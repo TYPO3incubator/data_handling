@@ -14,6 +14,8 @@ namespace TYPO3\CMS\DataHandling\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Core\MicroDateTime;
+
 abstract class AbstractEvent
 {
     /**
@@ -33,7 +35,7 @@ abstract class AbstractEvent
 
     public function __construct()
     {
-        $this->eventDate = new \DateTime('now');
+        $this->eventDate = MicroDateTime::create('now');
     }
 
     public function getEventDate()

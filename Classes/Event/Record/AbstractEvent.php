@@ -39,7 +39,7 @@ abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Event\AbstractEvent
     {
         return [
             'event_name' => $this->getEventName(),
-            'event_date' => $this->getEventDate()->format('Y-m-d H:m:i.u'),
+            'event_date' => $this->getEventDate()->format('Y-m-d H:i:s.u'),
             'data' => json_encode($this->getData()),
             'metadata' => json_encode($this->getMetadata()),
         ];

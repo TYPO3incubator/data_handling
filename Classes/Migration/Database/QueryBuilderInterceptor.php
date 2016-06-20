@@ -22,10 +22,9 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
 {
     public function execute()
     {
-        if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
-            $from = $this->concreteQueryBuilder->getQueryPart('from');
-            $tableName = $this->sanitizeReference($from['table']);
+        $tableName = $this->determineTableName();
 
+        if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
             if (!EventEmitter::isSystemInternal($tableName)) {
                 $values = $this->determineValues();
                 EventEmitter::getInstance()->emitCreatedEvent($tableName,
@@ -34,14 +33,8 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
-            $from = $this->concreteQueryBuilder->getQueryPart('from');
-            $where = $this->concreteQueryBuilder->getQueryPart('where');
-            $tableName = $this->sanitizeReference($from['table']);
-
             if (!EventEmitter::isSystemInternal($tableName)) {
-                if ($where instanceof CompositeExpression) {
-                    $identifier = $this->determineIdentifier($tableName, $where);
-                }
+                $identifier = $this->determineIdentifier();
                 if (!empty($identifier)) {
                     $values = $this->determineValues();
                     if (!EventEmitter::isDeleteCommand($tableName, $values)) {
@@ -54,13 +47,8 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::DELETE) {
-            $from = $this->concreteQueryBuilder->getQueryPart('from');
-            $where = $this->concreteQueryBuilder->getQueryPart('where');
-            $tableName = $this->sanitizeReference($from['table']);
             if (!EventEmitter::isSystemInternal($tableName)) {
-                if ($where instanceof CompositeExpression) {
-                    $identifier = $this->determineIdentifier($tableName, $where);
-                }
+                $identifier = $this->determineIdentifier();
                 if (!empty($identifier)) {
                     EventEmitter::getInstance()->emitPurgeEvent($tableName, $identifier);
                 }
@@ -79,13 +67,18 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
         return preg_replace('#^(`|\'|")([^`\'"]+)(\1)$#', '$2', $tableName);
     }
 
-    /**
-     * @param string $tableName
-     * @param CompositeExpression $where
-     * @return int|null
-     */
-    protected function determineIdentifier(string $tableName, CompositeExpression $where)
+    protected function determineTableName(): string
     {
+        $from = $this->concreteQueryBuilder->getQueryPart('from');
+        $tableName = $this->sanitizeReference($from['table']);
+        return $tableName;
+    }
+
+    protected function determineIdentifier()
+    {
+        $tableName = $this->determineTableName();
+        $where = $this->concreteQueryBuilder->getQueryPart('where');
+
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable($tableName);
         $queryBuilder->getRestrictions()

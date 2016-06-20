@@ -108,7 +108,8 @@ class EventEmitter implements SingletonInterface
         ];
 
         return (
-            strpos($tableName, 'cf_') === 0
+            empty($tableName)
+            || strpos($tableName, 'cf_') === 0
             || in_array($tableName, $systemInternalTables)
             || strpos($tableName, 'sys_') === 0 && !in_array($tableName, $nonSystemInternalTables)
         );

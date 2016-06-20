@@ -50,6 +50,6 @@ abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Event\AbstractEvent
      */
     public function getEventName(): string
     {
-        return 'core-record-' . preg_replace('#^(?:.*\\\\)?(\w+)Event$#', '$1', get_class($this));
+        return 'core-record-' . strtolower(preg_replace('#^(?:.*\\\\)?(\w+)Event$#', '$1', get_class($this)));
     }
 }

@@ -21,7 +21,7 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
     public function exec_INSERTquery($table, $fields_values, $no_quote_fields = false)
     {
         if (!EventEmitter::isSystemInternal($table)) {
-            EventEmitter::getInstance()->emitCreateEvent($table, $fields_values);
+            EventEmitter::getInstance()->emitCreatedEvent($table, $fields_values);
         }
         return parent::exec_INSERTquery($table, $fields_values, $no_quote_fields);
     }
@@ -31,7 +31,7 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
         if (!EventEmitter::isSystemInternal($table)) {
             foreach ($rows as $row) {
                 $fieldValues = array_combine($fields, $row);
-                EventEmitter::getInstance()->emitCreateEvent($table, $fieldValues);
+                EventEmitter::getInstance()->emitCreatedEvent($table, $fieldValues);
             }
         }
 

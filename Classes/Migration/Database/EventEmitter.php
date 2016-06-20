@@ -30,7 +30,7 @@ class EventEmitter implements SingletonInterface
         return GeneralUtility::makeInstance(EventEmitter::class);
     }
 
-    public function emitCreateEvent($tableName, array $fieldValues)
+    public function emitCreatedEvent(string $tableName, array $fieldValues)
     {
         $event = GeneralUtility::makeInstance(CreatedEvent::class);
         $event->setTableName($tableName);

@@ -28,7 +28,7 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
 
             if (!EventEmitter::isSystemInternal($tableName)) {
                 $values = $this->determineValues();
-                EventEmitter::getInstance()->emitCreateEvent($tableName, $values);
+                EventEmitter::getInstance()->emitCreatedEvent($tableName, $values);
             }
         } elseif ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
             $from = $this->concreteQueryBuilder->getQueryPart('from');

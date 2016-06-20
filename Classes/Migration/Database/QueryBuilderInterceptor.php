@@ -28,9 +28,12 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
 
             if (!EventEmitter::isSystemInternal($tableName)) {
                 $values = $this->determineValues();
-                EventEmitter::getInstance()->emitCreatedEvent($tableName, $values);
+                EventEmitter::getInstance()->emitCreatedEvent($tableName,
+                    $values);
             }
-        } elseif ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
+        }
+
+        if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
             $from = $this->concreteQueryBuilder->getQueryPart('from');
             $where = $this->concreteQueryBuilder->getQueryPart('where');
             $tableName = $this->sanitizeReference($from['table']);
@@ -41,7 +44,25 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
                 }
                 if (!empty($identifier)) {
                     $values = $this->determineValues();
-                    EventEmitter::getInstance()->emitChangedEvent($tableName, $values, $identifier);
+                    if (!EventEmitter::isDeleteCommand($tableName, $values)) {
+                        EventEmitter::getInstance()->emitChangedEvent($tableName, $values, $identifier);
+                    } else {
+                        EventEmitter::getInstance()->emitDeletedEvent($tableName, $values, $identifier);
+                    }
+                }
+            }
+        }
+
+        if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::DELETE) {
+            $from = $this->concreteQueryBuilder->getQueryPart('from');
+            $where = $this->concreteQueryBuilder->getQueryPart('where');
+            $tableName = $this->sanitizeReference($from['table']);
+            if (!EventEmitter::isSystemInternal($tableName)) {
+                if ($where instanceof CompositeExpression) {
+                    $identifier = $this->determineIdentifier($tableName, $where);
+                }
+                if (!empty($identifier)) {
+                    EventEmitter::getInstance()->emitPurgeEvent($tableName, $identifier);
                 }
             }
         }

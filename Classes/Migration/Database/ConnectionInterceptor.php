@@ -43,7 +43,11 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
         if (!EventEmitter::isSystemInternal($table)) {
             $identifier = $this->determineIdentifier($table, $where);
             if (!empty($identifier)) {
-                EventEmitter::getInstance()->emitChangedEvent($table, $fields_values, $identifier);
+                if (!EventEmitter::isDeleteCommand($table, $fields_values)) {
+                    EventEmitter::getInstance()->emitChangedEvent($table, $fields_values, $identifier);
+                } else {
+                    EventEmitter::getInstance()->emitDeletedEvent($table, $fields_values, $identifier);
+                }
             }
         }
         return parent::exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields);
@@ -52,6 +56,10 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
     public function exec_DELETEquery($table, $where)
     {
         if (!EventEmitter::isSystemInternal($table)) {
+            $identifier = $this->determineIdentifier($table, $where);
+            if (!empty($identifier)) {
+                EventEmitter::getInstance()->emitPurgeEvent($table, $identifier);
+            }
         }
         return parent::exec_DELETEquery($table, $where);
     }

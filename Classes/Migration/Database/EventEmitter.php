@@ -18,6 +18,8 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Event\Record\ChangedEvent;
 use TYPO3\CMS\DataHandling\Event\Record\CreatedEvent;
+use TYPO3\CMS\DataHandling\Event\Record\DeletedEvent;
+use TYPO3\CMS\DataHandling\Event\Record\PurgedEvent;
 use TYPO3\CMS\DataHandling\Store\EventStore;
 
 class EventEmitter implements SingletonInterface
@@ -46,6 +48,39 @@ class EventEmitter implements SingletonInterface
         $event->setData($fieldValues);
 
         EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
+    }
+
+    public function emitDeletedEvent(string $tableName, array $fieldValues, int $identifier)
+    {
+        $event = GeneralUtility::makeInstance(DeletedEvent::class);
+        $event->setTableName($tableName);
+        $event->setData($fieldValues);
+
+        EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
+    }
+
+    public function emitPurgeEvent(string $tableName, int $identifier)
+    {
+        $event = GeneralUtility::makeInstance(PurgedEvent::class);
+        $event->setTableName($tableName);
+
+        EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
+    }
+
+    static public function isDeleteCommand(string $tableName, array $fieldValues): bool
+    {
+        $fieldName = MetaModelService::getInstance()->getDeletedFieldName($tableName);
+        return (
+            !empty($fieldName) && !empty($fieldValues[$fieldName])
+        );
+    }
+
+    static public function isDisableCommand(string $tableName, array $fieldValues): bool
+    {
+        $fieldName = MetaModelService::getInstance()->getDisabledFieldName($tableName);
+        return (
+            !empty($fieldName) && !empty($fieldValues[$fieldName])
+        );
     }
 
     static public function isSystemInternal(string $tableName): bool

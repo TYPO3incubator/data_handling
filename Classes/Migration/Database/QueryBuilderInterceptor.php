@@ -70,7 +70,12 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
     protected function determineTableName(): string
     {
         $from = $this->concreteQueryBuilder->getQueryPart('from');
-        $tableName = $this->sanitizeReference($from['table']);
+        if (isset($from[0]['table'])) {
+            $tableName = $from[0]['table'];
+        } else {
+            $tableName = $from['table'];
+        }
+        $tableName = $this->sanitizeReference($tableName);
         return $tableName;
     }
 

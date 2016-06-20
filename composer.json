@@ -6,7 +6,7 @@
 	"license": ["GPL-2.0+"],
 	"require": {
 		"php" : "^7.0",
-		"dbellettini/eventstore-client": "~0.7"
+		"dbellettini/eventstore-client": "dev-master"
 	},
 	"replace": {
 		"data-handling": "*"

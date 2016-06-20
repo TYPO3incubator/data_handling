@@ -48,7 +48,7 @@ class EventEmitter implements SingletonInterface
         EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
     }
 
-    static public function isSystemInternal($tableName)
+    static public function isSystemInternal(string $tableName): bool
     {
         $systemInternalTables = [
             'sys_event_store',

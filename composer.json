@@ -4,6 +4,7 @@
 	"description": "TYPO3 Data Handling",
 	"homepage": "https://typo3.org",
 	"license": ["GPL-2.0+"],
+	"minimum-stability": "dev",
 	"require": {
 		"php" : "^7.0",
 		"dbellettini/eventstore-client": "dev-master"

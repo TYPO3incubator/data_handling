@@ -16,4 +16,50 @@ namespace TYPO3\CMS\DataHandling\Event;
 
 abstract class AbstractEvent
 {
+    /**
+     * @var \DateTime
+     */
+    protected $eventDate;
+
+    /**
+     * @var array|null
+     */
+    protected $data;
+
+    /**
+     * @var array|null
+     */
+    protected $metadata;
+
+    public function __construct()
+    {
+        $this->eventDate = new \DateTime('now');
+    }
+
+    public function getEventDate()
+    {
+        return $this->eventDate;
+    }
+
+    public function setData(array $data = null)
+    {
+        $this->data = $data;
+    }
+
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function setMetadata(array $metadata = null)
+    {
+        $this->metadata = $metadata;
+    }
+
+    public function getMetadata()
+    {
+        return $this->metadata;
+    }
+
+    abstract public function toArray(): array;
 }

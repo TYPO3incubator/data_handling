@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Store;
+namespace TYPO3\CMS\DataHandling\Event\Record;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,23 +14,7 @@ namespace TYPO3\CMS\DataHandling\Store;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Event\AbstractEvent;
-
-class EventSerializer
+class DeletedEvent extends AbstractEvent
 {
-    public function normalize(AbstractEvent $event): array
-    {
-        return [
-            'type' => '',
-            'source' => '',
-            'timestamp' => new \DateTime(),
-            'data' => [],
-            'metadata' => [],
-        ];
-    }
 
-    public function toArray(AbstractEvent $event): array
-    {
-
-    }
 }

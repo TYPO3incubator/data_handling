@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Store;
+namespace TYPO3\CMS\DataHandling\Store\Driver;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,21 +16,8 @@ namespace TYPO3\CMS\DataHandling\Store;
 
 use TYPO3\CMS\DataHandling\Event\AbstractEvent;
 
-class EventSerializer
+interface DriverInterface
 {
-    public function normalize(AbstractEvent $event): array
-    {
-        return [
-            'type' => '',
-            'source' => '',
-            'timestamp' => new \DateTime(),
-            'data' => [],
-            'metadata' => [],
-        ];
-    }
-
-    public function toArray(AbstractEvent $event): array
-    {
-
-    }
+    public function append(string $streamName, AbstractEvent $event);
+    public function open(string $eventStream);
 }

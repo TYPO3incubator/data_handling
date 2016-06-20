@@ -41,6 +41,10 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
     public function exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields = false)
     {
         if (!EventEmitter::isSystemInternal($table)) {
+            $identifier = $this->determineIdentifier($table, $where);
+            if (!empty($identifier)) {
+                EventEmitter::getInstance()->emitChangedEvent($table, $fields_values, $identifier);
+            }
         }
         return parent::exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields);
     }
@@ -50,5 +54,19 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
         if (!EventEmitter::isSystemInternal($table)) {
         }
         return parent::exec_DELETEquery($table, $where);
+    }
+
+    /**
+     * @param string $tableName
+     * @param string $whereClause
+     * @return null|int
+     */
+    protected function determineIdentifier($tableName, $whereClause)
+    {
+        $rows = $this->exec_SELECTgetRows('*', $tableName, $whereClause);
+        if (count($rows) !== 1 || empty($rows[0]['uid'])) {
+            return null;
+        }
+        return (int)$rows[0]['uid'];
     }
 }

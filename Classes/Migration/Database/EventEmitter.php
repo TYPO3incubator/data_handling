@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Event\Record\ChangedEvent;
 use TYPO3\CMS\DataHandling\Event\Record\CreatedEvent;
 use TYPO3\CMS\DataHandling\Store\EventStore;
 
@@ -36,6 +37,15 @@ class EventEmitter implements SingletonInterface
         $event->setData($fieldValues);
 
         EventStore::getInstance()->append('content-' . $tableName, $event);
+    }
+
+    public function emitChangedEvent(string $tableName, array $fieldValues, int $identifier)
+    {
+        $event = GeneralUtility::makeInstance(ChangedEvent::class);
+        $event->setTableName($tableName);
+        $event->setData($fieldValues);
+
+        EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
     }
 
     static public function isSystemInternal($tableName)

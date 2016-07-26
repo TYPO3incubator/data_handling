@@ -14,7 +14,15 @@ namespace TYPO3\CMS\DataHandling\Event\Record;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 class PurgedEvent extends AbstractEvent
 {
-
+    /**
+     * @return PurgedEvent
+     */
+    public static function create()
+    {
+        return GeneralUtility::makeInstance(PurgedEvent::class);
+    }
 }

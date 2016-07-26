@@ -32,36 +32,36 @@ class EventEmitter implements SingletonInterface
         return GeneralUtility::makeInstance(EventEmitter::class);
     }
 
-    public function emitCreatedEvent(string $tableName, array $fieldValues)
+    public function emitCreatedEvent(string $tableName, array $fieldValues, array $metadata = null)
     {
-        $event = GeneralUtility::makeInstance(CreatedEvent::class);
+        $event = CreatedEvent::create();
         $event->setTableName($tableName);
         $event->setData($fieldValues);
 
         EventStore::getInstance()->append('content-' . $tableName, $event);
     }
 
-    public function emitChangedEvent(string $tableName, array $fieldValues, int $identifier)
+    public function emitChangedEvent(string $tableName, array $fieldValues, int $identifier, array $metadata = null)
     {
-        $event = GeneralUtility::makeInstance(ChangedEvent::class);
+        $event = ChangedEvent::create();
         $event->setTableName($tableName);
         $event->setData($fieldValues);
 
         EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
     }
 
-    public function emitDeletedEvent(string $tableName, array $fieldValues, int $identifier)
+    public function emitDeletedEvent(string $tableName, array $fieldValues, int $identifier, array $metadata = null)
     {
-        $event = GeneralUtility::makeInstance(DeletedEvent::class);
+        $event = DeletedEvent::create();
         $event->setTableName($tableName);
         $event->setData($fieldValues);
 
         EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
     }
 
-    public function emitPurgeEvent(string $tableName, int $identifier)
+    public function emitPurgeEvent(string $tableName, int $identifier, array $metadata = null)
     {
-        $event = GeneralUtility::makeInstance(PurgedEvent::class);
+        $event = PurgedEvent::create();
         $event->setTableName($tableName);
 
         EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);

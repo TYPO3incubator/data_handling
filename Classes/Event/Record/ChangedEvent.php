@@ -14,7 +14,15 @@ namespace TYPO3\CMS\DataHandling\Event\Record;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 class ChangedEvent extends AbstractEvent
 {
-
+    /**
+     * @return ChangedEvent
+     */
+    public static function create()
+    {
+        return GeneralUtility::makeInstance(ChangedEvent::class);
+    }
 }

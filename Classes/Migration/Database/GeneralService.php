@@ -16,33 +16,18 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Event\Record\AbstractEvent;
-use TYPO3\CMS\DataHandling\Event\Record\ChangedEvent;
-use TYPO3\CMS\DataHandling\Event\Record\CreatedEvent;
-use TYPO3\CMS\DataHandling\Event\Record\DeletedEvent;
-use TYPO3\CMS\DataHandling\Event\Record\PurgedEvent;
-use TYPO3\CMS\DataHandling\Store\EventStore;
 
-class EventEmitter implements SingletonInterface
+class GeneralService implements SingletonInterface
 {
     /**
-     * @return EventEmitter
+     * @return GeneralService
      */
     static public function getInstance()
     {
-        return GeneralUtility::makeInstance(EventEmitter::class);
+        return GeneralUtility::makeInstance(GeneralService::class);
     }
 
-    public function emitRecordEvent(AbstractEvent $event)
-    {
-        $streamName = 'record-' . $event->getTableName();
-        if ($event->getIdentifier()) {
-            $streamName .= '-' . $event->getIdentifier();
-        }
-        EventStore::getInstance()->append($streamName, $event);
-    }
-
-    static public function isDeleteCommand(string $tableName, array $fieldValues): bool
+    public function isDeleteCommand(string $tableName, array $fieldValues): bool
     {
         $fieldName = MetaModelService::getInstance()->getDeletedFieldName($tableName);
         return (
@@ -50,7 +35,7 @@ class EventEmitter implements SingletonInterface
         );
     }
 
-    static public function isDisableCommand(string $tableName, array $fieldValues): bool
+    public function isDisableCommand(string $tableName, array $fieldValues): bool
     {
         $fieldName = MetaModelService::getInstance()->getDisabledFieldName($tableName);
         return (
@@ -58,7 +43,7 @@ class EventEmitter implements SingletonInterface
         );
     }
 
-    static public function isSystemInternal(string $tableName): bool
+    public function isSystemInternal(string $tableName): bool
     {
         $systemInternalTables = [
             'sys_event_store',

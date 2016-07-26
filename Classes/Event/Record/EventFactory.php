@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Migration\Database;
+namespace TYPO3\CMS\DataHandling\Event\Record;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,10 +16,6 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Event\Record\ChangedEvent;
-use TYPO3\CMS\DataHandling\Event\Record\CreatedEvent;
-use TYPO3\CMS\DataHandling\Event\Record\DeletedEvent;
-use TYPO3\CMS\DataHandling\Event\Record\PurgedEvent;
 
 class EventFactory implements SingletonInterface
 {

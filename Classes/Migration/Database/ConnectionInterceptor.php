@@ -16,12 +16,14 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
 
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\DataHandling\Event\Record\AbstractEvent;
+use TYPO3\CMS\DataHandling\Event\Record\EventEmitter;
+use TYPO3\CMS\DataHandling\Event\Record\EventFactory;
 
 class ConnectionInterceptor extends DatabaseConnection
 {
     public function exec_INSERTquery($table, $fields_values, $no_quote_fields = false)
     {
-        if (!EventEmitter::isSystemInternal($table)) {
+        if (!GeneralService::getInstance()->isSystemInternal($table)) {
             $event = EventFactory::getInstance()->createCreatedEvent($table, $fields_values);
             $this->emitRecordEvent($event);
         }
@@ -30,7 +32,7 @@ class ConnectionInterceptor extends DatabaseConnection
 
     public function exec_INSERTmultipleRows($table, array $fields, array $rows, $no_quote_fields = false)
     {
-        if (!EventEmitter::isSystemInternal($table)) {
+        if (!GeneralService::getInstance()->isSystemInternal($table)) {
             foreach ($rows as $row) {
                 $fieldValues = array_combine($fields, $row);
                 $event = EventFactory::getInstance()->createCreatedEvent($table, $fieldValues);
@@ -43,10 +45,10 @@ class ConnectionInterceptor extends DatabaseConnection
 
     public function exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields = false)
     {
-        if (!EventEmitter::isSystemInternal($table)) {
+        if (!GeneralService::getInstance()->isSystemInternal($table)) {
             $identifier = $this->determineIdentifier($table, $where);
             if (!empty($identifier)) {
-                if (!EventEmitter::isDeleteCommand($table, $fields_values)) {
+                if (!GeneralService::getInstance()->isDeleteCommand($table, $fields_values)) {
                     $event = EventFactory::getInstance()->createChangedEvent($table, $fields_values, $identifier);
                 } else {
                     $event = EventFactory::getInstance()->createDeletedEvent($table, $fields_values, $identifier);
@@ -59,7 +61,7 @@ class ConnectionInterceptor extends DatabaseConnection
 
     public function exec_DELETEquery($table, $where)
     {
-        if (!EventEmitter::isSystemInternal($table)) {
+        if (!GeneralService::getInstance()->isSystemInternal($table)) {
             $identifier = $this->determineIdentifier($table, $where);
             if (!empty($identifier)) {
                 $event = EventFactory::getInstance()->createPurgeEvent($table, $identifier);

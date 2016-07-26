@@ -18,6 +18,8 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Event\Record\AbstractEvent;
+use TYPO3\CMS\DataHandling\Event\Record\EventEmitter;
+use TYPO3\CMS\DataHandling\Event\Record\EventFactory;
 
 class QueryBuilderInterceptor extends QueryBuilder
 {
@@ -26,7 +28,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         $tableName = $this->determineTableName();
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
-            if (!EventEmitter::isSystemInternal($tableName)) {
+            if (!GeneralService::getInstance()->isSystemInternal($tableName)) {
                 $values = $this->determineValues();
                 $event = EventFactory::getInstance()->createCreatedEvent($tableName, $values);
                 $this->emitRecordEvent($event);
@@ -34,11 +36,11 @@ class QueryBuilderInterceptor extends QueryBuilder
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
-            if (!EventEmitter::isSystemInternal($tableName)) {
+            if (!GeneralService::getInstance()->isSystemInternal($tableName)) {
                 $identifier = $this->determineIdentifier();
                 if (!empty($identifier)) {
                     $values = $this->determineValues();
-                    if (!EventEmitter::isDeleteCommand($tableName, $values)) {
+                    if (!GeneralService::getInstance()->isDeleteCommand($tableName, $values)) {
                         $event = EventFactory::getInstance()->createChangedEvent($tableName, $values, $identifier);
                     } else {
                         $event = EventFactory::getInstance()->createDeletedEvent($tableName, $values, $identifier);
@@ -49,7 +51,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::DELETE) {
-            if (!EventEmitter::isSystemInternal($tableName)) {
+            if (!GeneralService::getInstance()->isSystemInternal($tableName)) {
                 $identifier = $this->determineIdentifier();
                 if (!empty($identifier)) {
                     $event = EventFactory::getInstance()->createPurgeEvent($tableName, $identifier);

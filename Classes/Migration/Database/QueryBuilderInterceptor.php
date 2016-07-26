@@ -15,9 +15,11 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
  */
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Event\Record\AbstractEvent;
 
-class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilder
+class QueryBuilderInterceptor extends QueryBuilder
 {
     public function execute()
     {
@@ -26,7 +28,8 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
             if (!EventEmitter::isSystemInternal($tableName)) {
                 $values = $this->determineValues();
-                EventEmitter::getInstance()->emitCreatedEvent($tableName, $values);
+                $event = EventFactory::getInstance()->createCreatedEvent($tableName, $values);
+                $this->emitRecordEvent($event);
             }
         }
 
@@ -36,10 +39,11 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
                 if (!empty($identifier)) {
                     $values = $this->determineValues();
                     if (!EventEmitter::isDeleteCommand($tableName, $values)) {
-                        EventEmitter::getInstance()->emitChangedEvent($tableName, $values, $identifier);
+                        $event = EventFactory::getInstance()->createChangedEvent($tableName, $values, $identifier);
                     } else {
-                        EventEmitter::getInstance()->emitDeletedEvent($tableName, $values, $identifier);
+                        $event = EventFactory::getInstance()->createDeletedEvent($tableName, $values, $identifier);
                     }
+                    $this->emitRecordEvent($event);
                 }
             }
         }
@@ -48,12 +52,28 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
             if (!EventEmitter::isSystemInternal($tableName)) {
                 $identifier = $this->determineIdentifier();
                 if (!empty($identifier)) {
-                    EventEmitter::getInstance()->emitPurgeEvent($tableName, $identifier);
+                    $event = EventFactory::getInstance()->createPurgeEvent($tableName, $identifier);
+                    $this->emitRecordEvent($event);
                 }
             }
         }
 
         return parent::execute();
+    }
+
+    protected function emitRecordEvent(AbstractEvent $event)
+    {
+        $metadata = ['trigger' => QueryBuilderInterceptor::class];
+
+        if ($event->getMetadata() === null) {
+            $event->setMetadata($metadata);
+        } else {
+            $event->setMetadata(
+                array_merge($event->getMetadata(), $metadata)
+            );
+        }
+
+        EventEmitter::getInstance()->emitRecordEvent($event);
     }
 
     /**
@@ -82,6 +102,7 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
         $tableName = $this->determineTableName();
         $where = $this->concreteQueryBuilder->getQueryPart('where');
 
+        /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable($tableName);
         $queryBuilder->getRestrictions()

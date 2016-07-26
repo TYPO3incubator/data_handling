@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Event\Record\AbstractEvent;
 use TYPO3\CMS\DataHandling\Event\Record\ChangedEvent;
 use TYPO3\CMS\DataHandling\Event\Record\CreatedEvent;
 use TYPO3\CMS\DataHandling\Event\Record\DeletedEvent;
@@ -32,39 +33,13 @@ class EventEmitter implements SingletonInterface
         return GeneralUtility::makeInstance(EventEmitter::class);
     }
 
-    public function emitCreatedEvent(string $tableName, array $fieldValues, array $metadata = null)
+    public function emitRecordEvent(AbstractEvent $event)
     {
-        $event = CreatedEvent::create();
-        $event->setTableName($tableName);
-        $event->setData($fieldValues);
-
-        EventStore::getInstance()->append('content-' . $tableName, $event);
-    }
-
-    public function emitChangedEvent(string $tableName, array $fieldValues, int $identifier, array $metadata = null)
-    {
-        $event = ChangedEvent::create();
-        $event->setTableName($tableName);
-        $event->setData($fieldValues);
-
-        EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
-    }
-
-    public function emitDeletedEvent(string $tableName, array $fieldValues, int $identifier, array $metadata = null)
-    {
-        $event = DeletedEvent::create();
-        $event->setTableName($tableName);
-        $event->setData($fieldValues);
-
-        EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
-    }
-
-    public function emitPurgeEvent(string $tableName, int $identifier, array $metadata = null)
-    {
-        $event = PurgedEvent::create();
-        $event->setTableName($tableName);
-
-        EventStore::getInstance()->append('content-' . $tableName . '-' . $identifier, $event);
+        $streamName = 'record-' . $event->getTableName();
+        if ($event->getIdentifier()) {
+            $streamName .= '-' . $event->getIdentifier();
+        }
+        EventStore::getInstance()->append($streamName, $event);
     }
 
     static public function isDeleteCommand(string $tableName, array $fieldValues): bool

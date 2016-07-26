@@ -22,6 +22,11 @@ abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Event\AbstractEvent
      */
     protected $tableName;
 
+    /**
+     * @var int
+     */
+    protected $identifier;
+
     public function getTableName()
     {
         return $this->tableName;
@@ -33,6 +38,16 @@ abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Event\AbstractEvent
     public function setTableName(string $tableName)
     {
         $this->tableName = $tableName;
+    }
+
+    public function getIdentifier()
+    {
+        return $this->identifier;
+    }
+
+    public function setIdentifier(int $identifier)
+    {
+        $this->identifier = $identifier;
     }
 
     public function toArray(): array

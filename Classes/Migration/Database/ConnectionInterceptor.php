@@ -14,12 +14,16 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
  * The TYPO3 project - inspiring people to share!
  */
 
-class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
+use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\DataHandling\Event\Record\AbstractEvent;
+
+class ConnectionInterceptor extends DatabaseConnection
 {
     public function exec_INSERTquery($table, $fields_values, $no_quote_fields = false)
     {
         if (!EventEmitter::isSystemInternal($table)) {
-            EventEmitter::getInstance()->emitCreatedEvent($table, $fields_values);
+            $event = EventFactory::getInstance()->createCreatedEvent($table, $fields_values);
+            $this->emitRecordEvent($event);
         }
         return parent::exec_INSERTquery($table, $fields_values, $no_quote_fields);
     }
@@ -29,7 +33,8 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
         if (!EventEmitter::isSystemInternal($table)) {
             foreach ($rows as $row) {
                 $fieldValues = array_combine($fields, $row);
-                EventEmitter::getInstance()->emitCreatedEvent($table, $fieldValues);
+                $event = EventFactory::getInstance()->createCreatedEvent($table, $fieldValues);
+                $this->emitRecordEvent($event);
             }
         }
 
@@ -42,10 +47,11 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
             $identifier = $this->determineIdentifier($table, $where);
             if (!empty($identifier)) {
                 if (!EventEmitter::isDeleteCommand($table, $fields_values)) {
-                    EventEmitter::getInstance()->emitChangedEvent($table, $fields_values, $identifier);
+                    $event = EventFactory::getInstance()->createChangedEvent($table, $fields_values, $identifier);
                 } else {
-                    EventEmitter::getInstance()->emitDeletedEvent($table, $fields_values, $identifier);
+                    $event = EventFactory::getInstance()->createDeletedEvent($table, $fields_values, $identifier);
                 }
+                $this->emitRecordEvent($event);
             }
         }
         return parent::exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields);
@@ -56,10 +62,26 @@ class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
         if (!EventEmitter::isSystemInternal($table)) {
             $identifier = $this->determineIdentifier($table, $where);
             if (!empty($identifier)) {
-                EventEmitter::getInstance()->emitPurgeEvent($table, $identifier);
+                $event = EventFactory::getInstance()->createPurgeEvent($table, $identifier);
+                $this->emitRecordEvent($event);
             }
         }
         return parent::exec_DELETEquery($table, $where);
+    }
+
+    protected function emitRecordEvent(AbstractEvent $event)
+    {
+        $metadata = ['trigger' => ConnectionInterceptor::class];
+
+        if ($event->getMetadata() === null) {
+            $event->setMetadata($metadata);
+        } else {
+            $event->setMetadata(
+                array_merge($event->getMetadata(), $metadata)
+            );
+        }
+
+        EventEmitter::getInstance()->emitRecordEvent($event);
     }
 
     /**

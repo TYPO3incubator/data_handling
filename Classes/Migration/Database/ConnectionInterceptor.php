@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\SingletonInterface;
-
 class ConnectionInterceptor extends \TYPO3\CMS\Core\Database\DatabaseConnection
 {
     public function exec_INSERTquery($table, $fields_values, $no_quote_fields = false)

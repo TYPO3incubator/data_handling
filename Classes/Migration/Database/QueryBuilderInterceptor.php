@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Doctrine\DBAL\Query\Expression\CompositeExpression;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -27,8 +26,7 @@ class QueryBuilderInterceptor extends \TYPO3\CMS\Core\Database\Query\QueryBuilde
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
             if (!EventEmitter::isSystemInternal($tableName)) {
                 $values = $this->determineValues();
-                EventEmitter::getInstance()->emitCreatedEvent($tableName,
-                    $values);
+                EventEmitter::getInstance()->emitCreatedEvent($tableName, $values);
             }
         }
 

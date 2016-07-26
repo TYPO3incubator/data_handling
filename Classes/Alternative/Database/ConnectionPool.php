@@ -20,6 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
 {
+    const ORIGIN_CONNECTION_NAME = 'Origin';
     /**
      * @return ConnectionPool
      */
@@ -28,18 +29,13 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
         return GeneralUtility::makeInstance(ConnectionPool::class);
     }
 
-    public function getDefaultConnection(): Connection
+    public function getOriginConnection(): Connection
     {
-        return $this->getConnectionByName(static::DEFAULT_CONNECTION_NAME);
+        return $this->getConnectionByName(static::ORIGIN_CONNECTION_NAME);
     }
 
-    public function getDefaultQueryBuilder(): QueryBuilder
+    public function getOriginQueryBuilder(): QueryBuilder
     {
-        return $this->getDefaultConnection()->createQueryBuilder();
-    }
-
-    public function getQueryBuilderForTable(string $tableName): QueryBuilder
-    {
-        return parent::getQueryBuilderForTable($tableName);
+        return $this->getOriginConnection()->createQueryBuilder();
     }
 }

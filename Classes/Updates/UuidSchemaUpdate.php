@@ -100,7 +100,7 @@ class UuidSchemaUpdate extends AbstractUpdate
 
     protected function getQueryBuilderForTable($tableName)
     {
-        $queryBuilder = ConnectionPool::create()->getDefaultQueryBuilder();
+        $queryBuilder = ConnectionPool::create()->getOriginQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
 
         /** @var DeletedRestriction $deletedRestriction */

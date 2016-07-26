@@ -50,7 +50,7 @@ class SqlDriver implements DriverInterface
      */
     protected function getQueryBuilder()
     {
-        $queryBuilder = ConnectionPool::create()->getDefaultQueryBuilder();
+        $queryBuilder = ConnectionPool::create()->getOriginQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
 
         return $queryBuilder;

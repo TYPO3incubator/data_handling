@@ -15,9 +15,9 @@ namespace TYPO3\CMS\DataHandling\Store\Driver;
  */
 
 use Rhumsaa\Uuid\Uuid;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Alternative\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Store\EventSerializer;
 
@@ -50,10 +50,8 @@ class SqlDriver implements DriverInterface
      */
     protected function getQueryBuilder()
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('sys_event_store');
-        $queryBuilder->getRestrictions()
-            ->removeAll();
+        $queryBuilder = ConnectionPool::create()->getDefaultQueryBuilder();
+        $queryBuilder->getRestrictions()->removeAll();
 
         return $queryBuilder;
     }

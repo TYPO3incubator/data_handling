@@ -17,14 +17,14 @@ namespace TYPO3\CMS\DataHandling\Migration\Database;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class GeneralService implements SingletonInterface
+class GenericService implements SingletonInterface
 {
     /**
-     * @return GeneralService
+     * @return GenericService
      */
     static public function getInstance()
     {
-        return GeneralUtility::makeInstance(GeneralService::class);
+        return GeneralUtility::makeInstance(GenericService::class);
     }
 
     public function isDeleteCommand(string $tableName, array $fieldValues): bool

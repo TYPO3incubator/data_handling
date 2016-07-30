@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Record;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,20 +15,14 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-class EventManager
+class ChangeCommand extends AbstractCommand
 {
     /**
-     * @return EventManager
+     * @return ChangeCommand
      */
     public static function create()
     {
-        return GeneralUtility::makeInstance(EventManager::class);
-    }
-
-    public function handle(AbstractEvent $event)
-    {
-
+        return GeneralUtility::makeInstance(ChangeCommand::class);
     }
 }

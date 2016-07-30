@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
-abstract class AbstractEvent
+abstract class AbstractCommand
 {
     /**
      * @var array|null

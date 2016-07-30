@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Record;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,21 +14,20 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Rhumsaa\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-class EventManager
+class CreateCommand extends AbstractCommand
 {
     /**
-     * @return EventManager
+     * @param string $tableName
+     * @return CreateCommand
      */
-    public static function create()
+    public static function create(string $tableName)
     {
-        return GeneralUtility::makeInstance(EventManager::class);
-    }
-
-    public function handle(AbstractEvent $event)
-    {
-
+        $command = GeneralUtility::makeInstance(CreateCommand::class);
+        $command->setIdentifier(Uuid::uuid4()->toString());
+        $command->setTableName($tableName);
+        return $command;
     }
 }

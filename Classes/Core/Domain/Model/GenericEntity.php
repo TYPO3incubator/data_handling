@@ -14,66 +14,92 @@ namespace TYPO3\CMS\DataHandling\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class GenericEntity
 {
+    public static function create()
+    {
+        return GeneralUtility::makeInstance(GenericEntity::class);
+    }
+
+    /**
+     * @var string
+     */
     protected $uid;
+
+    /**
+     * @var string
+     */
     protected $uuid;
-    protected $name;
 
-    public function create() {
+    /**
+     * @var array
+     */
+    protected $values;
 
+    /**
+     * @var string
+     */
+    protected $entityName;
+
+    /**
+     * @var GenericEntity
+     */
+    protected $baseEntity;
+
+    public function getUid(): string
+    {
+        return $this->uid;
     }
 
-    public function update() {
-
+    public function setUid(string $uid): GenericEntity
+    {
+        $this->uid = $uid;
+        return $this;
     }
 
-    public function remove() {
-
+    public function getUuid(): string
+    {
+        return $this->uuid;
     }
 
-    public function purge() {
-
+    public function setUuid(string $uuid): GenericEntity
+    {
+        $this->uuid = $uuid;
+        return $this;
     }
 
-    public function disable() {
-
+    public function getValue(): array
+    {
+        return $this->values;
     }
 
-    public function enable() {
-
+    public function setValues(array $values): GenericEntity
+    {
+        $this->values = $values;
+        return $this;
     }
 
-    public function setRestriction() {
-
+    public function getEntityName(): string
+    {
+        return $this->entityName;
     }
 
-    public function setReference() {
-
+    public function setEntityName(string $entityName): GenericEntity
+    {
+        $this->entityName = $entityName;
+        return $this;
     }
 
-    public function addReference() {
-
+    public function setBaseEntity(GenericEntity $baseEntity): GenericEntity
+    {
+        $this->baseEntity = $baseEntity;
+        return $this;
     }
 
-    public function removeReference() {
-
-    }
-
-    public function translate() {
-
-    }
-
-    public function localize() {
-
-    }
-
-    public function branch() {
-
-    }
-
-    public function merge() {
-
+    public function getBaseEntity(): GenericEntity
+    {
+        return $this->baseEntity;
     }
 }

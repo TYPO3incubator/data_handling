@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
+namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,21 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 
-class EventManager
+class LegacyDataHandler extends DataHandler
 {
-    /**
-     * @return EventManager
-     */
-    public static function create()
+    public function checkValueForInput($value, $tcaFieldConf, $table, $id, $realPid, $field)
     {
-        return GeneralUtility::makeInstance(EventManager::class);
-    }
-
-    public function handle(AbstractEvent $event)
-    {
-
+        return parent::checkValueForInput($value, $tcaFieldConf, $table, $id, $realPid, $field);
     }
 }

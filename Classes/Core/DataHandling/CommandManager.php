@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
 
 class CommandManager
 {
@@ -26,12 +27,7 @@ class CommandManager
         return GeneralUtility::makeInstance(CommandManager::class);
     }
 
-    public function mapDataCommand()
-    {
-
-    }
-
-    public function mapActionCommand()
+    public function handle(AbstractCommand $command)
     {
 
     }

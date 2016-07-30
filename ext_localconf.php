@@ -28,3 +28,14 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\DatabaseC
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class]
     = \TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class;
 
+// integration: hooks & slots
+
+\TYPO3\CMS\DataHandling\Common::getSignalSlotDispatcher()->connect(
+    \TYPO3\CMS\Backend\Controller\EditDocumentController::class, 'preInitAfter',
+    \TYPO3\CMS\DataHandling\Integration\Slot\EditDocumentControllerSlot::class, 'fetchEditedAggregates'
+);
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ac3c06f089776446875c4957a7f35a56'] =
+    \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ac3c06f089776446875c4957a7f35a56'] =
+    \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;

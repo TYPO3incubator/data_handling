@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Store\EventStore;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 
 class EventEmitter implements SingletonInterface
 {

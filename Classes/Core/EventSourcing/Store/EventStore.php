@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Store;
+namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -17,8 +17,8 @@ namespace TYPO3\CMS\DataHandling\Core\Store;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Store\Driver\DriverInterface;
-use TYPO3\CMS\DataHandling\Core\Store\Driver\SqlDriver;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\DriverInterface;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
 
 class EventStore implements SingletonInterface
 {

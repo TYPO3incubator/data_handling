@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Store\Driver;
+namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
 
 /*
  * This file is part of the TYPO3 CMS project.

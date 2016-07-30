@@ -1,18 +1,30 @@
 <?php
 defined('TYPO3_MODE') or die();
 
+// XCLASSES & alternative implementations
+
 $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Origin'] =
     $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Default'];
 $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Default']['wrapperClass'] =
-    \TYPO3\CMS\DataHandling\Migration\Database\ConnectionInterceptor::class;
+    \TYPO3\CMS\DataHandling\Core\Compatibility\Database\ConnectionInterceptor::class;
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\DatabaseConnection::class]['className']
-    = \TYPO3\CMS\DataHandling\Migration\Database\DatabaseConnectionInterceptor::class;
+    = \TYPO3\CMS\DataHandling\Core\Compatibility\Database\DatabaseConnectionInterceptor::class;
 
+/*
+ * ext:core
+ */
 
+// provide new database fields
 \TYPO3\CMS\DataHandling\Common::getSignalSlotDispatcher()->connect(
     \TYPO3\CMS\Install\Service\SqlExpectedSchemaService::class, 'tablesDefinitionIsBeingBuilt',
-    \TYPO3\CMS\DataHandling\Slot\UuidSchemaModificationSlot::class, 'generate'
+    \TYPO3\CMS\DataHandling\Core\Slot\UuidSchemaModificationSlot::class, 'generate'
 );
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\TYPO3\CMS\DataHandling\Updates\UuidSchemaUpdate::class]
-    = \TYPO3\CMS\DataHandling\Updates\UuidSchemaUpdate::class;
+
+/*
+ * ext:install
+ */
+
+// create initial uuid values
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class]
+    = \TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class;
 

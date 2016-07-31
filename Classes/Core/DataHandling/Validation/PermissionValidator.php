@@ -21,7 +21,7 @@ class PermissionValidator
     /**
      * @return PermissionValidator
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(PermissionValidator::class);
     }

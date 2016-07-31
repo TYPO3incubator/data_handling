@@ -22,7 +22,7 @@ class EventManager
     /**
      * @return EventManager
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(EventManager::class);
     }

@@ -39,7 +39,7 @@ class ProjectionContext
      * @param int[]|null $languageChain
      * @return ProjectionContext
      */
-    public static function create(int $workspaceId, array $languageChain = null)
+    public static function instance(int $workspaceId, array $languageChain = null)
     {
         return GeneralUtility::makeInstance(
             ProjectionContext::class,

@@ -22,14 +22,14 @@ class EventFactory implements SingletonInterface
     /**
      * @return EventFactory
      */
-    static public function getInstance()
+    static public function instance()
     {
         return GeneralUtility::makeInstance(EventFactory::class);
     }
 
     public function createCreatedEvent(string $tableName, array $fieldValues)
     {
-        $event = CreatedEvent::create();
+        $event = CreatedEvent::instance();
         $event->setTableName($tableName);
         $event->setData($fieldValues);
         return $event;
@@ -37,7 +37,7 @@ class EventFactory implements SingletonInterface
 
     public function createChangedEvent(string $tableName, array $fieldValues, int $identifier)
     {
-        $event = ChangedEvent::create();
+        $event = ChangedEvent::instance();
         $event->setTableName($tableName);
         $event->setIdentifier($identifier);
         $event->setData($fieldValues);
@@ -46,7 +46,7 @@ class EventFactory implements SingletonInterface
 
     public function createDeletedEvent(string $tableName, array $fieldValues, int $identifier)
     {
-        $event = DeletedEvent::create();
+        $event = DeletedEvent::instance();
         $event->setTableName($tableName);
         $event->setIdentifier($identifier);
         $event->setData($fieldValues);
@@ -55,7 +55,7 @@ class EventFactory implements SingletonInterface
 
     public function createPurgeEvent(string $tableName, int $identifier)
     {
-        $event = PurgedEvent::create();
+        $event = PurgedEvent::instance();
         $event->setTableName($tableName);
         $event->setIdentifier($identifier);
         return $event;

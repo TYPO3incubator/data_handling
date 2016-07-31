@@ -61,7 +61,7 @@ class CommandMapper
     /**
      * @return CommandMapper
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(CommandMapper::class);
     }
@@ -307,7 +307,7 @@ class CommandMapper
 
     protected function fetchUuid(Reference $reference): string
     {
-        $queryBuilder = ConnectionPool::create()->getOriginQueryBuilder();
+        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
             ->select('uuid')
             ->from($reference->getName())
@@ -318,7 +318,7 @@ class CommandMapper
 
     protected function fetchState(Reference $reference): State
     {
-        $queryBuilder = ConnectionPool::create()->getOriginQueryBuilder();
+        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
             ->select('*')
             ->from($reference->getName())

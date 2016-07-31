@@ -24,8 +24,8 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 {
     public function exec_INSERTquery($table, $fields_values, $no_quote_fields = false)
     {
-        if (!GenericService::getInstance()->isSystemInternal($table)) {
-            $event = EventFactory::getInstance()->createCreatedEvent($table, $fields_values);
+        if (!GenericService::instance()->isSystemInternal($table)) {
+            $event = EventFactory::instance()->createCreatedEvent($table, $fields_values);
             $this->emitRecordEvent($event);
         }
         return parent::exec_INSERTquery($table, $fields_values, $no_quote_fields);
@@ -33,10 +33,10 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_INSERTmultipleRows($table, array $fields, array $rows, $no_quote_fields = false)
     {
-        if (!GenericService::getInstance()->isSystemInternal($table)) {
+        if (!GenericService::instance()->isSystemInternal($table)) {
             foreach ($rows as $row) {
                 $fieldValues = array_combine($fields, $row);
-                $event = EventFactory::getInstance()->createCreatedEvent($table, $fieldValues);
+                $event = EventFactory::instance()->createCreatedEvent($table, $fieldValues);
                 $this->emitRecordEvent($event);
             }
         }
@@ -46,13 +46,13 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields = false)
     {
-        if (!GenericService::getInstance()->isSystemInternal($table)) {
+        if (!GenericService::instance()->isSystemInternal($table)) {
             $identifier = $this->determineIdentifier($table, $where);
             if (!empty($identifier)) {
-                if (!GenericService::getInstance()->isDeleteCommand($table, $fields_values)) {
-                    $event = EventFactory::getInstance()->createChangedEvent($table, $fields_values, $identifier);
+                if (!GenericService::instance()->isDeleteCommand($table, $fields_values)) {
+                    $event = EventFactory::instance()->createChangedEvent($table, $fields_values, $identifier);
                 } else {
-                    $event = EventFactory::getInstance()->createDeletedEvent($table, $fields_values, $identifier);
+                    $event = EventFactory::instance()->createDeletedEvent($table, $fields_values, $identifier);
                 }
                 $this->emitRecordEvent($event);
             }
@@ -62,10 +62,10 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_DELETEquery($table, $where)
     {
-        if (!GenericService::getInstance()->isSystemInternal($table)) {
+        if (!GenericService::instance()->isSystemInternal($table)) {
             $identifier = $this->determineIdentifier($table, $where);
             if (!empty($identifier)) {
-                $event = EventFactory::getInstance()->createPurgeEvent($table, $identifier);
+                $event = EventFactory::instance()->createPurgeEvent($table, $identifier);
                 $this->emitRecordEvent($event);
             }
         }
@@ -84,7 +84,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
             );
         }
 
-        EventEmitter::getInstance()->emitRecordEvent($event);
+        EventEmitter::instance()->emitRecordEvent($event);
     }
 
     /**

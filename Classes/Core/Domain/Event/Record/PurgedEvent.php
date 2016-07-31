@@ -21,7 +21,7 @@ class PurgedEvent extends AbstractEvent
     /**
      * @return PurgedEvent
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(PurgedEvent::class);
     }

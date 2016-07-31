@@ -100,12 +100,12 @@ class UuidSchemaUpdate extends AbstractUpdate
 
     protected function getQueryBuilderForTable($tableName)
     {
-        $queryBuilder = ConnectionPool::create()->getOriginQueryBuilder();
+        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
 
         /** @var DeletedRestriction $deletedRestriction */
         $deletedRestriction = GeneralUtility::makeInstance(DeletedRestriction::class);
-        if (MetaModelService::getInstance()->getDeletedFieldName($tableName) !== null) {
+        if (MetaModelService::instance()->getDeletedFieldName($tableName) !== null) {
             $queryBuilder->getRestrictions()->add($deletedRestriction);
         }
 

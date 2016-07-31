@@ -24,7 +24,7 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     /**
      * @return ConnectionPool
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(ConnectionPool::class);
     }

@@ -125,7 +125,7 @@ class CommandResolver
 
     protected function fetchUuid(Reference $reference): string
     {
-        $queryBuilder = ConnectionPool::create()->getOriginQueryBuilder();
+        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
             ->select('uuid')
             ->from($reference->getName())

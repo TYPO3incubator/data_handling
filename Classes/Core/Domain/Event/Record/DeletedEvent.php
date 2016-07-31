@@ -21,7 +21,7 @@ class DeletedEvent extends AbstractEvent
     /**
      * @return DeletedEvent
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(DeletedEvent::class);
     }

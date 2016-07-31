@@ -30,7 +30,7 @@ class EventStore implements SingletonInterface
     /**
      * @return EventStore
      */
-    static public function getInstance()
+    static public function instance()
     {
         return GeneralUtility::makeInstance(EventStore::class);
     }

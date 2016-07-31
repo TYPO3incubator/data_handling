@@ -40,7 +40,7 @@ class DataHandlerHook
         }
 
         $controllerSlot = EditDocumentControllerSlot::instance();
-        $processedAggregates = CommandMapper::create()
+        $processedAggregates = CommandMapper::instance()
             ->setAggregates($controllerSlot->getAggregates())
             ->setDataCollection($dataHandler->datamap)
             ->setActionCollection($dataHandler->cmdmap)

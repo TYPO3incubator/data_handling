@@ -22,14 +22,14 @@ class GenericService implements SingletonInterface
     /**
      * @return GenericService
      */
-    static public function getInstance()
+    static public function instance()
     {
         return GeneralUtility::makeInstance(GenericService::class);
     }
 
     public function isDeleteCommand(string $tableName, array $fieldValues): bool
     {
-        $fieldName = MetaModelService::getInstance()->getDeletedFieldName($tableName);
+        $fieldName = MetaModelService::instance()->getDeletedFieldName($tableName);
         return (
             !empty($fieldName) && !empty($fieldValues[$fieldName])
         );
@@ -37,7 +37,7 @@ class GenericService implements SingletonInterface
 
     public function isDisableCommand(string $tableName, array $fieldValues): bool
     {
-        $fieldName = MetaModelService::getInstance()->getDisabledFieldName($tableName);
+        $fieldName = MetaModelService::instance()->getDisabledFieldName($tableName);
         return (
             !empty($fieldName) && !empty($fieldValues[$fieldName])
         );

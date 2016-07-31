@@ -22,7 +22,7 @@ class CommandManager
     /**
      * @return CommandManager
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(CommandManager::class);
     }

@@ -33,7 +33,7 @@ class ValueResolver extends AbstractResolver
         $values = [];
 
         foreach ($rawValues as $propertyName => $rawValue) {
-            if (MetaModelService::getInstance()->isInvalidValueProperty($reference->getName(), $propertyName)) {
+            if (MetaModelService::instance()->isInvalidValueProperty($reference->getName(), $propertyName)) {
                 continue;
             }
 

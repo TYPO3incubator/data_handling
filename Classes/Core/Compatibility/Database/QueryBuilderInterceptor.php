@@ -29,22 +29,22 @@ class QueryBuilderInterceptor extends QueryBuilder
         $tableName = $this->determineTableName();
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
-            if (!GenericService::getInstance()->isSystemInternal($tableName)) {
+            if (!GenericService::instance()->isSystemInternal($tableName)) {
                 $values = $this->determineValues();
-                $event = EventFactory::getInstance()->createCreatedEvent($tableName, $values);
+                $event = EventFactory::instance()->createCreatedEvent($tableName, $values);
                 $this->emitRecordEvent($event);
             }
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
-            if (!GenericService::getInstance()->isSystemInternal($tableName)) {
+            if (!GenericService::instance()->isSystemInternal($tableName)) {
                 $identifier = $this->determineIdentifier();
                 if (!empty($identifier)) {
                     $values = $this->determineValues();
-                    if (!GenericService::getInstance()->isDeleteCommand($tableName, $values)) {
-                        $event = EventFactory::getInstance()->createChangedEvent($tableName, $values, $identifier);
+                    if (!GenericService::instance()->isDeleteCommand($tableName, $values)) {
+                        $event = EventFactory::instance()->createChangedEvent($tableName, $values, $identifier);
                     } else {
-                        $event = EventFactory::getInstance()->createDeletedEvent($tableName, $values, $identifier);
+                        $event = EventFactory::instance()->createDeletedEvent($tableName, $values, $identifier);
                     }
                     $this->emitRecordEvent($event);
                 }
@@ -52,10 +52,10 @@ class QueryBuilderInterceptor extends QueryBuilder
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::DELETE) {
-            if (!GenericService::getInstance()->isSystemInternal($tableName)) {
+            if (!GenericService::instance()->isSystemInternal($tableName)) {
                 $identifier = $this->determineIdentifier();
                 if (!empty($identifier)) {
-                    $event = EventFactory::getInstance()->createPurgeEvent($tableName, $identifier);
+                    $event = EventFactory::instance()->createPurgeEvent($tableName, $identifier);
                     $this->emitRecordEvent($event);
                 }
             }
@@ -76,7 +76,7 @@ class QueryBuilderInterceptor extends QueryBuilder
             );
         }
 
-        EventEmitter::getInstance()->emitRecordEvent($event);
+        EventEmitter::instance()->emitRecordEvent($event);
     }
 
     /**

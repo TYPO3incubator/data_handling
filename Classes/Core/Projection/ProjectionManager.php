@@ -21,7 +21,7 @@ class ProjectionManager
     /**
      * @return ProjectionManager
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(ProjectionManager::class);
     }

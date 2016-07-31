@@ -39,13 +39,13 @@ class RelationResolver extends AbstractResolver
         $relations = [];
 
         foreach ($rawValues as $propertyName => $rawValue) {
-            if (!MetaModelService::getInstance()->isRelationProperty($reference->getName(), $propertyName)) {
+            if (!MetaModelService::instance()->isRelationProperty($reference->getName(), $propertyName)) {
                 continue;
             }
 
             $relationReferences = [];
             $relationHandler = $this->createRelationHandler();
-            $configuration = MetaModelService::getInstance()->getColumnConfiguration($reference->getName(), $propertyName);
+            $configuration = MetaModelService::instance()->getColumnConfiguration($reference->getName(), $propertyName);
 
             if (($configuration['config']['special'] ?? null) === 'languages') {
                 $specialTableName = 'sys_language';

@@ -21,7 +21,7 @@ class CreatedEvent extends AbstractEvent
     /**
      * @return CreatedEvent
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(CreatedEvent::class);
     }

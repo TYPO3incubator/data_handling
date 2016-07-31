@@ -21,7 +21,7 @@ class ValueValidator
     /**
      * @return ValueValidator
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(ValueValidator::class);
     }

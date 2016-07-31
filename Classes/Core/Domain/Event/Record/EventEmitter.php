@@ -23,7 +23,7 @@ class EventEmitter implements SingletonInterface
     /**
      * @return EventEmitter
      */
-    static public function getInstance()
+    static public function instance()
     {
         return GeneralUtility::makeInstance(EventEmitter::class);
     }
@@ -34,6 +34,6 @@ class EventEmitter implements SingletonInterface
         if ($event->getIdentifier()) {
             $streamName .= '-' . $event->getIdentifier();
         }
-        EventStore::getInstance()->append($streamName, $event);
+        EventStore::instance()->append($streamName, $event);
     }
 }

@@ -21,7 +21,7 @@ class ContextManager
     /**
      * @return ContextManager
      */
-    public static function create()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(ContextManager::class);
     }

@@ -22,7 +22,17 @@ abstract class AbstractCommand extends \TYPO3\CMS\DataHandling\Core\Domain\Comma
     protected $tableName;
 
     /**
-     * @var int
+     * Identifier of the subject the command is applied.
+     *
+     * @var string
+     */
+    protected $subject;
+
+    /**
+     * Identifier to be used for further commands, e.g.
+     * for adding relations to a new entity.
+     *
+     * @var string
      */
     protected $identifier;
 
@@ -39,12 +49,22 @@ abstract class AbstractCommand extends \TYPO3\CMS\DataHandling\Core\Domain\Comma
         $this->tableName = $tableName;
     }
 
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(string $subject)
+    {
+        $this->subject = $subject;
+    }
+
     public function getIdentifier()
     {
         return $this->identifier;
     }
 
-    public function setIdentifier(int $identifier)
+    public function setIdentifier(string $identifier)
     {
         $this->identifier = $identifier;
     }

@@ -19,10 +19,17 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ChangeCommand extends AbstractCommand
 {
     /**
+     * @param string $tableName
+     * @param string $subject
+     * @param array $data
      * @return ChangeCommand
      */
-    public static function create()
+    public static function instance(string $tableName, string $subject, array $data)
     {
-        return GeneralUtility::makeInstance(ChangeCommand::class);
+        $command = GeneralUtility::makeInstance(ChangeCommand::class);
+        $command->setTableName($tableName);
+        $command->setIdentifier($subject);
+        $command->setData($data);
+        return $command;
     }
 }

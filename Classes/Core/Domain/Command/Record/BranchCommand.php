@@ -18,15 +18,18 @@ use Rhumsaa\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Identifiable;
 
-class CreateCommand extends AbstractCommand implements Identifiable
+class BranchCommand extends AbstractCommand implements Identifiable
 {
     /**
      * @param string $tableName
-     * @return CreateCommand
+     * @param string $subject
+     * @param mixed $context
+     * @return BranchCommand
      */
-    public static function instance(string $tableName)
+    public static function instance(string $tableName, string $subject, $context = null)
     {
-        $command = GeneralUtility::makeInstance(CreateCommand::class);
+        $command = GeneralUtility::makeInstance(BranchCommand::class);
+        $command->setSubject($subject);
         $command->setIdentifier(Uuid::uuid4()->toString());
         $command->setTableName($tableName);
         return $command;

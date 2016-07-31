@@ -44,7 +44,7 @@ class DataHandlerHook
             ->setAggregates($controllerSlot->getAggregates())
             ->setDataCollection($dataHandler->datamap)
             ->setActionCollection($dataHandler->cmdmap)
-            ->mapCommands($dataHandler->cmdmap)
+            ->mapCommands()
             ->getProcessedAggregates();
 
         foreach ($processedAggregates as $aggregate) {

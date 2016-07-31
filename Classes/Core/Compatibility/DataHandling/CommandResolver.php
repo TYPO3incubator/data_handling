@@ -25,6 +25,9 @@ use TYPO3\CMS\DataHandling\Domain\Object\Record\Bundle;
 use TYPO3\CMS\DataHandling\Domain\Object\Record\Reference;
 use TYPO3\CMS\DataHandling\Domain\Object\Record\State;
 
+/**
+ * @deprecated Stuff from yesterday (aka "the past")
+ */
 class CommandResolver
 {
     /**

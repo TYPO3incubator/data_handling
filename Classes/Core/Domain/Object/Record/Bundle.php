@@ -70,10 +70,7 @@ class Bundle
 
     public function getValue(string $propertyName)
     {
-        if (!isset($this->values[$propertyName])) {
-            return null;
-        }
-        return $this->values[$propertyName];
+        return ($this->values[$propertyName] ?? null);
     }
 
     public function getBaseBundle(): Bundle

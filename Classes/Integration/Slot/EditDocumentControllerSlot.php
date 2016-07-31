@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\Integration\Slot;
 use TYPO3\CMS\Backend\Controller\EditDocumentController;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Domain\Model\GenericEntity;
+use TYPO3\CMS\DataHandling\Domain\Object\Record\Bundle;
 
 /**
  * Fills generated uuid columns in schema
@@ -25,7 +25,7 @@ use TYPO3\CMS\DataHandling\Domain\Model\GenericEntity;
 class EditDocumentControllerSlot implements SingletonInterface
 {
     /**
-     * @var GenericEntity[]
+     * @var Bundle[]
      */
     protected $aggregates = [];
 
@@ -56,7 +56,7 @@ class EditDocumentControllerSlot implements SingletonInterface
     }
 
     /**
-     * @return GenericEntity[]
+     * @return Bundle[]
      */
     public function getAggregates(): array
     {
@@ -65,9 +65,9 @@ class EditDocumentControllerSlot implements SingletonInterface
 
     public function setAggregate(string $tableName, string $uid)
     {
-        $this->aggregates[$tableName . ':' . $uid] = GenericEntity::create()
-            ->setUid($uid)
-            ->setEntityName($tableName);
+        $bundle = Bundle::instance();
+        $bundle->getReference()->setUuid($uid)->setName($tableName);
+        $this->aggregates[$tableName . ':' . $uid] = $bundle;
     }
 
     public function unsetAggregate(string $tableName, string $uid)

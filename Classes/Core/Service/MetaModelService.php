@@ -29,17 +29,120 @@ class MetaModelService implements SingletonInterface
 
     public function getDeletedFieldName(string $tableName)
     {
-        if (empty($GLOBALS['TCA'][$tableName]['ctrl']['delete'])) {
-            return null;
-        }
-        return $GLOBALS['TCA'][$tableName]['ctrl']['delete'];
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['delete'] ?? null);
     }
 
     public function getDisabledFieldName(string $tableName)
     {
-        if (empty($GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns']['disabled'])) {
-            return null;
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns']['disabled'] ?? null);
+    }
+
+    public function getColumnConfiguration(string $tableName, string $propertyName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['columns'][$propertyName] ?? null);
+    }
+
+    public function isInvalidValueProperty(string $tableName, string $propertyName): bool
+    {
+        return (
+            $this->isInvalidChangeProperty($tableName, $propertyName)
+            || $this->isRelationProperty($tableName, $propertyName)
+        );
+    }
+
+    public function isInvalidChangeProperty(string $tableName, string $propertyName): bool
+    {
+        return (
+            $this->isSystemProperty($tableName, $propertyName)
+            || $this->isActionProperty($tableName, $propertyName)
+            || $this->isVisibilityProperty($tableName, $propertyName)
+            || $this->isRestrictionProperty($tableName, $propertyName)
+        );
+    }
+
+    // @todo Analyse group/file with MM references
+    public function isRelationProperty(string $tableName, string $propertyName): bool
+    {
+        if (empty($GLOBALS['TCA'][$tableName]['columns'][$propertyName]['config']['type'])) {
+            return false;
         }
-        return $GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns']['disabled'];
+
+        $configuration = $GLOBALS['TCA'][$tableName]['columns'][$propertyName]['config'];
+
+        return (
+            $configuration['type'] === 'group'
+                && ($configuration['internal_type'] ?? null) === 'db'
+                && !empty($configuration['allowed'])
+            || $configuration['type'] === 'select'
+                && (
+                    !empty($configuration['foreign_table'])
+                        && !empty($GLOBALS['TCA'][$configuration['foreign_table']])
+                    || ($configuration['config']['special'] ?? null) === 'languages'
+                )
+            || $configuration['type'] === 'inline'
+                && !empty($configuration['foreign_table'])
+                && !empty($GLOBALS['TCA'][$configuration['foreign_table']])
+        );
+    }
+
+    public function isSystemProperty(string $tableName, string $propertyName): bool
+    {
+        $denyPropertyNames = ['uid', 'pid'];
+        $ctrlNames = ['tstamp', 'crdate', 'cruser_id', 'editlock', 'origUid'];
+        foreach ($ctrlNames as $ctrlName) {
+            if (!empty($GLOBALS['TCA'][$tableName]['ctrl'][$ctrlName])) {
+                $denyPropertyNames[] = $GLOBALS['TCA'][$tableName]['ctrl'][$ctrlName];
+            }
+        }
+
+        return (
+            in_array($propertyName, $denyPropertyNames)
+            || strpos($propertyName, 't3ver_') === 0
+        );
+    }
+
+    public function isActionProperty(string $tableName, string $propertyName): bool
+    {
+        $denyPropertyNames = [];
+        $ctrlNames = ['sortby', 'delete'];
+        foreach ($ctrlNames as $ctrlName) {
+            if (!empty($GLOBALS['TCA'][$tableName]['ctrl'][$ctrlName])) {
+                $denyPropertyNames[] = $GLOBALS['TCA'][$tableName]['ctrl'][$ctrlName];
+            }
+        }
+
+        return (
+            in_array($propertyName, $denyPropertyNames)
+        );
+    }
+
+    public function isVisibilityProperty(string $tableName, string $propertyName): bool
+    {
+        $denyPropertyNames = [];
+        $ctrlEnableNames = ['disabled'];
+        foreach ($ctrlEnableNames as $ctrlEnableName) {
+            if (!empty($GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns'][$ctrlEnableName])) {
+                $denyPropertyNames[] = $GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns'][$ctrlEnableName];
+            }
+        }
+
+        return (
+            in_array($propertyName, $denyPropertyNames)
+        );
+    }
+
+    public function isRestrictionProperty(string $tableName, string $propertyName): bool
+    {
+        $denyPropertyNames = [];
+        $ctrlEnableNames = ['starttime', 'endtime', 'fe_group'];
+        foreach ($ctrlEnableNames as $ctrlEnableName) {
+            if (!empty($GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns'][$ctrlEnableName])) {
+                $denyPropertyNames[] = $GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns'][$ctrlEnableName];
+            }
+        }
+
+        return (
+            in_array($propertyName, $denyPropertyNames)
+        );
     }
 }

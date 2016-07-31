@@ -15,7 +15,6 @@ namespace TYPO3\CMS\DataHandling\Integration\Hook;
  */
 
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapper;
 use TYPO3\CMS\DataHandling\Integration\Slot\EditDocumentControllerSlot;
 
@@ -26,11 +25,26 @@ class DataHandlerHook
 {
     public function processDatamap_beforeStart(DataHandler $dataHandler)
     {
-        $controllerSlot = EditDocumentControllerSlot::instance();
+        $this->process($dataHandler);
+    }
 
+    public function processCmdmap_beforeStart(DataHandler $dataHandler)
+    {
+        $this->process($dataHandler);
+    }
+
+    protected function process(DataHandler $dataHandler)
+    {
+        if (empty($dataHandler->datamap) && empty($dataHandler->cmdmap)) {
+            return;
+        }
+
+        $controllerSlot = EditDocumentControllerSlot::instance();
         $processedAggregates = CommandMapper::create()
             ->setAggregates($controllerSlot->getAggregates())
-            ->mapDataCommands($dataHandler->datamap)
+            ->setDataCollection($dataHandler->datamap)
+            ->setActionCollection($dataHandler->cmdmap)
+            ->mapCommands($dataHandler->cmdmap)
             ->getProcessedAggregates();
 
         foreach ($processedAggregates as $aggregate) {
@@ -38,21 +52,6 @@ class DataHandlerHook
         }
 
         $dataHandler->datamap = [];
-    }
-
-    public function processCmdmap_beforeStart(DataHandler $dataHandler)
-    {
-        $controllerSlot = EditDocumentControllerSlot::instance();
-
-        $processedAggregates = CommandMapper::create()
-            ->setAggregates($controllerSlot->getAggregates())
-            ->mapActionCommands($dataHandler->cmdmap)
-            ->getProcessedAggregates();
-
-        foreach ($processedAggregates as $aggregate) {
-            $controllerSlot->unsetAggregate($aggregate['tableName'], $aggregate['uid']);
-        }
-
         $dataHandler->cmdmap = [];
     }
 }

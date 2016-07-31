@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\InputConverter;
+namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,15 +16,11 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\InputConverter;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\LegacyDataHandler;
+use TYPO3\CMS\DataHandling\Domain\Object\Property\Reference;
 
 abstract class AbstractConverter
 {
-    abstract public function convert($value, array $configuration = null);
-
-    protected function processEvaluations($value, array $configuration = null): string
-    {
-        return $value;
-    }
+    abstract public function convert(Reference $reference, array $configuration, $value);
 
     protected function getLegacyDataHandler(): LegacyDataHandler
     {

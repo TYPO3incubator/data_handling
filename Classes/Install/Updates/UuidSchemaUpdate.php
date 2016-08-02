@@ -68,7 +68,7 @@ class UuidSchemaUpdate extends AbstractUpdate
             $fetchStatement = $fetchQueryBuilder
                 ->select('uid')
                 ->from($tableName)
-                ->where($fetchQueryBuilder->expr()->eq('uuid', '""'))
+                ->where($fetchQueryBuilder->expr()->eq('uuid', $fetchQueryBuilder->createNamedParameter('')))
                 ->execute();
 
 
@@ -92,9 +92,9 @@ class UuidSchemaUpdate extends AbstractUpdate
         $statement = $queryBuilder
             ->from($tableName)
             ->count('uuid')
-            ->where($queryBuilder->expr()->eq('uuid', '""'))
+            ->where($queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter('')))
             ->execute();
-        $count = $statement->fetchColumn(0);
+        $count = $statement->fetchColumn();
         return $count;
     }
 

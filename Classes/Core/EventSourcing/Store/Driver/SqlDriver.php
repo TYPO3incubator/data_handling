@@ -34,26 +34,14 @@ class SqlDriver implements DriverInterface
         $rawEvent['event_stream'] = $streamName;
         $rawEvent['event_id'] = Uuid::uuid4();
 
-        $this->getQueryBuilder()
-            ->insert('sys_event_store')
-            ->values($rawEvent)
-            ->execute();
+        ConnectionPool::instance()
+            ->getOriginConnection()
+            ->insert('sys_event_store', $rawEvent);
     }
 
     public function open(string $eventStream)
     {
 
-    }
-
-    /**
-     * @return QueryBuilder
-     */
-    protected function getQueryBuilder()
-    {
-        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
-        $queryBuilder->getRestrictions()->removeAll();
-
-        return $queryBuilder;
     }
 
     /**

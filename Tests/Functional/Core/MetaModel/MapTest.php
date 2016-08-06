@@ -107,7 +107,51 @@ class MapTest extends FunctionalTestCase
                 'from.schema.name' => 'tt_content',
                 'from.name' => 'image',
             ],
-            $this->subject->getSchema('sys_file_reference')->getProperty('uid_foreign')->getRelations()
+            $this->subject->getSchema('sys_file_reference')->getProperty('uid_foreign')->getPassiveRelations()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function oneToManyCommaSeparatedValueRelationsAreDefined()
+    {
+        $this->assertHasActiveRelation(
+            [
+                'property.schema.name' => 'tx_irretutorial_1ncsv_hotel',
+                'property.name' => 'offers',
+                'to.name' => 'tx_irretutorial_1ncsv_offer',
+            ],
+            $this->subject->getSchema('tx_irretutorial_1ncsv_hotel')->getProperty('offers')->getActiveRelations()
+        );
+        foreach ($this->subject->getSchema('tx_irretutorial_1ncsv_offer')->getProperties() as $property) {
+            $this->assertEmpty(
+                $property->getPassiveRelations()
+            );
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function oneToManyForeignFieldRelationsAreDefined()
+    {
+        $this->assertHasActiveRelation(
+            [
+                'property.schema.name' => 'tx_irretutorial_1nff_hotel',
+                'property.name' => 'offers',
+                'to.name' => 'tx_irretutorial_1nff_offer',
+            ],
+            $this->subject->getSchema('tx_irretutorial_1nff_hotel')->getProperty('offers')->getActiveRelations()
+        );
+        $this->assertHasPassiveRelation(
+            [
+                'property.schema.name' => 'tx_irretutorial_1nff_offer',
+                'property.name' => 'parentid',
+                'from.schema.name' => 'tx_irretutorial_1nff_hotel',
+                'from.name' => 'offers',
+            ],
+            $this->subject->getSchema('tx_irretutorial_1nff_offer')->getProperty('parentid')->getPassiveRelations()
         );
     }
 

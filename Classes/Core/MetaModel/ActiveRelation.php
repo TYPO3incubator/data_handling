@@ -15,9 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\MetaModel;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-class ActiveRelation
+class ActiveRelation implements Relational
 {
     /**
      * @return ActiveRelation

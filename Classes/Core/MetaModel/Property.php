@@ -70,16 +70,25 @@ class Property
         $this->schema = $schema;
     }
 
+    /**
+     * @return Relational|ActiveRelation[]|PassiveRelation[]
+     */
     public function getRelations(): array
     {
         return $this->activeRelations + $this->passiveRelations;
     }
 
+    /**
+     * @return ActiveRelation[]
+     */
     public function getActiveRelations(): array
     {
         return $this->activeRelations;
     }
 
+    /**
+     * @return PassiveRelation[]
+     */
     public function getPassiveRelations(): array
     {
         return $this->passiveRelations;

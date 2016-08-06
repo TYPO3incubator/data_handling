@@ -68,6 +68,7 @@ class Property
             throw new \RuntimeException('Schema is already defined', 1470497240);
         }
         $this->schema = $schema;
+        return $this;
     }
 
     /**

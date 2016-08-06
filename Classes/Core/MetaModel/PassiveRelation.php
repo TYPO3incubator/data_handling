@@ -41,7 +41,7 @@ class PassiveRelation implements Relational
         return $this->property;
     }
 
-    public function setProperty(Property $property): ActiveRelation
+    public function setProperty(Property $property): PassiveRelation
     {
         $this->property = $property;
         return $this;
@@ -52,7 +52,7 @@ class PassiveRelation implements Relational
         return $this->from;
     }
 
-    public function setFrom(Property $from): ActiveRelation
+    public function setFrom(Property $from): PassiveRelation
     {
         $this->from = $from;
         return $this;

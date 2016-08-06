@@ -68,7 +68,11 @@ class Schema
         return isset($this->properties[$propertyName]);
     }
 
-    public function getProperty(string $propertyName): Property
+    /**
+     * @param string $propertyName
+     * @return null|Property
+     */
+    public function getProperty(string $propertyName)
     {
         return ($this->properties[$propertyName] ?? null);
     }

@@ -36,7 +36,11 @@ class Map
         $this->build();
     }
 
-    public function getSchema(string $name): Schema {
+    /**
+     * @param string $name
+     * @return null|Schema
+     */
+    public function getSchema(string $name) {
         return ($this->schemas[$name] ?? null);
     }
 

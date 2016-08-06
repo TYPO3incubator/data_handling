@@ -77,7 +77,7 @@ class MetaModelService implements SingletonInterface
                 && (
                     !empty($configuration['foreign_table'])
                         && !empty($GLOBALS['TCA'][$configuration['foreign_table']])
-                    || ($configuration['config']['special'] ?? null) === 'languages'
+                    || ($configuration['special'] ?? null) === 'languages'
                 )
             || $configuration['type'] === 'inline'
                 && !empty($configuration['foreign_table'])

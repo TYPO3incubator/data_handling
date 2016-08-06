@@ -70,6 +70,26 @@ class MapTest extends FunctionalTestCase
     /**
      * @test
      */
+    public function languageRelationsAreDefined()
+    {
+        $this->assertHasActiveRelation(
+            [
+                'property.schema.name' => 'tt_content',
+                'property.name' => 'sys_language_uid',
+                'to.name' => 'sys_language',
+            ],
+            $this->subject->getSchema('tt_content')->getProperty('sys_language_uid')->getActiveRelations()
+        );
+        foreach ($this->subject->getSchema('sys_language')->getProperties() as $property) {
+            $this->assertEmpty(
+                $property->getPassiveRelations()
+            );
+        }
+    }
+
+    /**
+     * @test
+     */
     public function fileReferenceRelationsAreDefined()
     {
         $this->assertHasActiveRelation(
@@ -78,7 +98,7 @@ class MapTest extends FunctionalTestCase
                 'property.name' => 'image',
                 'to.name' => 'sys_file_reference',
             ],
-            $this->subject->getSchema('tt_content')->getProperty('image')->getRelations()
+            $this->subject->getSchema('tt_content')->getProperty('image')->getActiveRelations()
         );
         $this->assertHasPassiveRelation(
             [

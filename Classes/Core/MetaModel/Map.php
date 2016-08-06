@@ -27,6 +27,21 @@ class Map
     }
 
     /**
+     * @return string
+     */
+    public static function calculateHash(): string
+    {
+        return sha1(
+            serialize($GLOBALS['TCA'])
+        );
+    }
+
+    /**
+     * @var string
+     */
+    protected $hash;
+
+    /**
      * @var Schema[]
      */
     protected $schemas = [];
@@ -34,6 +49,14 @@ class Map
     public function __construct()
     {
         $this->build();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCurrent(): bool
+    {
+        return ($this->hash === static::calculateHash());
     }
 
     /**
@@ -46,6 +69,8 @@ class Map
 
     protected function build()
     {
+        // store hash of current configuration
+        $this->hash = static::calculateHash();
         // first build all available schemas and properties
         foreach ($GLOBALS['TCA'] as $tableName => $tableConfiguration) {
             $schema = Schema::instance()->setName($tableName);

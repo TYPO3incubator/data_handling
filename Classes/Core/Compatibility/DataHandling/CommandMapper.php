@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;

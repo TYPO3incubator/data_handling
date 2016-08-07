@@ -91,6 +91,11 @@ class State
         return array_key_exists($propertyName, $this->values);
     }
 
+    public function getValue(string $propertyName)
+    {
+        return ($this->values[$propertyName] ?? null);
+    }
+
     /**
      * @return Reference[][]
      */

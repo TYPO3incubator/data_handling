@@ -20,24 +20,12 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Domain\Object\Record\Bundle;
-use TYPO3\CMS\DataHandling\Domain\Object\Record\BundleChangeMap;
 use TYPO3\CMS\DataHandling\Domain\Object\Record\Change;
 use TYPO3\CMS\DataHandling\Domain\Object\Record\Reference;
 use TYPO3\CMS\DataHandling\Domain\Object\Record\State;
 
 class CommandMapper
 {
-    /**
-     * @var Bundle[]
-     */
-    protected $aggregates = [];
-
-    /**
-     * @var Bundle[]
-     */
-    protected $processedAggregates = [];
-
     /**
      * @var array
      */
@@ -49,9 +37,9 @@ class CommandMapper
     protected $actionCollection = [];
 
     /**
-     * @var BundleChangeMap[]
+     * @var Change[]
      */
-    protected $dataCollectionBundleChangeMaps = [];
+    protected $dataCollectionChanges = [];
 
     /**
      * @var CommandMapperScope
@@ -71,25 +59,6 @@ class CommandMapper
         $this->scope = CommandMapperScope::instance();
     }
 
-    public function getProcessedAggregates(): array
-    {
-        return $this->processedAggregates;
-    }
-
-    /**
-     * @param Bundle[] $aggregates
-     * @return CommandMapper
-     */
-    public function setAggregates(array $aggregates): CommandMapper
-    {
-        foreach ($aggregates as $aggregate) {
-            $reference = $aggregate->getReference();
-            $identity = $reference->getName() . ':' . $reference->getUid();
-            $this->aggregates[$identity] = $aggregate;
-        }
-        return $this;
-    }
-
     public function setDataCollection(array $dataCollection): CommandMapper
     {
         $this->dataCollection = $dataCollection;
@@ -105,9 +74,9 @@ class CommandMapper
     public function mapCommands(): CommandMapper
     {
         $this->sanitizeCollections();
-        $this->buildPageBundleChangeMaps();
-        $this->buildRecordBundleChangeMaps();
-        $this->extendBundleChangeMaps();
+        $this->buildPageChanges();
+        $this->buildRecordChanges();
+        $this->extendChanges();
 
         $this->mapDataCollectionCommands();
         $this->mapActionCollectionCommands();
@@ -120,42 +89,43 @@ class CommandMapper
         $this->unsetDataCollectionsToBeDeleted();
     }
 
-    protected function buildPageBundleChangeMaps()
+    protected function buildPageChanges()
     {
-        foreach ($this->createDataCollectionBundles(['pages']) as $bundle) {
-            $this->dataCollectionBundleChangeMaps[] = $this->buildBundleChangeMap($bundle);
+        foreach ($this->createDataCollectionChanges(['pages']) as $change) {
+            $this->dataCollectionChanges[] = $change;
         }
     }
 
-    protected function buildRecordBundleChangeMaps()
+    protected function buildRecordChanges()
     {
-        foreach ($this->createDataCollectionBundles(['!pages']) as $bundle) {
-            $this->dataCollectionBundleChangeMaps[] = $this->buildBundleChangeMap($bundle);
+        foreach ($this->createDataCollectionChanges(['!pages']) as $change) {
+            $this->dataCollectionChanges[] = $change;
         }
     }
 
-    protected function extendBundleChangeMaps()
+    protected function extendChanges()
     {
-        foreach ($this->dataCollectionBundleChangeMaps as $bundleChangeMap) {
-            $bundle = $bundleChangeMap->getBundle();
-            $change = $bundleChangeMap->getChange();
+        foreach ($this->dataCollectionChanges as $change) {
+            $this->extendChangeIdentity($change);
 
-            $change->getTargetState()->setValues(
-                CompatibilityResolver\ValueResolver::instance()->resolve($bundle->getReference(), $bundle->getValues())
+            $targetState = $change->getTargetState();
+
+            $targetState->setValues(
+                CompatibilityResolver\ValueResolver::instance()->resolve($targetState->getReference(), $targetState->getValues())
             );
-            $change->getTargetState()->setRelations(
-                CompatibilityResolver\RelationResolver::instance()->resolve($bundle->getReference(), $bundle->getValues())
+            $targetState->setRelations(
+                CompatibilityResolver\RelationResolver::instance()->resolve($targetState->getReference(), $targetState->getValues())
             );
         }
     }
 
     /**
      * @param string[] $conditions
-     * @return Bundle[]
+     * @return Change[]
      */
-    protected function createDataCollectionBundles(array $conditions = []): array
+    protected function createDataCollectionChanges(array $conditions = []): array
     {
-        $bundles = [];
+        $changes = [];
         $onlyTableNames = [];
         $excludeTableNames = [];
 
@@ -176,41 +146,39 @@ class CommandMapper
             }
 
             foreach ($uidValues as $uid => $values) {
-                $bundle = Bundle::instance();
-                $bundle->getReference()->setName($tableName)->setUid($uid);
-                $bundle->setValues($values);
-                $bundles[] = $bundle;
+                $targetState = State::instance()
+                    ->setReference(Reference::instance()->setName($tableName)->setUid($uid))
+                    ->setValues($values);
+                $changes[] = Change::instance()->setTargetState($targetState);
             }
         }
 
-        return $bundles;
+        return $changes;
     }
 
-    protected function buildBundleChangeMap(Bundle $bundle): BundleChangeMap
+    protected function extendChangeIdentity(Change $change)
     {
-        $change = Change::instance()->setTargetState(
-            State::instance()->setReference($bundle->getReference())
-        );
+        $targetStateReference = $change->getTargetState()->getReference();
 
-        $currentStateReference = $change->getTargetState()->getReference();
-
-        if ($this->isValidUid($currentStateReference->getUid())) {
+        if ($this->isValidUid($targetStateReference->getUid())) {
             $change->setSourceState(
-                $this->fetchState($currentStateReference)
+                $this->fetchState($targetStateReference)
             );
-            $currentStateReference->setUuid(
+            $targetStateReference->setUuid(
                 $change->getSourceState()->getReference()->getUuid()
             );
         } else {
-            $currentStateReference->setUuid(Uuid::uuid4());
+            $targetStateReference->setUuid(Uuid::uuid4());
             // @todo Check whether NEW-id is defined already and throw exception
-            $this->scope->newChangesMap[$currentStateReference->getUid()] = $currentStateReference->getUuid();
+            $this->scope->newChangesMap[$targetStateReference->getUid()] = $targetStateReference->getUuid();
 
             // @todo Check for nested new pages here
-            $pidValue = $bundle->getValue('pid');
+            $pidValue = $change->getTargetState()->getValue('pid');
+            // relating to a new page
             if (!empty($this->scope->newChangesMap[$pidValue])) {
                 $nodeReference = $this->scope->newChangesMap[$pidValue]->getTargetState()->getReference();
                 $change->getTargetState()->getNodeReference()->import($nodeReference);
+            // relating to an existing page
             } elseif ((string)$pidValue !== '0') {
                 $nodeReference = Reference::instance()
                     ->setName('pages')
@@ -219,11 +187,6 @@ class CommandMapper
                 $change->getTargetState()->getNodeReference()->import($nodeReference);
             }
         }
-
-        $bundleChangeMap = BundleChangeMap::instance();
-        $bundleChangeMap->setBundle($bundle)->setChange($change);
-
-        return $bundleChangeMap;
     }
 
     protected function unsetDataCollectionsToBeDeleted()
@@ -243,59 +206,12 @@ class CommandMapper
 
     protected function mapDataCollectionCommands()
     {
-        foreach ($this->extractDataCollectionAggregates() as $aggregate) {
-
-        }
+        // determine aggregates and process them
     }
 
     protected function mapActionCollectionCommands()
     {
 
-    }
-
-    protected function getAggregate(string $tableName, string $uid): Bundle
-    {
-        if ($this->hasAggregate($tableName, $uid)) {
-            return $this->aggregates[$tableName . ':' . $uid];
-        }
-        return null;
-    }
-
-    protected function setProcessedAggregate(string $tableName, string $uid)
-    {
-        if ($this->hasAggregate($tableName, $uid)) {
-            $identifier = $tableName . ':' . $uid;
-            $this->processedAggregates[$identifier] = $this->aggregates[$identifier];
-            unset($this->aggregates[$identifier]);
-        }
-    }
-
-    protected function hasAggregate(string $tableName, string $uid): bool
-    {
-        return isset($this->aggregates[$tableName . ':' . $uid]);
-    }
-
-    /**
-     * @return Bundle[]
-     */
-    protected function extractDataCollectionAggregates(): array
-    {
-        $aggregates = [];
-
-        foreach ($this->dataCollection as $tableName => $uidValues) {
-            foreach ($uidValues as $uid => $values) {
-                if ($this->hasAggregate($tableName, $uid)) {
-                    $aggregate = $this->getAggregate($tableName, $uid);
-                    $aggregate->setValues($values);
-
-                    $aggregates[$tableName . ':' . $uid] = $aggregate;
-                    unset($this->dataCollection[$tableName][$uid]);
-                    $this->setProcessedAggregate($tableName, $uid);
-                }
-            }
-        }
-
-        return $aggregates;
     }
 
     protected function isValidUid($uid): bool

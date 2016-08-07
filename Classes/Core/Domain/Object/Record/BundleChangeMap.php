@@ -16,6 +16,9 @@ namespace TYPO3\CMS\DataHandling\Domain\Object\Record;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * @deprecated Not required anymore, switch to Change directly
+ */
 class BundleChangeMap
 {
     /**

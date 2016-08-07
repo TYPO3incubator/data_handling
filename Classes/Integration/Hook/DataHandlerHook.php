@@ -16,7 +16,6 @@ namespace TYPO3\CMS\DataHandling\Integration\Hook;
 
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapper;
-use TYPO3\CMS\DataHandling\Integration\Slot\EditDocumentControllerSlot;
 
 /**
  * Fills generated uuid columns in schema
@@ -39,17 +38,10 @@ class DataHandlerHook
             return;
         }
 
-        $controllerSlot = EditDocumentControllerSlot::instance();
-        $processedAggregates = CommandMapper::instance()
-            ->setAggregates($controllerSlot->getAggregates())
+        CommandMapper::instance()
             ->setDataCollection($dataHandler->datamap)
             ->setActionCollection($dataHandler->cmdmap)
-            ->mapCommands()
-            ->getProcessedAggregates();
-
-        foreach ($processedAggregates as $aggregate) {
-            $controllerSlot->unsetAggregate($aggregate['tableName'], $aggregate['uid']);
-        }
+            ->mapCommands();
 
         $dataHandler->datamap = [];
         $dataHandler->cmdmap = [];

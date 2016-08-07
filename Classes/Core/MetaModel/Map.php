@@ -15,9 +15,28 @@ namespace TYPO3\CMS\DataHandling\Core\MetaModel;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Object\Providable;
 
-class Map
+class Map implements Providable, Instantiable
 {
+    /**
+     * @var Map
+     */
+    static protected $map;
+
+    /**
+     * @param bool $force
+     * @return Map
+     */
+    public static function provide(bool $force = false)
+    {
+        if ($force || !isset(static::$map) || !static::$map->isCurrent()) {
+            static::$map = Map::instance();
+        }
+        return static::$map;
+    }
+
     /**
      * @return Map
      */

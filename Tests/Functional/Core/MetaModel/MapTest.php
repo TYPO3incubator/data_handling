@@ -50,6 +50,43 @@ class MapTest extends FunctionalTestCase
     /**
      * @test
      */
+    public function sameMapInstanceIsReturned()
+    {
+        $expectedMap = Map::provide();
+        $actualMap = Map::provide();
+
+        $this->assertSame($expectedMap, $actualMap);
+    }
+
+    /**
+     * @test
+     */
+    public function differentMapInstanceIsReturnedOnForceCommand()
+    {
+        $expectedMap = Map::provide();
+        $actualMap = Map::provide(true);
+
+        $this->assertNotSame($expectedMap, $actualMap);
+    }
+
+    /**
+     * @test
+     */
+    public function differentMapInstanceIsReturnedOnConfigurationChanges()
+    {
+        $expectedMap = Map::provide();
+
+        $propertyName = uniqid('property');
+        $GLOBALS['TCA']['tt_content']['columns'][$propertyName]['config']['type'] = 'none';
+        $actualMap = Map::provide();
+
+        $this->assertNotSame($expectedMap, $actualMap);
+        $this->assertNotNull($actualMap->getSchema('tt_content')->getProperty($propertyName));
+    }
+
+    /**
+     * @test
+     */
     public function invalidSchemaReturnsNull()
     {
         $this->assertNull(

@@ -75,7 +75,7 @@ class RelationResolver extends AbstractResolver
                     }
                     $relationReference->setName($relationName)->setUid($pointer);
                 } elseif (isset($this->scope->newChangesMap[$pointer])) {
-                    $relationReference = $this->scope->newChangesMap[$pointer]->getCurrentState()->getReference();
+                    $relationReference = $this->scope->newChangesMap[$pointer]->getTargetState()->getReference();
                 } else {
                     throw new \UnexpectedValueException('Reference cannot be resolved', 1469968439);
                 }

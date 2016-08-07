@@ -29,30 +29,32 @@ class Change
     /**
      * @var State
      */
-    protected $previousState;
+    protected $sourceState;
 
     /**
      * @var State
      */
-    protected $currentState;
+    protected $targetState;
 
-    public function getPreviousState(): State
+    public function getSourceState(): State
     {
-        return $this->previousState;
+        return $this->sourceState;
     }
 
-    public function setPreviousState(State $previousState): State
+    public function setSourceState(State $previousState): Change
     {
-        return $this->previousState = $previousState;
+        $this->sourceState = $previousState;
+        return $this;
     }
 
-    public function getCurrentState(): State
+    public function getTargetState(): State
     {
-        return $this->currentState;
+        return $this->targetState;
     }
 
-    public function setCurrentState(State $currentState): State
+    public function setTargetState(State $currentState): Change
     {
-        return $this->currentState = $currentState;
+        $this->targetState = $currentState;
+        return $this;
     }
 }

@@ -57,9 +57,10 @@ class State
         return $this->nodeReference;
     }
 
-    public function setNodeReference(Reference $nodeReference)
+    public function setNodeReference(Reference $nodeReference): State
     {
         $this->nodeReference = $nodeReference;
+        return $this;
     }
 
     public function getReference(): Reference
@@ -67,9 +68,10 @@ class State
         return $this->reference;
     }
 
-    public function setReference(Reference $reference)
+    public function setReference(Reference $reference): State
     {
         $this->reference = $reference;
+        return $this;
     }
 
     public function getValues(): array
@@ -77,9 +79,10 @@ class State
         return $this->values;
     }
 
-    public function setValues(array $values)
+    public function setValues(array $values): State
     {
         $this->values = $values;
+        return $this;
     }
 
     public function hasValue(string $propertyName): bool
@@ -96,9 +99,10 @@ class State
         return $this->relations;
     }
 
-    public function setRelations(array $relations)
+    public function setRelations(array $relations): State
     {
         $this->relations = $relations;
+        return $this;
     }
 
     public function hasRelation(string $propertyName): bool

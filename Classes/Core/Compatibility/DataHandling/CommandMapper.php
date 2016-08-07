@@ -140,10 +140,10 @@ class CommandMapper
             $bundle = $bundleChangeMap->getBundle();
             $change = $bundleChangeMap->getChange();
 
-            $change->getCurrentState()->setValues(
+            $change->getTargetState()->setValues(
                 CompatibilityResolver\ValueResolver::instance()->resolve($bundle->getReference(), $bundle->getValues())
             );
-            $change->getCurrentState()->setRelations(
+            $change->getTargetState()->setRelations(
                 CompatibilityResolver\RelationResolver::instance()->resolve($bundle->getReference(), $bundle->getValues())
             );
         }
@@ -188,20 +188,18 @@ class CommandMapper
 
     protected function buildBundleChangeMap(Bundle $bundle): BundleChangeMap
     {
-        $change = Change::instance();
-        $change->setCurrentState(State::instance());
-        $change->getCurrentState()->setReference(
-            $bundle->getReference()
+        $change = Change::instance()->setTargetState(
+            State::instance()->setReference($bundle->getReference())
         );
 
-        $currentStateReference = $change->getCurrentState()->getReference();
+        $currentStateReference = $change->getTargetState()->getReference();
 
         if ($this->isValidUid($currentStateReference->getUid())) {
-            $change->setPreviousState(
+            $change->setSourceState(
                 $this->fetchState($currentStateReference)
             );
             $currentStateReference->setUuid(
-                $change->getPreviousState()->getReference()->getUuid()
+                $change->getSourceState()->getReference()->getUuid()
             );
         } else {
             $currentStateReference->setUuid(Uuid::uuid4());
@@ -211,14 +209,14 @@ class CommandMapper
             // @todo Check for nested new pages here
             $pidValue = $bundle->getValue('pid');
             if (!empty($this->scope->newChangesMap[$pidValue])) {
-                $nodeReference = $this->scope->newChangesMap[$pidValue]->getCurrentState()->getReference();
-                $change->getCurrentState()->getNodeReference()->import($nodeReference);
+                $nodeReference = $this->scope->newChangesMap[$pidValue]->getTargetState()->getReference();
+                $change->getTargetState()->getNodeReference()->import($nodeReference);
             } elseif ((string)$pidValue !== '0') {
                 $nodeReference = Reference::instance()
                     ->setName('pages')
                     ->setUid($pidValue);
                 $nodeReference->setUuid($this->fetchUuid($nodeReference));
-                $change->getCurrentState()->getNodeReference()->import($nodeReference);
+                $change->getTargetState()->getNodeReference()->import($nodeReference);
             }
         }
 

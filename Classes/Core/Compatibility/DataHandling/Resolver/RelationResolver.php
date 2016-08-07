@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapperScope;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\DataHandling\Domain\Object\Property;
 use TYPO3\CMS\DataHandling\Domain\Object\Record;
 
 class RelationResolver extends AbstractResolver
@@ -44,7 +45,7 @@ class RelationResolver extends AbstractResolver
     /**
      * @param Record\Reference $reference
      * @param array $rawValues
-     * @return Record\Reference[][]
+     * @return Property\Reference[][]
      */
     public function resolve(Record\Reference $reference, array $rawValues): array {
         $relations = [];
@@ -63,7 +64,9 @@ class RelationResolver extends AbstractResolver
                 $pointerPartsCount = count($pointerParts);
 
                 if ($pointerPartsCount > 1 && MathUtility::canBeInterpretedAsInteger($pointerParts[$pointerPartsCount-1])) {
-                    $relationReference->setUid(array_pop($pointerParts))->setName(implode('_', $pointerParts));
+                    $relationReference
+                        ->setUid(array_pop($pointerParts))
+                        ->setName(implode('_', $pointerParts));
                 } elseif (MathUtility::canBeInterpretedAsInteger($pointer)) {
                     $configuration = $GLOBALS['TCA'][$reference->getName()]['columns'][$propertyName]['config'];
                     if ($configuration['type'] === 'group') {
@@ -73,14 +76,18 @@ class RelationResolver extends AbstractResolver
                     } else {
                         throw new \UnexpectedValueException('Reference name cannot be resolved', 1469968438);
                     }
-                    $relationReference->setName($relationName)->setUid($pointer);
+                    $relationReference
+                        ->setName($relationName)
+                        ->setUid($pointer);
                 } elseif (isset($this->scope->newChangesMap[$pointer])) {
                     $relationReference = $this->scope->newChangesMap[$pointer]->getTargetState()->getReference();
                 } else {
                     throw new \UnexpectedValueException('Reference cannot be resolved', 1469968439);
                 }
 
-                $relationReferences[] = $relationReference;
+                $relationReferences[] = Property\Reference::instance()
+                    ->setEntityReference($relationReference)
+                    ->setName($propertyName);
             }
 
             $relations[$propertyName] = $relationReferences;

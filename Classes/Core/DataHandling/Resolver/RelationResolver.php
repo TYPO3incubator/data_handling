@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
 use TYPO3\CMS\Core\Database\RelationHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\DataHandling\Domain\Object\Property;
 use TYPO3\CMS\DataHandling\Domain\Object\Record;
 
 class RelationResolver extends AbstractResolver
@@ -32,7 +33,7 @@ class RelationResolver extends AbstractResolver
     /**
      * @param Record\Reference $reference
      * @param array $rawValues
-     * @return Record\Reference[][]
+     * @return Property\Reference[][]
      */
     public function resolve(Record\Reference $reference, array $rawValues): array
     {
@@ -78,7 +79,12 @@ class RelationResolver extends AbstractResolver
             );
 
             foreach ($relationHandler->itemArray as $item) {
-                $relationReferences[] = Record\Reference::instance()->setName($item['table'])->setUid($item['id']);
+                $relationReference = Record\Reference::instance()
+                    ->setName($item['table'])
+                    ->setUid($item['id']);
+                $relationReference[] = Property\Reference::instance()
+                    ->setEntityReference($relationReference)
+                    ->setName($propertyName);
             }
 
             $relations[$propertyName] = $relationReferences;

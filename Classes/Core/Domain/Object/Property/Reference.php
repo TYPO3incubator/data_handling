@@ -42,9 +42,10 @@ class Reference
         return $this->entityReference;
     }
 
-    public function setEntityReference(Record\Reference $entityReference)
+    public function setEntityReference(Record\Reference $entityReference): Reference
     {
         $this->entityReference = $entityReference;
+        return $this;
     }
 
     public function getName(): string

@@ -33,7 +33,7 @@ class RelationResolver extends AbstractResolver
     /**
      * @param Record\Reference $reference
      * @param array $rawValues
-     * @return Property\Reference[][]
+     * @return Property\Reference[]
      */
     public function resolve(Record\Reference $reference, array $rawValues): array
     {
@@ -44,7 +44,6 @@ class RelationResolver extends AbstractResolver
                 continue;
             }
 
-            $relationReferences = [];
             $relationHandler = $this->createRelationHandler();
             $configuration = MetaModelService::instance()->getColumnConfiguration($reference->getName(), $propertyName);
 
@@ -79,15 +78,13 @@ class RelationResolver extends AbstractResolver
             );
 
             foreach ($relationHandler->itemArray as $item) {
-                $relationReference = Record\Reference::instance()
+                $entityReference = Record\Reference::instance()
                     ->setName($item['table'])
                     ->setUid($item['id']);
-                $relationReference[] = Property\Reference::instance()
-                    ->setEntityReference($relationReference)
+                $relations[] = Property\Reference::instance()
+                    ->setEntityReference($entityReference)
                     ->setName($propertyName);
             }
-
-            $relations[$propertyName] = $relationReferences;
         }
 
         return $relations;

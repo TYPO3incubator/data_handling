@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Domain\Object\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Domain\Object\Property;
 
 class State
 {
@@ -42,7 +43,7 @@ class State
     protected $values = [];
 
     /**
-     * @var Reference[][]
+     * @var Property\Reference[]
      */
     protected $relations = [];
 
@@ -97,21 +98,35 @@ class State
     }
 
     /**
-     * @return Reference[][]
+     * @return Property\Reference[]
      */
     public function getRelations(): array
     {
         return $this->relations;
     }
 
+    /**
+     * @param Property\Reference[] $relations
+     * @return State
+     */
     public function setRelations(array $relations): State
     {
         $this->relations = $relations;
         return $this;
     }
 
-    public function hasRelation(string $propertyName): bool
+    /**
+     * @param string $propertyName
+     * @return Property\Reference[]
+     */
+    public function getPropertyRelations(string $propertyName): array
     {
-        return isset($this->relations[$propertyName]);
+        $relations = [];
+        foreach ($this->relations as $relation) {
+            if ($relation->getName() === $propertyName) {
+                $relations[] = $relation;
+            }
+        }
+        return $relations;
     }
 }

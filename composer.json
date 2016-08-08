@@ -18,11 +18,7 @@
 	],
 	"autoload": {
 		"psr-4": {
-			"TYPO3\\CMS\\DataHandling\\": "Classes/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
+			"TYPO3\\CMS\\DataHandling\\": "Classes/",
 			"TYPO3\\CMS\\DataHandling\\Tests\\": "Tests/"
 		}
 	}

@@ -81,4 +81,18 @@ class Reference
         $this->name = $reference->getName();
         return $this;
     }
+
+    /**
+     * @param Reference $reference
+     * @return bool
+     */
+    public function equals(Reference $reference): bool {
+        return (
+            $this->name === $reference->getName()
+            && (
+                $this->uuid === $reference->getUuid()
+                || $this->uid = $reference->getUid()
+            )
+        );
+    }
 }

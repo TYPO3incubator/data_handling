@@ -14,17 +14,9 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\MathUtility;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Record;
-use TYPO3\CMS\DataHandling\Domain\Object\Record\Bundle;
 use TYPO3\CMS\DataHandling\Domain\Object\Record\Change;
-use TYPO3\CMS\DataHandling\Domain\Object\Record\Reference;
-use TYPO3\CMS\DataHandling\Domain\Object\Record\State;
 
 class CommandMapperScope
 {

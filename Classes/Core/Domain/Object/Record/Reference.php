@@ -44,7 +44,7 @@ class Reference implements RepresentableAsString
 
     public function __toString(): string
     {
-        return $this->name . ':' . ($this->uuid ?? $this->uid ?? '[null]');
+        return $this->name . ':' . ($this->uuid ?? $this->uid ?? uniqid('none'));
     }
 
     public function getUid(): string

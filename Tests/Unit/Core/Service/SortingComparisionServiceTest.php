@@ -149,6 +149,11 @@ class SortingComparisonServiceTest extends UnitTestCase
                     ['action' => SortingComparisonService::ACTION_ORDER, 'items' => ['A', 'E', 'D', 'C']],
                 ]
             ],
+            'same source & same target using identified objects' => [
+                [Reference::instance()->setName('first')->setUid(1), Reference::instance()->setName('second')->setUid(2)],
+                [Reference::instance()->setName('first')->setUid(1), Reference::instance()->setName('second')->setUid(2)],
+                []
+            ]
         ];
     }
 }

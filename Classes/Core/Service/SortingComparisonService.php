@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Object\RepresentableAsString;
 
 class SortingComparisonService implements SingletonInterface
 {
@@ -91,13 +92,26 @@ class SortingComparisonService implements SingletonInterface
 
     protected function isSequential(array $haystack, array $needle): bool
     {
-        foreach ($needle as $index => $item) {
-            if (!isset($haystack[$index]) || $item !== $haystack[$index]) {
+        foreach ($needle as $index => $needleItem) {
+            if (!isset($haystack[$index])
+                || !$this->equals($haystack[$index], $needleItem)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    protected function equals($source, $target): bool
+    {
+        if (
+            $source instanceof RepresentableAsString
+            && $target instanceof RepresentableAsString
+        ) {
+            return ($source->__toString() === $target->__toString());
+        }
+
+        return ($source === $target);
     }
 
     /**

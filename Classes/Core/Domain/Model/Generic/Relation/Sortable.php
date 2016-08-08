@@ -16,6 +16,9 @@ namespace TYPO3\CMS\DataHandling\Domain\Model\Generic\Relation;
 
 use TYPO3\CMS\DataHandling\Domain\Model\Generic\AbstractEntity;
 
+/**
+ * @deprecated Not required anymore
+ */
 interface Sortable
 {
     public function moveToTop(AbstractEntity $entity);

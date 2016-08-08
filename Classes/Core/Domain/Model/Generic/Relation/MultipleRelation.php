@@ -17,6 +17,9 @@ namespace TYPO3\CMS\DataHandling\Domain\Model\Generic\Relation;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Domain\Model\Generic\AbstractEntity;
 
+/**
+ * @deprecated Not required anymore
+ */
 class RelationCollection
 {
     /**

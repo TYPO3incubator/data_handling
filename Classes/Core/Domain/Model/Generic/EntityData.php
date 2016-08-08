@@ -18,6 +18,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Domain\Model\Generic\Relation\Changeable;
 use TYPO3\CMS\DataHandling\Domain\Model\Generic\Relation\RelationCollection;
 
+/**
+ * @deprecated Not required anymore
+ */
 class EntityData
 {
     /**

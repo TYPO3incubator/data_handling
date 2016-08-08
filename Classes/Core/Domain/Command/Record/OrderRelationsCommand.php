@@ -14,23 +14,22 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Record;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Identifiable;
 
-class CreateCommand extends AbstractCommand
+class OrderRelationsCommand extends AbstractCommand
 {
     /**
      * @param string $tableName
      * @param string $subject
-     * @param mixed $context
-     * @return CreateCommand
+     * @param array $data
+     * @return OrderRelationsCommand
      */
-    public static function instance(string $tableName, string $subject, $context = null)
+    public static function instance(string $tableName, string $subject, array $data)
     {
-        $command = GeneralUtility::makeInstance(CreateCommand::class);
+        $command = GeneralUtility::makeInstance(OrderRelationsCommand::class);
         $command->setTableName($tableName);
-        $command->setIdentifier($subject);
+        $command->setSubject($subject);
+        $command->setData($data);
         return $command;
     }
 }

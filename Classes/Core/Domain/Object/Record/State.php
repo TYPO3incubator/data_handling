@@ -116,6 +116,18 @@ class State
     }
 
     /**
+     * @return Property\Reference[][]
+     */
+    public function getRelationsByProperty(): array
+    {
+        $relationsByProperty = [];
+        foreach ($this->relations as $relation) {
+            $relationsByProperty[$relation->getName()][] = $relation;
+        }
+        return $relationsByProperty;
+    }
+
+    /**
      * @param string $propertyName
      * @return Property\Reference[]
      */

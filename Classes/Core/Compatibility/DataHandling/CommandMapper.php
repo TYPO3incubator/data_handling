@@ -18,7 +18,9 @@ use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
+use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResolver;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Reference;
@@ -208,7 +210,15 @@ class CommandMapper
 
     protected function mapDataCollectionCommands()
     {
-        // determine aggregates and process them
+        // sequence of changes ordered by accordant relative aggregate
+        $changes = CoreResolver\AggregateResolver::instance()
+            ->setSubjects($this->dataCollectionChanges)
+            ->resolve();
+        foreach ($changes as $change) {
+            foreach (CommandResolver::instance()->setChange($change)->resolve() as $command) {
+                CommandManager::instance()->handle($command);
+            }
+        }
     }
 
     protected function mapActionCollectionCommands()

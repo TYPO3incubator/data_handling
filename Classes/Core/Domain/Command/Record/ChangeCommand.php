@@ -28,7 +28,7 @@ class ChangeCommand extends AbstractCommand
     {
         $command = GeneralUtility::makeInstance(ChangeCommand::class);
         $command->setTableName($tableName);
-        $command->setIdentifier($subject);
+        $command->setSubject($subject);
         $command->setData($data);
         return $command;
     }

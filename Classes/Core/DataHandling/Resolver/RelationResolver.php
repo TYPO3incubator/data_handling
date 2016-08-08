@@ -51,11 +51,12 @@ class RelationResolver extends AbstractResolver
                 $specialTableName = 'sys_language';
             }
 
-            if ($configuration['config']['type'] === 'group' && $configuration['config']['internal_type'] === 'db') {
+            $type = $configuration['config']['type'];
+            if ($type === 'group' && $configuration['config']['internal_type'] === 'db') {
                 $tableNames = ($configuration['config']['allowed'] ?? '');
                 $manyToManyTable = ($configuration['config']['MM'] ?? '');
                 $itemValues = (empty($manyToManyTable) ? $rawValue : '');
-            } elseif ($configuration['config']['type'] === 'select') {
+            } elseif ($configuration['config']['type'] === 'inline') {
                 $tableNames = ($configuration['foreign_table'] ?? '');
                 $manyToManyTable = ($configuration['config']['MM'] ?? '');
                 $itemValues = (empty($manyToManyTable) ? $rawValue : '');
@@ -65,7 +66,7 @@ class RelationResolver extends AbstractResolver
                 $foreignField = ($configuration['config']['foreign_field'] ?? '');
                 $itemValues = (empty($manyToManyTable) && empty($foreignField) ? $rawValue : '');
             } else {
-                throw new \RuntimeException('Unknown TCA relation configuration', 1470001541);
+                throw new \RuntimeException('Unknown TCA relation configuration "' . $type . '"', 1470001541);
             }
 
             $relationHandler->start(

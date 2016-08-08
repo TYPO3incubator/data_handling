@@ -47,7 +47,10 @@ class Reference implements RepresentableAsString
         return $this->name . ':' . ($this->uuid ?? $this->uid ?? uniqid('none'));
     }
 
-    public function getUid(): string
+    /**
+     * @return string
+     */
+    public function getUid()
     {
         return $this->uid;
     }
@@ -58,7 +61,10 @@ class Reference implements RepresentableAsString
         return $this;
     }
 
-    public function getUuid(): string
+    /**
+     * @return string
+     */
+    public function getUuid()
     {
         return $this->uuid;
     }

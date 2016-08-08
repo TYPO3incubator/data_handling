@@ -62,11 +62,6 @@ class CommandMapper
         return GeneralUtility::makeInstance(CommandMapper::class);
     }
 
-    public function __construct()
-    {
-        $this->scope = CommandMapperScope::instance();
-    }
-
     public function setDataCollection(array $dataCollection): CommandMapper
     {
         $this->dataCollection = $dataCollection;
@@ -81,6 +76,8 @@ class CommandMapper
 
     public function mapCommands(): CommandMapper
     {
+        $this->initialize();
+
         $this->sanitizeCollections();
         $this->buildPageChanges();
         $this->buildRecordChanges();
@@ -105,6 +102,14 @@ class CommandMapper
         foreach ($this->commands as $command) {
             CommandManager::instance()->handle($command);
         }
+        return $this;
+    }
+
+    protected function initialize()
+    {
+        $this->scope = CommandMapperScope::instance();
+        $this->dataCollectionChanges = [];
+        $this->commands = [];
     }
 
     protected function sanitizeCollections()
@@ -139,6 +144,8 @@ class CommandMapper
             $targetState->setRelations(
                 CompatibilityResolver\RelationResolver::instance()->resolve($targetState->getReference(), $targetState->getValues())
             );
+
+            unset($targetState);
         }
     }
 
@@ -198,16 +205,25 @@ class CommandMapper
             $this->scope->newChangesMap[$targetStateReference->getUid()] = $targetStateReference->getUuid();
 
             // @todo Check for nested new pages here
-            $pidValue = $change->getTargetState()->getValue('pid');
+            $pageIdValue = $change->getTargetState()->getValue('pid');
             // relating to a new page
-            if (!empty($this->scope->newChangesMap[$pidValue])) {
-                $nodeReference = $this->scope->newChangesMap[$pidValue]->getTargetState()->getReference();
+            if (!empty($this->scope->newChangesMap[$pageIdValue])) {
+                $nodeReference = $this->scope->newChangesMap[$pageIdValue]->getTargetState()->getReference();
                 $change->getTargetState()->getNodeReference()->import($nodeReference);
-            // relating to an existing page
-            } elseif ((string)$pidValue !== '0') {
+            // negative page-id, fetch record and retrieve pid value
+            } elseif ($pageIdValue < 0) {
+                // @todo Add "MoveAfterRecordCommand"
+                $recordReference = Reference::instance()->import($targetStateReference)->setUid(abs($pageIdValue));
                 $nodeReference = Reference::instance()
                     ->setName('pages')
-                    ->setUid($pidValue);
+                    ->setUid($this->fetchPageId($recordReference));
+                $nodeReference->setUuid($this->fetchUuid($nodeReference));
+                $change->getTargetState()->getNodeReference()->import($nodeReference);
+            // relating to an existing page
+            } elseif ((string)$pageIdValue !== '0') {
+                $nodeReference = Reference::instance()
+                    ->setName('pages')
+                    ->setUid($pageIdValue);
                 $nodeReference->setUuid($this->fetchUuid($nodeReference));
                 $change->getTargetState()->getNodeReference()->import($nodeReference);
             }
@@ -258,6 +274,17 @@ class CommandMapper
             ->select('uuid')
             ->from($reference->getName())
             ->where($queryBuilder->expr()->eq('uid', $reference->getUid()))
+            ->execute();
+        return $statement->fetchColumn();
+    }
+
+    protected function fetchPageId(Reference $reference): string
+    {
+        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
+        $statement = $queryBuilder
+            ->select('pid')
+            ->from($reference->getName())
+            ->where($queryBuilder->expr()->eq('uid', abs($reference->getUid())))
             ->execute();
         return $statement->fetchColumn();
     }

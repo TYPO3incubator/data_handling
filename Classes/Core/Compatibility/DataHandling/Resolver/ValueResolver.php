@@ -53,7 +53,7 @@ class ValueResolver extends AbstractResolver
 
             $propertyReference = Property\Reference::instance();
             $propertyReference->setEntityReference($reference);
-            $propertyReference->setName($propertyReference);
+            $propertyReference->setName($propertyName);
             $values[$propertyName] = ValueConverter::instance()->convert($propertyReference, $rawValue);
         }
 

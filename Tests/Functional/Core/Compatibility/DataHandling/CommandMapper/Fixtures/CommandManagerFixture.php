@@ -15,12 +15,22 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
  */
 
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapper;
+use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
 
-class CommandMapperFixture extends CommandMapper implements SingletonInterface
+class CommandManagerFixture extends CommandManager implements SingletonInterface
 {
-    public function emitCommands(): CommandMapper
+    /**
+     * @var AbstractCommand[]
+     */
+    protected $commands = [];
+
+    public function handle(AbstractCommand $command)
     {
-        return $this;
+        $this->commands[] = $command;
+    }
+
+    public function getCommands(): array {
+        return $this->commands;
     }
 }

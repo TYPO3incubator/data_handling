@@ -27,6 +27,14 @@ use TYPO3\CMS\Install\Updates\AbstractUpdate;
 class UuidSchemaUpdate extends AbstractUpdate
 {
     /**
+     * @return UuidSchemaUpdate
+     */
+    static public function instance()
+    {
+        return GeneralUtility::makeInstance(UuidSchemaUpdate::class);
+    }
+
+    /**
      * @var string
      */
     protected $title = 'Fills generated uuid columns in schema';

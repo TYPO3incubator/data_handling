@@ -15,32 +15,45 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
  */
 
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase;
-use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapper;
-use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandMapperFixture;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Record as RecordCommand;
+use TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate;
+use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandManagerFixture;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class CommandMapperTest extends AbstractActionTestCase
 {
     /**
-     * @var CommandMapper|\PHPUnit_Framework_MockObject_MockObject
+     * @var string[]
      */
-    protected $subject;
+    protected $testExtensionsToLoad = [
+        'typo3conf/ext/data-handling'
+    ];
+
+    /**
+     * @var CommandManagerFixture
+     */
+    protected $commandManager;
 
     protected function setup()
     {
         parent::setUp();
 
-        $this->subject = new CommandMapperFixture();
+        UuidSchemaUpdate::instance()->performUpdate($queriesReference = [], $messagesReference = []);
 
-        \TYPO3\CMS\Core\Utility\GeneralUtility::setSingletonInstance(
-            CommandMapper::class,
-            $this->subject
+        $this->commandManager = new CommandManagerFixture();
+
+        GeneralUtility::setSingletonInstance(
+            CommandManager::class,
+            $this->commandManager
         );
     }
 
     protected function tearDown()
     {
-        unset($this->subject);
+        GeneralUtility::purgeInstances();
+        unset($this->commandManager);
     }
 
     /**
@@ -49,7 +62,144 @@ class CommandMapperTest extends AbstractActionTestCase
     public function createContents()
     {
         parent::createContents();
-        var_dump($this->subject->getCommands());
+
+        $this->assertHasCommands(
+            [
+                RecordCommand\CreateCommand::class => [
+                    [ 'tableName' => static::TABLE_Content, 'identifier' => '@@UUID@@' ],
+                    [ 'tableName' => static::TABLE_Content, 'identifier' => '@@UUID@@' ],
+                ],
+                RecordCommand\ChangeCommand::class => [
+                    [ 'tableName' => static::TABLE_Content, 'subject' => '@@UUID@@', 'data.header' => 'Testing #1' ],
+                    [ 'tableName' => static::TABLE_Content, 'subject' => '@@UUID@@', 'data.header' => 'Testing #2' ],
+                ],
+            ],
+            $this->commandManager->getCommands()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function modifyContent()
+    {
+        parent::modifyContent();
+
+        $this->assertHasCommands(
+            [
+                RecordCommand\ChangeCommand::class => [
+                    [ 'tableName' => static::TABLE_Content, 'subject' => '@@UUID@@', 'data.header' => 'Testing #1' ],
+                ],
+            ],
+            $this->commandManager->getCommands()
+        );
+    }
+
+    public function deleteContent() {
+        parent::deleteContent();
+    }
+
+    public function deleteLocalizedContentAndDeleteContent()
+    {
+        parent::deleteLocalizedContentAndDeleteContent();
+    }
+
+    public function copyContent()
+    {
+        parent::copyContent();
+    }
+
+    public function copyPasteContent()
+    {
+        parent::copyPasteContent();
+    }
+
+    public function localizeContent()
+    {
+        parent::localizeContent();
+    }
+
+    public function changeContentSorting()
+    {
+        parent::changeContentSorting();
+    }
+
+    public function moveContentToDifferentPage()
+    {
+        parent::moveContentToDifferentPage();
+    }
+
+    public function movePasteContentToDifferentPage()
+    {
+        parent::movePasteContentToDifferentPage();
+    }
+
+    public function moveContentToDifferentPageAndChangeSorting()
+    {
+        parent::moveContentToDifferentPageAndChangeSorting();
+    }
+
+    public function createPage()
+    {
+        parent::createPage();
+    }
+
+    public function modifyPage()
+    {
+        parent::modifyPage();
+    }
+
+    public function deletePage()
+    {
+        parent::deletePage();
+    }
+
+    public function copyPage()
+    {
+        parent::copyPage();
+    }
+
+    public function localizePage()
+    {
+        parent::localizePage();
+    }
+
+    public function changePageSorting()
+    {
+        parent::changePageSorting();
+    }
+
+    public function movePageToDifferentPage()
+    {
+        parent::movePageToDifferentPage();
+    }
+
+    public function movePageToDifferentPageAndChangeSorting()
+    {
+        parent::movePageToDifferentPageAndChangeSorting();
+    }
+
+    protected function assertHasCommands(array $expectations, array $actualCommands)
+    {
+        $foundCommands = [];
+        $expectedCommandCount = 0;
+        foreach ($expectations as $commandClassName => $commandExpectationCollection) {
+            foreach ($commandExpectationCollection as $commandExpectations) {
+                $expectedCommandCount++;
+                foreach ($actualCommands as $actualCommand) {
+                    if (in_array($actualCommand, $foundCommands)) {
+                        continue;
+                    }
+                    if (!is_a($actualCommand, $commandClassName)) {
+                        continue;
+                    }
+                    if ($this->matchesExpectations($commandExpectations, $actualCommand)) {
+                        $foundCommands[] = $actualCommand;
+                    }
+                }
+            }
+        }
+        $this->assertEquals($expectedCommandCount, count($foundCommands), 'Could not assert all commands');
     }
 
     /**
@@ -61,7 +211,13 @@ class CommandMapperTest extends AbstractActionTestCase
     {
         $matches = 0;
         foreach ($expectations as $expectationPath => $expectationValue) {
-            if (ObjectAccess::getPropertyPath($subject, $expectationPath) === $expectationValue) {
+            $actualValue = ObjectAccess::getPropertyPath($subject, $expectationPath);
+            // UUID4: 850358f1-0aee-445e-b462-cdb3440c1bc0
+            if ($expectationValue === '@@UUID@@') {
+                if (preg_match('#^[a-z0-9]{8}-(?:[a-z0-9]{4}-){3}[a-z0-9]{12}$#i', $actualValue)) {
+                    $matches++;
+                }
+            } elseif ($actualValue === $expectationValue) {
                 $matches++;
             }
         }

@@ -19,8 +19,8 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapperScope;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
-use TYPO3\CMS\DataHandling\Domain\Object\Property;
-use TYPO3\CMS\DataHandling\Domain\Object\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 class RelationResolver extends AbstractResolver
 {

@@ -17,8 +17,8 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
 use TYPO3\CMS\Core\Database\RelationHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
-use TYPO3\CMS\DataHandling\Domain\Object\Property;
-use TYPO3\CMS\DataHandling\Domain\Object\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 class RelationResolver extends AbstractResolver
 {

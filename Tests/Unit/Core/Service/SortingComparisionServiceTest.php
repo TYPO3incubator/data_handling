@@ -15,12 +15,8 @@ namespace TYPO3\CMS\DataHandling\Tests\Unit\Core\Service;
  */
 
 use TYPO3\CMS\Core\Tests\UnitTestCase;
-use TYPO3\CMS\DataHandling\Core\MetaModel\ActiveRelation;
-use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
-use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
-use TYPO3\CMS\DataHandling\Core\MetaModel\Relational;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Reference;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class SortingComparisonServiceTest extends UnitTestCase
 {

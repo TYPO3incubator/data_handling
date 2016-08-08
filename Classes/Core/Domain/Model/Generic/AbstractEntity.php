@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Domain\Model\Generic;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Domain\Object\Record\Reference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Reference;
 
 abstract class AbstractEntity
 {

@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Domain\Object\Property;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Domain\Object\Property;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Domain\Object\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 class Reference
 {

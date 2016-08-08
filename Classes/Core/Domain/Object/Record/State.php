@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Domain\Object\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Domain\Object\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Domain\Object\Property;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
 
 class State
 {

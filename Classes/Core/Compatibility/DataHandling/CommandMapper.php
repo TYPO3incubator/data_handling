@@ -20,9 +20,9 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Domain\Object\Record\Change;
-use TYPO3\CMS\DataHandling\Domain\Object\Record\Reference;
-use TYPO3\CMS\DataHandling\Domain\Object\Record\State;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Reference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\State;
 
 class CommandMapper
 {

@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter\AbstractConverter;
-use TYPO3\CMS\DataHandling\Domain\Object\Property\Reference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Property\Reference;
 
 class ValueConverter
 {

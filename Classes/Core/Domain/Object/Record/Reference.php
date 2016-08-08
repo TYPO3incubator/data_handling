@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Domain\Object\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 /*
  * This file is part of the TYPO3 CMS project.

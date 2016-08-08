@@ -15,8 +15,9 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Object\RepresentableAsString;
 
-class Reference
+class Reference implements RepresentableAsString
 {
     /**
      * @return Reference
@@ -40,6 +41,11 @@ class Reference
      * @var string
      */
     protected $name;
+
+    public function __toString(): string
+    {
+        return $this->name . ':' . ($this->uuid ?? $this->uid ?? '[null]');
+    }
 
     public function getUid(): string
     {

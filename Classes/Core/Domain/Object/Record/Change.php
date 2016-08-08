@@ -27,6 +27,11 @@ class Change
     }
 
     /**
+     * @var bool
+     */
+    protected $new = false;
+
+    /**
      * @var State
      */
     protected $sourceState;
@@ -35,6 +40,17 @@ class Change
      * @var State
      */
     protected $targetState;
+
+    public function isNew(): bool
+    {
+        return $this->new;
+    }
+
+    public function setNew(bool $new): Change
+    {
+        $this->new = $new;
+        return $this;
+    }
 
     public function getSourceState(): State
     {

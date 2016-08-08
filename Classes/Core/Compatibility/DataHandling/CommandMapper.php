@@ -22,6 +22,7 @@ use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResol
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Reference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\State;
@@ -47,6 +48,11 @@ class CommandMapper
      * @var CommandMapperScope
      */
     protected $scope;
+
+    /**
+     * @var AbstractCommand[]
+     */
+    protected $commands = [];
 
     /**
      * @return CommandMapper
@@ -84,6 +90,21 @@ class CommandMapper
         $this->mapActionCollectionCommands();
 
         return $this;
+    }
+
+    /**
+     * @return AbstractCommand[]
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    public function emitCommands(): CommandMapper
+    {
+        foreach ($this->commands as $command) {
+            CommandManager::instance()->handle($command);
+        }
     }
 
     protected function sanitizeCollections()
@@ -215,9 +236,8 @@ class CommandMapper
             ->setSubjects($this->dataCollectionChanges)
             ->resolve();
         foreach ($changes as $change) {
-            foreach (CommandResolver::instance()->setChange($change)->resolve() as $command) {
-                CommandManager::instance()->handle($command);
-            }
+            $commands = CommandResolver::instance()->setChange($change)->resolve();
+            $this->commands = $this->commands + $commands;
         }
     }
 

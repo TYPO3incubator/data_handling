@@ -41,7 +41,8 @@ class DataHandlerHook
         CommandMapper::instance()
             ->setDataCollection($dataHandler->datamap)
             ->setActionCollection($dataHandler->cmdmap)
-            ->mapCommands();
+            ->mapCommands()
+            ->emitCommands();
 
         $dataHandler->datamap = [];
         $dataHandler->cmdmap = [];

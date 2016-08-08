@@ -1,12 +1,12 @@
 <phpunit
 	backupGlobals="true"
 	backupStaticAttributes="false"
-	bootstrap="../../../../typo3/sysext/core/Build/FunctionalTestsBootstrap.php"
+	bootstrap="../../../../typo3/sysext/core/Build/UnitTestsBootstrap.php"
 	colors="true"
 	convertErrorsToExceptions="true"
 	convertWarningsToExceptions="true"
 	forceCoversAnnotation="false"
-	processIsolation="true"
+	processIsolation="false"
 	stopOnError="false"
 	stopOnFailure="false"
 	stopOnIncomplete="false"
@@ -14,8 +14,8 @@
 	verbose="false"
 >
 	<testsuites>
-		<testsuite name="ext:data-handling functional tests">
-			<directory>../Tests/Functional/</directory>
+		<testsuite name="ext:data-handling unit tests">
+			<directory>../Tests/Unit/</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>

@@ -19,6 +19,9 @@ use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 class Common
 {
+    const FIELD_UUID = 't3uuid';
+    const FIELD_REVISION = 't3rev';
+
     /**
      * @return Dispatcher
      */

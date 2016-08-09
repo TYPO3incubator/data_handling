@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Install\Updates;
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\Install\Updates\AbstractUpdate;
@@ -76,7 +77,7 @@ class UuidSchemaUpdate extends AbstractUpdate
             $fetchStatement = $fetchQueryBuilder
                 ->select('uid')
                 ->from($tableName)
-                ->where($fetchQueryBuilder->expr()->eq('uuid', $fetchQueryBuilder->createNamedParameter('')))
+                ->where($fetchQueryBuilder->expr()->eq(Common::FIELD_UUID, $fetchQueryBuilder->createNamedParameter('')))
                 ->execute();
 
 
@@ -84,7 +85,7 @@ class UuidSchemaUpdate extends AbstractUpdate
                 $updateQueryBuilder = $this->getQueryBuilderForTable($tableName);
                 $updateQueryBuilder
                     ->update($tableName)
-                    ->set('uuid', Uuid::uuid4())
+                    ->set(Common::FIELD_UUID, Uuid::uuid4())
                     ->where($updateQueryBuilder->expr()->eq('uid', $row['uid']))
                     ->execute();
                 $databaseQueries[] = $updateQueryBuilder->getSQL();
@@ -99,8 +100,8 @@ class UuidSchemaUpdate extends AbstractUpdate
         $queryBuilder = $this->getQueryBuilderForTable($tableName);
         $statement = $queryBuilder
             ->from($tableName)
-            ->count('uuid')
-            ->where($queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter('')))
+            ->count(Common::FIELD_UUID)
+            ->where($queryBuilder->expr()->eq(Common::FIELD_UUID, $queryBuilder->createNamedParameter('')))
             ->execute();
         $count = $statement->fetchColumn();
         return $count;

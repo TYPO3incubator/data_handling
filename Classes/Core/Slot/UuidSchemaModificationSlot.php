@@ -14,6 +14,8 @@ namespace TYPO3\CMS\DataHandling\Core\Slot;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Common;
+
 class UuidSchemaModificationSlot
 {
     /**
@@ -27,7 +29,7 @@ class UuidSchemaModificationSlot
         $this->definitionTemplate =
             $delimiter . implode(PHP_EOL, [
                 'CREATE TABLE %s (',
-                    'uuid varchar(36) NOT NULL DEFAULT \'\'',
+                    Common::FIELD_UUID . ' varchar(36) NOT NULL DEFAULT \'\'',
                 ');',
             ]) . $delimiter;
     }

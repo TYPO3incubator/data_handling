@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResolver;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
@@ -271,7 +272,7 @@ class CommandMapper
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
-            ->select('uuid')
+            ->select(Common::FIELD_UUID)
             ->from($reference->getName())
             ->where($queryBuilder->expr()->eq('uid', $reference->getUid()))
             ->execute();
@@ -304,7 +305,7 @@ class CommandMapper
         }
 
         $state = State::instance();
-        $state->getReference()->import($reference)->setUuid($data['uuid']);
+        $state->getReference()->import($reference)->setUuid($data[Common::FIELD_UUID]);
 
         $state->setValues(
             CoreResolver\ValueResolver::instance()->resolve($state->getReference(), $data)

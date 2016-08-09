@@ -16,11 +16,11 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\LegacyDataHandler;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Property\Reference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 
 abstract class AbstractConverter
 {
-    abstract public function convert(Reference $reference, array $configuration, $value);
+    abstract public function convert(PropertyReference $reference, array $configuration, $value);
 
     protected function getLegacyDataHandler(): LegacyDataHandler
     {

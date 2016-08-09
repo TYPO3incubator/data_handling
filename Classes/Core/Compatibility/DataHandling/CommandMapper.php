@@ -23,9 +23,9 @@ use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Change;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Reference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\State;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
 
 class CommandMapper
 {
@@ -177,7 +177,7 @@ class CommandMapper
 
             foreach ($uidValues as $uid => $values) {
                 $targetState = State::instance()
-                    ->setReference(Reference::instance()->setName($tableName)->setUid($uid))
+                    ->setReference(EntityReference::instance()->setName($tableName)->setUid($uid))
                     ->setValues($values);
                 $changes[] = Change::instance()->setTargetState($targetState);
             }
@@ -213,15 +213,15 @@ class CommandMapper
             // negative page-id, fetch record and retrieve pid value
             } elseif ($pageIdValue < 0) {
                 // @todo Add "MoveAfterRecordCommand"
-                $recordReference = Reference::instance()->import($targetStateReference)->setUid(abs($pageIdValue));
-                $nodeReference = Reference::instance()
+                $recordReference = EntityReference::instance()->import($targetStateReference)->setUid(abs($pageIdValue));
+                $nodeReference = EntityReference::instance()
                     ->setName('pages')
                     ->setUid($this->fetchPageId($recordReference));
                 $nodeReference->setUuid($this->fetchUuid($nodeReference));
                 $change->getTargetState()->getNodeReference()->import($nodeReference);
             // relating to an existing page
             } elseif ((string)$pageIdValue !== '0') {
-                $nodeReference = Reference::instance()
+                $nodeReference = EntityReference::instance()
                     ->setName('pages')
                     ->setUid($pageIdValue);
                 $nodeReference->setUuid($this->fetchUuid($nodeReference));
@@ -267,7 +267,7 @@ class CommandMapper
         return (!empty($uid) && MathUtility::canBeInterpretedAsInteger($uid));
     }
 
-    protected function fetchUuid(Reference $reference): string
+    protected function fetchUuid(EntityReference $reference): string
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
@@ -278,7 +278,7 @@ class CommandMapper
         return $statement->fetchColumn();
     }
 
-    protected function fetchPageId(Reference $reference): string
+    protected function fetchPageId(EntityReference $reference): string
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
@@ -289,7 +289,7 @@ class CommandMapper
         return $statement->fetchColumn();
     }
 
-    protected function fetchState(Reference $reference): State
+    protected function fetchState(EntityReference $reference): State
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder

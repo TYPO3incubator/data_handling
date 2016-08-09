@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -17,14 +17,14 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Object\RepresentableAsString;
 
-class Reference implements RepresentableAsString
+class EntityReference implements RepresentableAsString
 {
     /**
-     * @return Reference
+     * @return EntityReference
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(Reference::class);
+        return GeneralUtility::makeInstance(EntityReference::class);
     }
 
     /**
@@ -55,7 +55,7 @@ class Reference implements RepresentableAsString
         return $this->uid;
     }
 
-    public function setUid(string $uid): Reference
+    public function setUid(string $uid): EntityReference
     {
         $this->uid = $uid;
         return $this;
@@ -69,7 +69,7 @@ class Reference implements RepresentableAsString
         return $this->uuid;
     }
 
-    public function setUuid(string $uuid): Reference
+    public function setUuid(string $uuid): EntityReference
     {
         $this->uuid = $uuid;
         return $this;
@@ -80,13 +80,13 @@ class Reference implements RepresentableAsString
         return $this->name;
     }
 
-    public function setName(string $name): Reference
+    public function setName(string $name): EntityReference
     {
         $this->name = $name;
         return $this;
     }
 
-    public function import(Reference $reference): Reference
+    public function import(EntityReference $reference): EntityReference
     {
         $this->uid = $reference->getUid();
         $this->uuid = $reference->getUuid();
@@ -95,10 +95,10 @@ class Reference implements RepresentableAsString
     }
 
     /**
-     * @param Reference $reference
+     * @param EntityReference $reference
      * @return bool
      */
-    public function equals(Reference $reference): bool {
+    public function equals(EntityReference $reference): bool {
         return (
             $this->name === $reference->getName()
             && (

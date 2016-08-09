@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Property\Reference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 
 class PassThroughConverter extends AbstractConverter
 {
@@ -27,7 +27,7 @@ class PassThroughConverter extends AbstractConverter
         return GeneralUtility::makeInstance(InputConverter::class);
     }
 
-    public function convert(Reference $reference, array $configuration, $value)
+    public function convert(PropertyReference $reference, array $configuration, $value)
     {
         // last four parameters ($table, $id, $realPid, $field) are required for
         // + datetime values for the current DBMS in DBAL context

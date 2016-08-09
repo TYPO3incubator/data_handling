@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,21 +15,20 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 use TYPO3\CMS\DataHandling\Core\Object\RepresentableAsString;
 
-class Reference implements RepresentableAsString
+class PropertyReference implements RepresentableAsString
 {
     /**
-     * @return Reference
+     * @return PropertyReference
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(Reference::class);
+        return GeneralUtility::makeInstance(PropertyReference::class);
     }
 
     /**
-     * @var Record\Reference
+     * @var EntityReference
      */
     protected $entityReference;
 
@@ -43,12 +42,12 @@ class Reference implements RepresentableAsString
         return $this->entityReference->__toString() . ':' . $this->name;
     }
 
-    public function getEntityReference(): Record\Reference
+    public function getEntityReference(): EntityReference
     {
         return $this->entityReference;
     }
 
-    public function setEntityReference(Record\Reference $entityReference): Reference
+    public function setEntityReference(EntityReference $entityReference): PropertyReference
     {
         $this->entityReference = $entityReference;
         return $this;
@@ -59,16 +58,16 @@ class Reference implements RepresentableAsString
         return $this->name;
     }
 
-    public function setName(string $name): Reference
+    public function setName(string $name): PropertyReference
     {
         $this->name = $name;
         return $this;
     }
 
-    public function import(Reference $reference): Reference
+    public function import(PropertyReference $reference): PropertyReference
     {
         if ($this->entityReference === null) {
-            $this->entityReference = Record\Reference::instance();
+            $this->entityReference = EntityReference::instance();
         }
 
         $this->entityReference->import($reference->getEntityReference());

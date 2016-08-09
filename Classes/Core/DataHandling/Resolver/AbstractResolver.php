@@ -14,9 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 
 abstract class AbstractResolver
 {
@@ -26,5 +24,5 @@ abstract class AbstractResolver
      */
     protected $context;
 
-    abstract public function resolve(Record\Reference $reference, array $rawValues): array;
+    abstract public function resolve(EntityReference $reference, array $rawValues): array;
 }

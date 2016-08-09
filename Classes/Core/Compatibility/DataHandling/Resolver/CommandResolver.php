@@ -18,8 +18,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Record as RecordCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 
 class CommandResolver
@@ -33,7 +33,7 @@ class CommandResolver
     }
 
     /**
-     * @var Record\Change
+     * @var Change
      */
     protected $change;
 
@@ -47,7 +47,7 @@ class CommandResolver
      */
     protected $commands;
 
-    public function setChange(Record\Change $change): CommandResolver
+    public function setChange(Change $change): CommandResolver
     {
         $this->change = $change;
         return $this;
@@ -109,9 +109,9 @@ class CommandResolver
 
     protected function processRelations()
     {
-        /** @var Property\Reference[][] $sourceRelationsByProperty */
+        /** @var PropertyReference[][] $sourceRelationsByProperty */
         $sourceRelationsByProperty = [];
-        /** @var Property\Reference[][] $targetRelationsByProperty */
+        /** @var PropertyReference[][] $targetRelationsByProperty */
         $targetRelationsByProperty = $this->change->getTargetState()->getRelationsByProperty();
 
         if (!$this->change->isNew()) {
@@ -153,8 +153,8 @@ class CommandResolver
     }
 
     /**
-     * @param Property\Reference[] $sourceRelations
-     * @param Property\Reference[] $targetRelations
+     * @param PropertyReference[] $sourceRelations
+     * @param PropertyReference[] $targetRelations
      */
     protected function comparePropertyRelations(array $sourceRelations, array $targetRelations)
     {
@@ -167,7 +167,7 @@ class CommandResolver
 
         foreach ($comparisonActions as $comparisonAction) {
             if ($comparisonAction['action'] === SortingComparisonService::ACTION_REMOVE) {
-                /** @var Property\Reference $relationPropertyReference */
+                /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
                 $relationReference = $relationPropertyReference->getEntityReference();
                 $this->addCommand(
@@ -178,7 +178,7 @@ class CommandResolver
                     ])
                 );
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ADD) {
-                /** @var Property\Reference $relationPropertyReference */
+                /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
                 $relationReference = $relationPropertyReference->getEntityReference();
                 $this->addCommand(
@@ -190,7 +190,7 @@ class CommandResolver
                 );
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ORDER) {
                 $orderCommandData = [];
-                /** @var Property\Reference $relationPropertyReference */
+                /** @var PropertyReference $relationPropertyReference */
                 foreach ($comparisonAction['items'] as $relationPropertyReference) {
                     $relationReference = $relationPropertyReference->getEntityReference();
                     $orderCommandData[] = [

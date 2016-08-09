@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Unit\Core\Service;
  */
 
 use TYPO3\CMS\Core\Tests\UnitTestCase;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record\Reference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 
 class SortingComparisonServiceTest extends UnitTestCase
@@ -150,8 +150,8 @@ class SortingComparisonServiceTest extends UnitTestCase
                 ]
             ],
             'same source & same target using identified objects' => [
-                [Reference::instance()->setName('first')->setUid(1), Reference::instance()->setName('second')->setUid(2)],
-                [Reference::instance()->setName('first')->setUid(1), Reference::instance()->setName('second')->setUid(2)],
+                [EntityReference::instance()->setName('first')->setUid(1), EntityReference::instance()->setName('second')->setUid(2)],
+                [EntityReference::instance()->setName('first')->setUid(1), EntityReference::instance()->setName('second')->setUid(2)],
                 []
             ]
         ];

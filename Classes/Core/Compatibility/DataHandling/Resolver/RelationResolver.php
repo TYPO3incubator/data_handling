@@ -18,9 +18,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapperScope;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 class RelationResolver extends AbstractResolver
 {
@@ -43,11 +43,11 @@ class RelationResolver extends AbstractResolver
     }
 
     /**
-     * @param Record\Reference $reference
+     * @param EntityReference $reference
      * @param array $rawValues
-     * @return Property\Reference[]
+     * @return PropertyReference[]
      */
-    public function resolve(Record\Reference $reference, array $rawValues): array {
+    public function resolve(EntityReference $reference, array $rawValues): array {
         $relations = [];
 
         foreach ($rawValues as $propertyName => $rawValue) {
@@ -58,7 +58,7 @@ class RelationResolver extends AbstractResolver
             $pointers = GeneralUtility::trimExplode(',', $rawValue, true);
 
             foreach ($pointers as $pointer) {
-                $entityReference = Record\Reference::instance();
+                $entityReference = EntityReference::instance();
                 $pointerParts = explode('_', $pointer);
                 $pointerPartsCount = count($pointerParts);
 
@@ -73,7 +73,7 @@ class RelationResolver extends AbstractResolver
                     } elseif ($configuration['type'] === 'select' || $configuration['type'] === 'inline') {
                         $relationName = $configuration['foreign_table'];
                     } else {
-                        throw new \UnexpectedValueException('Reference name cannot be resolved', 1469968438);
+                        throw new \UnexpectedValueException('EntityReference name cannot be resolved', 1469968438);
                     }
                     $entityReference
                         ->setName($relationName)
@@ -81,10 +81,10 @@ class RelationResolver extends AbstractResolver
                 } elseif (isset($this->scope->newChangesMap[$pointer])) {
                     $entityReference = $this->scope->newChangesMap[$pointer]->getTargetState()->getReference();
                 } else {
-                    throw new \UnexpectedValueException('Reference cannot be resolved', 1469968439);
+                    throw new \UnexpectedValueException('EntityReference cannot be resolved', 1469968439);
                 }
 
-                $relations[] = Property\Reference::instance()
+                $relations[] = PropertyReference::instance()
                     ->setEntityReference($entityReference)
                     ->setName($propertyName);
             }

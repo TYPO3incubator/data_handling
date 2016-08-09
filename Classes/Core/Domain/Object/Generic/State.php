@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,7 +15,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
 
 class State
 {
@@ -28,12 +27,12 @@ class State
     }
 
     /**
-     * @var Reference
+     * @var EntityReference
      */
     protected $nodeReference;
 
     /**
-     * @var Reference
+     * @var EntityReference
      */
     protected $reference;
 
@@ -43,33 +42,33 @@ class State
     protected $values = [];
 
     /**
-     * @var Property\Reference[]
+     * @var PropertyReference[]
      */
     protected $relations = [];
 
     public function __construct()
     {
-        $this->nodeReference = Reference::instance();
-        $this->reference = Reference::instance();
+        $this->nodeReference = EntityReference::instance();
+        $this->reference = EntityReference::instance();
     }
 
-    public function getNodeReference(): Reference
+    public function getNodeReference(): EntityReference
     {
         return $this->nodeReference;
     }
 
-    public function setNodeReference(Reference $nodeReference): State
+    public function setNodeReference(EntityReference $nodeReference): State
     {
         $this->nodeReference = $nodeReference;
         return $this;
     }
 
-    public function getReference(): Reference
+    public function getReference(): EntityReference
     {
         return $this->reference;
     }
 
-    public function setReference(Reference $reference): State
+    public function setReference(EntityReference $reference): State
     {
         $this->reference = $reference;
         return $this;
@@ -98,7 +97,7 @@ class State
     }
 
     /**
-     * @return Property\Reference[]
+     * @return PropertyReference[]
      */
     public function getRelations(): array
     {
@@ -106,7 +105,7 @@ class State
     }
 
     /**
-     * @param Property\Reference[] $relations
+     * @param PropertyReference[] $relations
      * @return State
      */
     public function setRelations(array $relations): State
@@ -116,7 +115,7 @@ class State
     }
 
     /**
-     * @return Property\Reference[][]
+     * @return PropertyReference[][]
      */
     public function getRelationsByProperty(): array
     {
@@ -129,7 +128,7 @@ class State
 
     /**
      * @param string $propertyName
-     * @return Property\Reference[]
+     * @return PropertyReference[]
      */
     public function getPropertyRelations(string $propertyName): array
     {

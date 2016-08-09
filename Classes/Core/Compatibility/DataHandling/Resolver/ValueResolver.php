@@ -18,9 +18,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapperScope;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\ValueConverter;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
 
 class ValueResolver extends AbstractResolver
 {
@@ -42,7 +42,7 @@ class ValueResolver extends AbstractResolver
         $this->scope = $scope;
     }
 
-    public function resolve(Record\Reference $reference, array $rawValues): array
+    public function resolve(EntityReference $reference, array $rawValues): array
     {
         $values = [];
 
@@ -51,7 +51,7 @@ class ValueResolver extends AbstractResolver
                 continue;
             }
 
-            $propertyReference = Property\Reference::instance();
+            $propertyReference = PropertyReference::instance();
             $propertyReference->setEntityReference($reference);
             $propertyReference->setName($propertyName);
             $values[$propertyName] = ValueConverter::instance()->convert($propertyReference, $rawValue);

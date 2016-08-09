@@ -15,10 +15,10 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Aggregate;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
 use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 class AggregateResolver
 {
@@ -33,17 +33,17 @@ class AggregateResolver
     protected $proxy;
 
     /**
-     * @var Record\Change[]
+     * @var Change[]
      */
     protected $subjects;
 
     /**
-     * @var Record\Aggregate[]
+     * @var Aggregate[]
      */
     protected $aggregates;
 
     /**
-     * @var Record\Aggregate[]
+     * @var Aggregate[]
      */
     protected $rootAggregates;
 
@@ -65,7 +65,7 @@ class AggregateResolver
     }
 
     /**
-     * @return Record\Change[]
+     * @return Change[]
      */
     public function resolve(): array
     {
@@ -76,14 +76,14 @@ class AggregateResolver
     }
 
     /**
-     * @param Record\Aggregate $aggregate
-     * @return Record\Aggregate[]
+     * @param Aggregate $aggregate
+     * @return Aggregate[]
      */
-    protected function getRootAggregates(Record\Aggregate $aggregate): array
+    protected function getRootAggregates(Aggregate $aggregate): array
     {
-        /** @var Record\Aggregate[] $activeAggregates */
+        /** @var Aggregate[] $activeAggregates */
         $rootAggregates = [];
-        /** @var Record\Aggregate[] $activeAggregates */
+        /** @var Aggregate[] $activeAggregates */
         $activeAggregates = [];
 
         $metaModelProperties = Map::instance()->getSchema($aggregate->getState()->getReference()->getName());
@@ -134,7 +134,7 @@ class AggregateResolver
 
         foreach ($this->subjects as $change) {
             // @todo Proxy
-            $this->aggregates[] = Record\Aggregate::instance()->setState($change->getTargetState());
+            $this->aggregates[] = Aggregate::instance()->setState($change->getTargetState());
         }
 
         foreach ($this->aggregates as $aggregate) {
@@ -147,7 +147,7 @@ class AggregateResolver
     }
 
     /**
-     * @return Record\Change[]
+     * @return Change[]
      */
     protected function sequence(): array
     {
@@ -165,10 +165,10 @@ class AggregateResolver
     }
 
     /**
-     * @param Record\Aggregate $aggregate
-     * @return Record\Change
+     * @param Aggregate $aggregate
+     * @return Change
      */
-    protected function resolveSubject(Record\Aggregate $aggregate): Record\Change
+    protected function resolveSubject(Aggregate $aggregate): Change
     {
         foreach ($this->subjects as $subject) {
             // @todo Proxy
@@ -182,10 +182,10 @@ class AggregateResolver
 
     /**
      * @param PassiveRelation $passiveRelation
-     * @param Record\Aggregate $needle
-     * @return Record\Aggregate[]
+     * @param Aggregate $needle
+     * @return Aggregate[]
      */
-    protected function findActiveRelationAggregates(PassiveRelation $passiveRelation, Record\Aggregate $needle): array
+    protected function findActiveRelationAggregates(PassiveRelation $passiveRelation, Aggregate $needle): array
     {
         $activeAggregates = [];
         $activeProperty = $passiveRelation->getFrom();

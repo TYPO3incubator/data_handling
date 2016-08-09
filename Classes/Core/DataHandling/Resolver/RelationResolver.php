@@ -16,9 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
 
 use TYPO3\CMS\Core\Database\RelationHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Property;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 class RelationResolver extends AbstractResolver
 {
@@ -31,11 +31,11 @@ class RelationResolver extends AbstractResolver
     }
 
     /**
-     * @param Record\Reference $reference
+     * @param EntityReference $reference
      * @param array $rawValues
-     * @return Property\Reference[]
+     * @return PropertyReference[]
      */
-    public function resolve(Record\Reference $reference, array $rawValues): array
+    public function resolve(EntityReference $reference, array $rawValues): array
     {
         $relations = [];
 
@@ -79,10 +79,10 @@ class RelationResolver extends AbstractResolver
             );
 
             foreach ($relationHandler->itemArray as $item) {
-                $entityReference = Record\Reference::instance()
+                $entityReference = EntityReference::instance()
                     ->setName($item['table'])
                     ->setUid($item['id']);
-                $relations[] = Property\Reference::instance()
+                $relations[] = PropertyReference::instance()
                     ->setEntityReference($entityReference)
                     ->setName($propertyName);
             }

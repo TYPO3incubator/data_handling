@@ -15,8 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Record;
 
 class ValueResolver extends AbstractResolver
 {
@@ -28,7 +28,7 @@ class ValueResolver extends AbstractResolver
         return GeneralUtility::makeInstance(ValueResolver::class);
     }
 
-    public function resolve(Record\Reference $reference, array $rawValues): array
+    public function resolve(EntityReference $reference, array $rawValues): array
     {
         $values = [];
 

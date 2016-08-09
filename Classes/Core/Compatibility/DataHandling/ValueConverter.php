@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter\AbstractConverter;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Property\Reference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 
 class ValueConverter
 {
@@ -28,7 +28,7 @@ class ValueConverter
         return GeneralUtility::makeInstance(ValueConverter::class);
     }
 
-    public function convert(Reference $reference, $value)
+    public function convert(PropertyReference $reference, $value)
     {
         $configuration = $this->getPropertyConfiguration($reference);
         $converter = $this->determineConverter($configuration['config']['type']);
@@ -55,10 +55,10 @@ class ValueConverter
     }
 
     /**
-     * @param Reference $reference
+     * @param PropertyReference $reference
      * @return null|array
      */
-    protected function getPropertyConfiguration(Reference $reference)
+    protected function getPropertyConfiguration(PropertyReference $reference)
     {
         $tableName = $reference->getEntityReference()->getName();
         $columnName = $reference->getName();

@@ -30,6 +30,7 @@ class EventSourcingSchemaModificationSlot
             $delimiter . implode(PHP_EOL, [
                 'CREATE TABLE %s (',
                     Common::FIELD_UUID . ' varchar(36) NOT NULL DEFAULT \'\'',
+                    Common::FIELD_REVISION . ' bigint(20) DEFAULT NULL',
                 ');',
             ]) . $delimiter;
     }

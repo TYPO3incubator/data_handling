@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,26 +15,20 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
 
-class CommandMapperScope
+class ReadState extends State
 {
     /**
-     * @return CommandMapperScope
+     * @return ReadState
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(CommandMapperScope::class);
+        return GeneralUtility::makeInstance(ReadState::class);
     }
 
-    /**
-     * @var Change[]
-     */
-    public $newChangesMap = [];
+    public static function reconstitute()
+    {
 
-    /**
-     * @var Change[]
-     */
-    public $relationChangesMap = [];
-
+    }
 }

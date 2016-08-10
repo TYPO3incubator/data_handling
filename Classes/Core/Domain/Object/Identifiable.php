@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,7 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+
 interface Identifiable
 {
-    public function getIdentifier(): string;
+    /**
+     * @return null|EntityReference
+     */
+    public function getIdentity();
 }

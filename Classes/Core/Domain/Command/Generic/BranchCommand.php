@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,24 +14,25 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Record;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 
 class BranchCommand extends AbstractCommand implements Identifiable
 {
+    use IdentifiableTrait;
+
     /**
-     * @param string $tableName
-     * @param string $subject
+     * @param EntityReference $subject
      * @param mixed $context
      * @return BranchCommand
      */
-    public static function instance(string $tableName, string $subject, $context = null)
+    public static function instance(EntityReference $subject, $context = null)
     {
         $command = GeneralUtility::makeInstance(BranchCommand::class);
         $command->setSubject($subject);
-        $command->setIdentifier(Uuid::uuid4()->toString());
-        $command->setTableName($tableName);
+        $command->setIdentity(EntityReference::create($subject->getName()));
         return $command;
     }
 }

@@ -14,6 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Object\RepresentableAsString;
 
@@ -25,6 +26,15 @@ class EntityReference implements RepresentableAsString
     public static function instance()
     {
         return GeneralUtility::makeInstance(EntityReference::class);
+    }
+
+    /**
+     * @param string $name
+     * @return EntityReference
+     */
+    public static function create(string $name): EntityReference
+    {
+        return static::instance()->setName($name)->setUuid(Uuid::uuid4());
     }
 
     /**

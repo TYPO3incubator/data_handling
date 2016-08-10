@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,19 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 
-class AddRelationCommand extends AbstractCommand
+class RemoveRelationCommand extends AbstractCommand
 {
     /**
-     * @param string $tableName
-     * @param string $subject
+     * @param EntityReference $subject
      * @param array $data
-     * @return AddRelationCommand
+     * @return RemoveRelationCommand
      */
-    public static function instance(string $tableName, string $subject, array $data)
+    public static function instance(EntityReference $subject, array $data)
     {
-        $command = GeneralUtility::makeInstance(AddRelationCommand::class);
-        $command->setTableName($tableName);
+        $command = GeneralUtility::makeInstance(RemoveRelationCommand::class);
         $command->setSubject($subject);
         $command->setData($data);
         return $command;

@@ -16,8 +16,8 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Record as RecordCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
@@ -79,11 +79,11 @@ class CommandResolver
 
         if ($this->change->isNew()) {
             $this->addCommand(
-                RecordCommand\CreateCommand::instance($reference->getName(), $reference->getUuid())
+                GenericCommand\CreateCommand::instance($reference)
             );
         } elseif ($this->isDifferentContext()) {
             $this->addCommand(
-                RecordCommand\BranchCommand::instance($reference->getName(), $reference->getUuid())
+                GenericCommand\BranchCommand::instance($reference)
             );
         }
     }
@@ -102,7 +102,7 @@ class CommandResolver
         }
         if (!empty($values)) {
             $this->addCommand(
-                RecordCommand\ChangeCommand::instance($reference->getName(), $reference->getUuid(), $values)
+                GenericCommand\ChangeCommand::instance($reference, $values)
             );
         }
     }
@@ -171,7 +171,7 @@ class CommandResolver
                 $relationPropertyReference = $comparisonAction['item'];
                 $relationReference = $relationPropertyReference->getEntityReference();
                 $this->addCommand(
-                    RecordCommand\RemoveRelationCommand::instance($reference->getName(), $reference->getUuid(), [
+                    GenericCommand\RemoveRelationCommand::instance($reference, [
                         'name' => $relationReference->getName(),
                         'uuid' => $relationReference->getUuid(),
                         'uid' => $relationReference->getUid(),
@@ -182,7 +182,7 @@ class CommandResolver
                 $relationPropertyReference = $comparisonAction['item'];
                 $relationReference = $relationPropertyReference->getEntityReference();
                 $this->addCommand(
-                    RecordCommand\AddRelationCommand::instance($reference->getName(), $reference->getUuid(), [
+                    GenericCommand\AttachRelationCommand::instance($reference, [
                         'name' => $relationReference->getName(),
                         'uuid' => $relationReference->getUuid(),
                         'uid' => $relationReference->getUid(),
@@ -200,7 +200,7 @@ class CommandResolver
                     ];
                 }
                 $this->addCommand(
-                    RecordCommand\OrderRelationsCommand::instance($reference->getName(), $reference->getUuid(), [
+                    GenericCommand\OrderRelationsCommand::instance($reference, [
                         'order' => $orderCommandData,
                     ])
                 );
@@ -213,7 +213,7 @@ class CommandResolver
         if ($command instanceof Identifiable) {
             // @todo Still think about, whether this is good - alternatively shift it to projection
             $this->change->getTargetState()->getReference()->setUuid(
-                $command->getIdentifier()
+                $command->getIdentity()->getUuid()
             );
         }
         $this->commands[] = $command;

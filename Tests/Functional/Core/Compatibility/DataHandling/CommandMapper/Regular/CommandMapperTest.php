@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Record as RecordCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
 use TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate;
 use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandManagerFixture;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
@@ -65,13 +65,13 @@ class CommandMapperTest extends AbstractActionTestCase
 
         $this->assertHasCommands(
             [
-                RecordCommand\CreateCommand::class => [
-                    [ 'tableName' => static::TABLE_Content, 'identifier' => '@@UUID@@' ],
-                    [ 'tableName' => static::TABLE_Content, 'identifier' => '@@UUID@@' ],
+                GenericCommand\CreateCommand::class => [
+                    [ 'identity.name' => static::TABLE_Content, 'identity.uuid' => '@@UUID@@' ],
+                    [ 'identity.name' => static::TABLE_Content, 'identity.uuid' => '@@UUID@@' ],
                 ],
-                RecordCommand\ChangeCommand::class => [
-                    [ 'tableName' => static::TABLE_Content, 'subject' => '@@UUID@@', 'data.header' => 'Testing #1' ],
-                    [ 'tableName' => static::TABLE_Content, 'subject' => '@@UUID@@', 'data.header' => 'Testing #2' ],
+                GenericCommand\ChangeCommand::class => [
+                    [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #1' ],
+                    [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #2' ],
                 ],
             ],
             $this->commandManager->getCommands()
@@ -87,8 +87,8 @@ class CommandMapperTest extends AbstractActionTestCase
 
         $this->assertHasCommands(
             [
-                RecordCommand\ChangeCommand::class => [
-                    [ 'tableName' => static::TABLE_Content, 'subject' => '@@UUID@@', 'data.header' => 'Testing #1' ],
+                GenericCommand\ChangeCommand::class => [
+                    [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #1' ],
                 ],
             ],
             $this->commandManager->getCommands()

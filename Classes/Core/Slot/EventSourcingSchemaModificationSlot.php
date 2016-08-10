@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Slot;
 
 use TYPO3\CMS\DataHandling\Common;
 
-class UuidSchemaModificationSlot
+class EventSourcingSchemaModificationSlot
 {
     /**
      * @var string

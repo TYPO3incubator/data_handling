@@ -17,7 +17,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\DatabaseC
 // provide new database fields
 \TYPO3\CMS\DataHandling\Common::getSignalSlotDispatcher()->connect(
     \TYPO3\CMS\Install\Service\SqlExpectedSchemaService::class, 'tablesDefinitionIsBeingBuilt',
-    \TYPO3\CMS\DataHandling\Core\Slot\UuidSchemaModificationSlot::class, 'generate'
+    \TYPO3\CMS\DataHandling\Core\Slot\EventSourcingSchemaModificationSlot::class, 'generate'
 );
 
 /*

@@ -38,6 +38,7 @@ class EventStore implements SingletonInterface
 
     public function __construct()
     {
+        // @todo Implement StorageManager and providers for multiple EventStores using different drivers
         $this->driver = GeneralUtility::makeInstance(SqlDriver::class);
     }
 

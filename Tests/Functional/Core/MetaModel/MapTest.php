@@ -19,6 +19,7 @@ use TYPO3\CMS\DataHandling\Core\MetaModel\ActiveRelation;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
 use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Relational;
+use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class MapTest extends FunctionalTestCase
@@ -203,7 +204,7 @@ class MapTest extends FunctionalTestCase
             if (!($actualRelation instanceof ActiveRelation)) {
                 continue;
             }
-            if (!$this->matchesExpectations($expectations, $actualRelation)) {
+            if (!AssertionUtility::matchesExpectations($expectations, $actualRelation)) {
                 continue;
             }
             $found = true;
@@ -223,28 +224,12 @@ class MapTest extends FunctionalTestCase
             if (!($actualRelation instanceof PassiveRelation)) {
                 continue;
             }
-            if (!$this->matchesExpectations($expectations, $actualRelation)) {
+            if (!AssertionUtility::matchesExpectations($expectations, $actualRelation)) {
                 continue;
             }
             $found = true;
             break;
         }
         $this->assertTrue($found, 'No relation found that matches expectations.');
-    }
-
-    /**
-     * @param array $expectations
-     * @param object|array|\ArrayAccess $subject
-     * @return bool
-     */
-    protected function matchesExpectations(array $expectations, $subject): bool
-    {
-        $matches = 0;
-        foreach ($expectations as $expectationPath => $expectationValue) {
-            if (ObjectAccess::getPropertyPath($subject, $expectationPath) === $expectationValue) {
-                $matches++;
-            }
-        }
-        return ($matches === count($expectations));
     }
 }

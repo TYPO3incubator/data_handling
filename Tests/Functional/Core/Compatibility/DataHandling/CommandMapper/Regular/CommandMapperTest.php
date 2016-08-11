@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
 use TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate;
+use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandManagerFixture;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
@@ -193,34 +194,12 @@ class CommandMapperTest extends AbstractActionTestCase
                     if (!is_a($actualCommand, $commandClassName)) {
                         continue;
                     }
-                    if ($this->matchesExpectations($commandExpectations, $actualCommand)) {
+                    if (AssertionUtility::matchesExpectations($commandExpectations, $actualCommand)) {
                         $foundCommands[] = $actualCommand;
                     }
                 }
             }
         }
         $this->assertEquals($expectedCommandCount, count($foundCommands), 'Could not assert all commands');
-    }
-
-    /**
-     * @param array $expectations
-     * @param object|array|\ArrayAccess $subject
-     * @return bool
-     */
-    protected function matchesExpectations(array $expectations, $subject): bool
-    {
-        $matches = 0;
-        foreach ($expectations as $expectationPath => $expectationValue) {
-            $actualValue = ObjectAccess::getPropertyPath($subject, $expectationPath);
-            // UUID4: 850358f1-0aee-445e-b462-cdb3440c1bc0
-            if ($expectationValue === '@@UUID@@') {
-                if (preg_match('#^[a-z0-9]{8}-(?:[a-z0-9]{4}-){3}[a-z0-9]{12}$#i', $actualValue)) {
-                    $matches++;
-                }
-            } elseif ($actualValue === $expectationValue) {
-                $matches++;
-            }
-        }
-        return ($matches === count($expectations));
     }
 }

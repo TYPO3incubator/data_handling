@@ -30,11 +30,26 @@ class EntityReference implements RepresentableAsString
     }
 
     /**
+     * @param array $array
+     * @return EntityReference
+     */
+    public static function fromArray(array $array)
+    {
+        $reference = static::instance()
+            ->setName($array['name'])
+            ->setUuid($array['uuid']);
+        if (isset($array['uid'])) {
+            $reference->setUid($array['uid']);
+        }
+        return $reference;
+    }
+
+    /**
      * @param string $name
      * @param array $record
      * @return EntityReference
      */
-    public static function fromRecord(string $name, array $record): EntityReference
+    public static function fromRecord(string $name, array $record)
     {
         if (empty($record['uid']) && empty($record[Common::FIELD_UUID])) {
             throw new \RuntimeException('Both uid and uuid are required', 1470910287);

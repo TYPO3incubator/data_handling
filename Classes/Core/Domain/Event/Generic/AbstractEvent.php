@@ -20,8 +20,10 @@ use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
 
 abstract class AbstractEvent extends Event\AbstractEvent implements Storable
@@ -88,30 +90,69 @@ abstract class AbstractEvent extends Event\AbstractEvent implements Storable
      */
     public function exportData()
     {
-        $array = [];
+        $data = [];
 
         if ($this->subject !== null) {
-            $array['subject'] = $this->subject->__toArray();
+            $data['subject'] = $this->subject->__toArray();
         }
 
         if ($this instanceof Identifiable) {
-            $array['identity'] = $this->getIdentity()->__toArray();
+            $data['identity'] = $this->getIdentity()->__toArray();
         }
         if ($this instanceof Relational) {
-            $array['relation'] = $this->getRelation()->__toArray();
+            $data['relation'] = $this->getRelation()->__toArray();
         }
         if ($this instanceof Sequenceable) {
-            $array['sequence'] = $this->getSequence()->__toArray();
+            $data['sequence'] = $this->getSequence()->__toArray();
         }
 
         if ($this->data !== null) {
-            $array['data'] = $this->data;
+            $data['data'] = $this->data;
         }
 
-        if (empty($array)) {
-            $array = null;
+        if (empty($data)) {
+            $data = null;
         }
 
-        return $array;
+        return $data;
+    }
+
+    /**
+     * @param null|array $data
+     * @return AbstractEvent
+     */
+    public function importData($data)
+    {
+        if ($data === null) {
+            return $this;
+        }
+
+        if (isset($data['data'])) {
+            $this->data = $data['data'];
+        }
+
+        if (isset($data['subject'])) {
+            $this->setSubject(
+                EntityReference::fromArray($data['subject'])
+            );
+        }
+
+        if ($this instanceof Identifiable) {
+            $this->setIdentity(
+                EntityReference::fromArray($data['identity'])
+            );
+        }
+        if ($this instanceof Relational) {
+            $this->setRelation(
+                PropertyReference::fromArray($data['relation'])
+            );
+        }
+        if ($this instanceof Sequenceable) {
+            $this->setSequence(
+                RelationSequence::fromArray($data['sequence'])
+            );
+        }
+
+        return $this;
     }
 }

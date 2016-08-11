@@ -28,6 +28,19 @@ class RelationSequence extends AbstractSequence
     }
 
     /**
+     * @param array $array
+     * @return RelationSequence
+     */
+    public static function fromArray(array $array)
+    {
+        $relation = static::instance();
+        foreach ($array as $item) {
+            $relation->attach(PropertyReference::fromArray($item));
+        }
+        return $relation;
+    }
+
+    /**
      * @var PropertyReference[]
      */
     protected $sequence = [];

@@ -21,6 +21,29 @@ use TYPO3\CMS\DataHandling\Core\Type\MicroDateTime;
 abstract class AbstractEvent
 {
     /**
+     * @param string $eventType
+     * @param string $uuid
+     * @param \DateTime $date
+     * @param null|array $data
+     * @param null|array $metadata
+     * @return AbstractEvent
+     */
+    static function reconstitute(string $eventType, string $uuid, \DateTime $date, $data, $metadata)
+    {
+        if (!in_array(Instantiable::class, class_implements($eventType))) {
+            throw new \RuntimeException('Cannot instantiate "' . $eventType . '"', 1470935798);
+        }
+
+        /** @var AbstractEvent $event */
+        $event = call_user_func($eventType . '::instance');
+        $event->uuid = $uuid;
+        $event->date = $date;
+        $event->metadata = $metadata;
+        $event->importData($data);
+        return $event;
+    }
+
+    /**
      * @var string
      */
     protected $uuid;
@@ -81,6 +104,12 @@ abstract class AbstractEvent
      * @return array
      */
     abstract public function exportData();
+
+    /**
+     * @param null|array $data
+     * @return AbstractEvent
+     */
+    abstract public function importData($data);
 
     /**
      * @param array|null $metadata

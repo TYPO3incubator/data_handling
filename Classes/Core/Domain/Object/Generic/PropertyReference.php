@@ -28,6 +28,17 @@ class PropertyReference implements RepresentableAsString
     }
 
     /**
+     * @param array $array
+     * @return PropertyReference
+     */
+    public static function fromArray(array $array)
+    {
+        return static::instance()
+            ->setName($array['name'])
+            ->setEntityReference(EntityReference::fromArray($array['entity']));
+    }
+
+    /**
      * @var EntityReference
      */
     protected $entityReference;

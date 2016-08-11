@@ -38,12 +38,12 @@ class Property
     protected $schema;
 
     /**
-     * @var array ActiveRelation[]
+     * @var ActiveRelation[]
      */
     protected $activeRelations = [];
 
     /**
-     * @var array PassiveRelation[]
+     * @var PassiveRelation[]
      */
     protected $passiveRelations = [];
 
@@ -87,12 +87,35 @@ class Property
         return $this->activeRelations;
     }
 
+    public function hasActiveRelationTo(string $toSchemaName): bool
+    {
+        foreach ($this->activeRelations as $activeRelation) {
+            if ($activeRelation->getTo()->getName() === $toSchemaName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @return PassiveRelation[]
      */
     public function getPassiveRelations(): array
     {
         return $this->passiveRelations;
+    }
+
+    public function hasPassiveRelationFrom(string $fromSchemaName, string $fromPropertyName): bool
+    {
+        foreach ($this->passiveRelations as $passiveRelation) {
+            if (
+                $passiveRelation->getFrom()->getSchema() === $fromSchemaName
+                && $passiveRelation->getFrom()->getName() === $fromPropertyName
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function addRelation($relation): Property

@@ -34,7 +34,7 @@ class Schema
     /**
      * @var Property[]
      */
-    protected $properties;
+    protected $properties = [];
 
     public function getName(): string
     {

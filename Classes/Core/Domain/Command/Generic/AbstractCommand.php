@@ -33,7 +33,11 @@ abstract class AbstractCommand extends \TYPO3\CMS\DataHandling\Core\Domain\Comma
         return $this->subject;
     }
 
-    public function setSubject(EntityReference $subject): AbstractCommand
+    /**
+     * @param EntityReference $subject
+     * @return AbstractCommand
+     */
+    public function setSubject(EntityReference $subject)
     {
         $this->subject = $subject;
         return $this;

@@ -31,7 +31,7 @@ class CreateCommand extends AbstractCommand implements Identifiable
     public static function instance(EntityReference $identity, $context = null)
     {
         $command = GeneralUtility::makeInstance(CreateCommand::class);
-        $command->setIdentity($identity);
+        $command->setIdentity(EntityReference::create($identity->getName()));
         return $command;
     }
 }

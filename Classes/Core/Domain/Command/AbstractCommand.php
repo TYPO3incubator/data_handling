@@ -26,25 +26,37 @@ abstract class AbstractCommand
      */
     protected $metadata;
 
-    public function __construct()
-    {
-    }
-
+    /**
+     * @param array|null $data
+     * @return AbstractCommand
+     */
     public function setData(array $data = null)
     {
         $this->data = $data;
+        return $this;
     }
 
+    /**
+     * @return array|null
+     */
     public function getData()
     {
         return $this->data;
     }
 
+    /**
+     * @param array|null $metadata
+     * @return AbstractCommand
+     */
     public function setMetadata(array $metadata = null)
     {
         $this->metadata = $metadata;
+        return $this;
     }
 
+    /**
+     * @return array|null
+     */
     public function getMetadata()
     {
         return $this->metadata;

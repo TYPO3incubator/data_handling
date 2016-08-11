@@ -20,6 +20,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 
 class CommandResolver
@@ -169,40 +170,23 @@ class CommandResolver
             if ($comparisonAction['action'] === SortingComparisonService::ACTION_REMOVE) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
-                $relationReference = $relationPropertyReference->getEntityReference();
                 $this->addCommand(
-                    GenericCommand\RemoveRelationCommand::instance($reference, [
-                        'name' => $relationReference->getName(),
-                        'uuid' => $relationReference->getUuid(),
-                        'uid' => $relationReference->getUid(),
-                    ])
+                    GenericCommand\RemoveRelationCommand::instance($reference, $relationPropertyReference)
                 );
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ADD) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
-                $relationReference = $relationPropertyReference->getEntityReference();
                 $this->addCommand(
-                    GenericCommand\AttachRelationCommand::instance($reference, [
-                        'name' => $relationReference->getName(),
-                        'uuid' => $relationReference->getUuid(),
-                        'uid' => $relationReference->getUid(),
-                    ])
+                    GenericCommand\AttachRelationCommand::instance($reference, $relationPropertyReference)
                 );
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ORDER) {
-                $orderCommandData = [];
+                $relationSequence = RelationSequence::instance();
                 /** @var PropertyReference $relationPropertyReference */
                 foreach ($comparisonAction['items'] as $relationPropertyReference) {
-                    $relationReference = $relationPropertyReference->getEntityReference();
-                    $orderCommandData[] = [
-                        'name' => $relationReference->getName(),
-                        'uuid' => $relationReference->getUuid(),
-                        'uid' => $relationReference->getUid(),
-                    ];
+                    $relationSequence->attach($relationPropertyReference);
                 }
                 $this->addCommand(
-                    GenericCommand\OrderRelationsCommand::instance($reference, [
-                        'order' => $orderCommandData,
-                    ])
+                    GenericCommand\OrderRelationsCommand::instance($reference, $relationSequence)
                 );
             }
         }

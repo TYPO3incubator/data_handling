@@ -16,19 +16,24 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationalTrait;
 
-class RemoveRelationCommand extends AbstractCommand
+class RemoveRelationCommand extends AbstractCommand implements Relational
 {
+    use RelationalTrait;
+
     /**
      * @param EntityReference $subject
-     * @param array $data
+     * @param PropertyReference $relation
      * @return RemoveRelationCommand
      */
-    public static function instance(EntityReference $subject, array $data)
+    public static function instance(EntityReference $subject, PropertyReference $relation)
     {
         $command = GeneralUtility::makeInstance(RemoveRelationCommand::class);
         $command->setSubject($subject);
-        $command->setData($data);
+        $command->setRelation($relation);
         return $command;
     }
 }

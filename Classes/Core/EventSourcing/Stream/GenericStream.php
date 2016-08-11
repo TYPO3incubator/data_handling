@@ -20,6 +20,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
 class GenericStream extends AbstractStream implements Instantiable
@@ -53,10 +54,7 @@ class GenericStream extends AbstractStream implements Instantiable
     public function publish(AbstractEvent $event)
     {
         if ($event instanceof Storable) {
-            EventStore::instance()->append(
-                $this->determineStreamName($event),
-                $event
-            );
+            EventStorePool::provide()->getDefault()->append($this->name, $event);
         }
         foreach ($this->consumers as $consumer) {
             call_user_func($consumer, $event);

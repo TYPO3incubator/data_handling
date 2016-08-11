@@ -34,6 +34,14 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ac3c06f089776446875c4957a7f35a56'] =
     \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
 
+// initialize default EventStore using SqlDriver
+\TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool::provide()
+    ->registerDefault(
+        \TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore::create(
+            \TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver::instance()
+        )
+    );
+
 // bind stream, listening to all generic events
 \TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager::provide()->bindStream(
     \TYPO3\CMS\DataHandling\Core\EventSourcing\StreamManager::provide()->provideStream(

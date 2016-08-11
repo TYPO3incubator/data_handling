@@ -21,7 +21,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\DriverInterface;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
 
-class EventStore implements SingletonInterface
+class EventStore
 {
     /**
      * @var DriverInterface
@@ -29,17 +29,27 @@ class EventStore implements SingletonInterface
     protected $driver;
 
     /**
+     * @param DriverInterface $driver
      * @return EventStore
      */
-    static public function instance()
+    public static function create(DriverInterface $driver)
     {
-        return GeneralUtility::makeInstance(EventStore::class);
+        return GeneralUtility::makeInstance(EventStore::class, $driver);
     }
 
-    public function __construct()
+    /**
+     * @param DriverInterface $driver
+     * @return EventStore
+     */
+    public function setDriver(DriverInterface $driver)
     {
-        // @todo Implement StorageManager and providers for multiple EventStores using different drivers
-        $this->driver = GeneralUtility::makeInstance(SqlDriver::class);
+        $this->driver = $driver;
+        return $this;
+    }
+
+    public function __construct(DriverInterface $driver)
+    {
+        $this->setDriver($driver);
     }
 
     public function append($streamName, AbstractEvent $event, $expectedVersion = null)

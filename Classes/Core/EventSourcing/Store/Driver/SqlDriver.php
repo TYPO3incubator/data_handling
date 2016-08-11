@@ -22,9 +22,12 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSerializer;
 class SqlDriver implements DriverInterface
 {
     /**
-     * @var EventSerializer
+     * @return SqlDriver
      */
-    protected $eventSerializer;
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(SqlDriver::class);
+    }
 
     public function append(string $streamName, AbstractEvent $event)
     {
@@ -53,19 +56,5 @@ class SqlDriver implements DriverInterface
     public function open(string $eventStream)
     {
 
-    }
-
-    /**
-     * @return EventSerializer
-     * @deprecated Currently not used
-     */
-    protected function getEventSerializer()
-    {
-        if (isset($this->eventSerializer)) {
-            return $this->eventSerializer;
-        }
-
-        $this->eventSerializer = GeneralUtility::makeInstance(EventSerializer::class);
-        return $this->eventSerializer;
     }
 }

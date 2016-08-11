@@ -17,12 +17,14 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Event;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
 
-abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent
+abstract class AbstractEvent extends Event\AbstractEvent implements Storable
 {
     /**
      * @param AbstractCommand $command
@@ -92,13 +94,13 @@ abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Core\Domain\Event\A
             $array['subject'] = $this->subject->__toArray();
         }
 
-        if ($this instanceof IdentifiableTrait) {
+        if ($this instanceof Identifiable) {
             $array['identity'] = $this->getIdentity()->__toArray();
         }
-        if ($this instanceof RelationalTrait) {
+        if ($this instanceof Relational) {
             $array['relation'] = $this->getRelation()->__toArray();
         }
-        if ($this instanceof SequenceableTrait) {
+        if ($this instanceof Sequenceable) {
             $array['sequence'] = $this->getSequence()->__toArray();
         }
 
@@ -111,13 +113,5 @@ abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Core\Domain\Event\A
         }
 
         return $array;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEventName(): string
-    {
-        return 'core-record-' . strtolower(preg_replace('#^(?:.*\\\\)?(\w+)Event$#', '$1', get_class($this)));
     }
 }

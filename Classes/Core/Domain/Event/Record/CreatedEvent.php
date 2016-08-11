@@ -15,12 +15,11 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 
-class CreatedEvent extends AbstractEvent implements Storable, Identifiable
+class CreatedEvent extends AbstractEvent implements Identifiable
 {
     use IdentifiableTrait;
 

@@ -19,19 +19,28 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceableTrait;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class OrderRelationsCommand extends AbstractCommand implements Sequenceable
+class OrderRelationsCommand extends AbstractCommand implements Instantiable, Sequenceable
 {
     use SequenceableTrait;
+
+    /**
+     * @return OrderRelationsCommand
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(OrderRelationsCommand::class);
+    }
 
     /**
      * @param EntityReference $subject
      * @param AbstractSequence $sequence
      * @return OrderRelationsCommand
      */
-    public static function instance(EntityReference $subject, AbstractSequence $sequence)
+    public static function create(EntityReference $subject, AbstractSequence $sequence)
     {
-        $command = GeneralUtility::makeInstance(OrderRelationsCommand::class);
+        $command = static::instance();
         $command->setSubject($subject);
         $command->setSequence($sequence);
         return $command;

@@ -113,7 +113,7 @@ class EventInitializationService
 
             $this->handleCommand(
                 $writeState,
-                Generic\CreateCommand::instance($writeState->getReference())
+                Generic\CreateCommand::create($writeState->getReference())
                     ->setMetadata([ static::KEY_UPGRADE => [ 'uid' => $data['uid'] ] ])
             );
         } else {
@@ -141,7 +141,7 @@ class EventInitializationService
             );
             $this->handleCommand(
                 $writeState,
-                Generic\ChangeCommand::instance($reference, $temporaryState->getValues())
+                Generic\ChangeCommand::create($reference, $temporaryState->getValues())
             );
         }
 
@@ -160,7 +160,7 @@ class EventInitializationService
                 if ($metaModelProperty->hasActiveRelationTo($relation->getEntityReference()->getName())) {
                     $this->handleCommand(
                         $writeState,
-                        Generic\AttachRelationCommand::instance($reference, $relation)
+                        Generic\AttachRelationCommand::create($reference, $relation)
                     );
                 }
             }

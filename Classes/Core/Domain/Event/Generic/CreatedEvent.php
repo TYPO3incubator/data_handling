@@ -18,18 +18,27 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class CreatedEvent extends AbstractEvent implements Identifiable
+class CreatedEvent extends AbstractEvent implements Instantiable, Identifiable
 {
     use IdentifiableTrait;
+
+    /**
+     * @return CreatedEvent
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(CreatedEvent::class);
+    }
 
     /**
      * @param EntityReference $identity
      * @return CreatedEvent
      */
-    public static function instance(EntityReference $identity)
+    public static function create(EntityReference $identity)
     {
-        $event = GeneralUtility::makeInstance(CreatedEvent::class);
+        $event = static::instance();
         $event->setIdentity($identity);
         return $event;
     }

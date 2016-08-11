@@ -18,19 +18,28 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class CreateCommand extends AbstractCommand implements Identifiable
+class CreateCommand extends AbstractCommand implements Instantiable, Identifiable
 {
     use IdentifiableTrait;
+
+    /**
+     * @return CreateCommand
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(CreateCommand::class);
+    }
 
     /**
      * @param EntityReference $identity
      * @param mixed $context
      * @return CreateCommand
      */
-    public static function instance(EntityReference $identity, $context = null)
+    public static function create(EntityReference $identity, $context = null)
     {
-        $command = GeneralUtility::makeInstance(CreateCommand::class);
+        $command = static::instance();
         $command->setIdentity(EntityReference::create($identity->getName()));
         return $command;
     }

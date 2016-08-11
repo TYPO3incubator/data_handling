@@ -16,16 +16,25 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class DeletedEvent extends AbstractEvent
+class DeletedEvent extends AbstractEvent implements Instantiable
 {
+    /**
+     * @return DeletedEvent
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(DeletedEvent::class);
+    }
+
     /**
      * @param EntityReference $subject
      * @return DeletedEvent
      */
-    public static function instance(EntityReference $subject)
+    public static function create(EntityReference $subject)
     {
-        $event = GeneralUtility::makeInstance(DeletedEvent::class);
+        $event = static::instance();
         $event->setSubject($subject);
         return $event;
     }

@@ -18,19 +18,28 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class BranchCommand extends AbstractCommand implements Identifiable
+class BranchCommand extends AbstractCommand implements Instantiable, Identifiable
 {
     use IdentifiableTrait;
+
+    /**
+     * @return BranchCommand
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(BranchCommand::class);
+    }
 
     /**
      * @param EntityReference $subject
      * @param mixed $context
      * @return BranchCommand
      */
-    public static function instance(EntityReference $subject, $context = null)
+    public static function create(EntityReference $subject, $context = null)
     {
-        $command = GeneralUtility::makeInstance(BranchCommand::class);
+        $command = static::instance();
         $command->setSubject($subject);
         $command->setIdentity(EntityReference::create($subject->getName()));
         return $command;

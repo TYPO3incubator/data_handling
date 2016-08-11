@@ -80,11 +80,11 @@ class CommandResolver
 
         if ($this->change->isNew()) {
             $this->addCommand(
-                GenericCommand\CreateCommand::instance($reference)
+                GenericCommand\CreateCommand::create($reference)
             );
         } elseif ($this->isDifferentContext()) {
             $this->addCommand(
-                GenericCommand\BranchCommand::instance($reference)
+                GenericCommand\BranchCommand::create($reference)
             );
         }
     }
@@ -103,7 +103,7 @@ class CommandResolver
         }
         if (!empty($values)) {
             $this->addCommand(
-                GenericCommand\ChangeCommand::instance($reference, $values)
+                GenericCommand\ChangeCommand::create($reference, $values)
             );
         }
     }
@@ -171,13 +171,13 @@ class CommandResolver
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
                 $this->addCommand(
-                    GenericCommand\RemoveRelationCommand::instance($reference, $relationPropertyReference)
+                    GenericCommand\RemoveRelationCommand::create($reference, $relationPropertyReference)
                 );
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ADD) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
                 $this->addCommand(
-                    GenericCommand\AttachRelationCommand::instance($reference, $relationPropertyReference)
+                    GenericCommand\AttachRelationCommand::create($reference, $relationPropertyReference)
                 );
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ORDER) {
                 $relationSequence = RelationSequence::instance();
@@ -186,7 +186,7 @@ class CommandResolver
                     $relationSequence->attach($relationPropertyReference);
                 }
                 $this->addCommand(
-                    GenericCommand\OrderRelationsCommand::instance($reference, $relationSequence)
+                    GenericCommand\OrderRelationsCommand::create($reference, $relationSequence)
                 );
             }
         }

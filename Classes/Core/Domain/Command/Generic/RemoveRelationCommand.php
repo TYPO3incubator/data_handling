@@ -19,19 +19,28 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationalTrait;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class RemoveRelationCommand extends AbstractCommand implements Relational
+class RemoveRelationCommand extends AbstractCommand implements Instantiable, Relational
 {
     use RelationalTrait;
+
+    /**
+     * @return RemoveRelationCommand
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(RemoveRelationCommand::class);
+    }
 
     /**
      * @param EntityReference $subject
      * @param PropertyReference $relation
      * @return RemoveRelationCommand
      */
-    public static function instance(EntityReference $subject, PropertyReference $relation)
+    public static function create(EntityReference $subject, PropertyReference $relation)
     {
-        $command = GeneralUtility::makeInstance(RemoveRelationCommand::class);
+        $command = static::instance();
         $command->setSubject($subject);
         $command->setRelation($relation);
         return $command;

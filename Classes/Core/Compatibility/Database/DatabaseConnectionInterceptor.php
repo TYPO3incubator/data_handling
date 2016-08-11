@@ -28,10 +28,10 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
         if (!GenericService::instance()->isSystemInternal($table)) {
             $reference = EntityReference::create($table);
             $this->emitRecordEvent(
-                Generic\CreatedEvent::instance($reference)
+                Generic\CreatedEvent::create($reference)
             );
             $this->emitRecordEvent(
-                Generic\ChangedEvent::instance($reference, $fields_values)
+                Generic\ChangedEvent::create($reference, $fields_values)
             );
             $fields_values[Common::FIELD_UUID] = $reference->getUuid();
         }
@@ -46,10 +46,10 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
                 $reference = EntityReference::create($table);
                 $fieldValues = array_combine($fields, $row);
                 $this->emitRecordEvent(
-                    Generic\CreatedEvent::instance($reference)
+                    Generic\CreatedEvent::create($reference)
                 );
                 $this->emitRecordEvent(
-                    Generic\ChangedEvent::instance($reference, $fieldValues)
+                    Generic\ChangedEvent::create($reference, $fieldValues)
                 );
                 $rows[$index][] = $reference->getUuid();
             }
@@ -65,11 +65,11 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
             foreach ($this->determineReferences($table, $where) as $reference) {
                 if (!GenericService::instance()->isDeleteCommand($table, $fields_values)) {
                     $this->emitRecordEvent(
-                        Generic\ChangedEvent::instance($reference, $fields_values)
+                        Generic\ChangedEvent::create($reference, $fields_values)
                     );
                 } else {
                     $this->emitRecordEvent(
-                        Generic\DeletedEvent::instance($reference)
+                        Generic\DeletedEvent::create($reference)
                     );
                 }
             }
@@ -83,7 +83,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
         if (!GenericService::instance()->isSystemInternal($table)) {
             foreach ($this->determineReferences($table, $where) as $reference) {
                 $this->emitRecordEvent(
-                    Generic\PurgedEvent::instance($reference)
+                    Generic\PurgedEvent::create($reference)
                 );
             }
         }

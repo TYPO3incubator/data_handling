@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
  */
 
 use Ramsey\Uuid\Uuid;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Type\MicroDateTime;
 
 abstract class AbstractEvent

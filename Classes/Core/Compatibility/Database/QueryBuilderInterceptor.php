@@ -34,10 +34,10 @@ class QueryBuilderInterceptor extends QueryBuilder
                 $reference = EntityReference::create($tableName);
                 $values = $this->determineValues();
                 $this->emitRecordEvent(
-                    Generic\CreatedEvent::instance($reference)
+                    Generic\CreatedEvent::create($reference)
                 );
                 $this->emitRecordEvent(
-                    Generic\ChangedEvent::instance($reference, $values)
+                    Generic\ChangedEvent::create($reference, $values)
                 );
                 $this->set(Common::FIELD_UUID, $reference->getUuid());
             }
@@ -49,11 +49,11 @@ class QueryBuilderInterceptor extends QueryBuilder
                     $values = $this->determineValues();
                     if (!GenericService::instance()->isDeleteCommand($tableName, $values)) {
                         $this->emitRecordEvent(
-                            Generic\ChangedEvent::instance($reference, $values)
+                            Generic\ChangedEvent::create($reference, $values)
                         );
                     } else {
                         $this->emitRecordEvent(
-                            Generic\DeletedEvent::instance($reference)
+                            Generic\DeletedEvent::create($reference)
                         );
                     }
                 }
@@ -64,7 +64,7 @@ class QueryBuilderInterceptor extends QueryBuilder
             if (!GenericService::instance()->isSystemInternal($tableName)) {
                 foreach ($this->determineReferences() as $reference) {
                     $this->emitRecordEvent(
-                        Generic\PurgedEvent::instance($reference)
+                        Generic\PurgedEvent::create($reference)
                     );
                 }
             }

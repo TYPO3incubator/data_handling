@@ -16,16 +16,25 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class PurgedEvent extends AbstractEvent
+class PurgedEvent extends AbstractEvent implements Instantiable
 {
+    /**
+     * @return PurgedEvent
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(PurgedEvent::class);
+    }
+
     /**
      * @param EntityReference $subject
      * @return PurgedEvent
      */
-    public static function instance(EntityReference $subject)
+    public static function create(EntityReference $subject)
     {
-        $event = GeneralUtility::makeInstance(PurgedEvent::class);
+        $event = static::instance();
         $event->setSubject($subject);
         return $event;
     }

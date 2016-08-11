@@ -16,17 +16,26 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class ChangeCommand extends AbstractCommand
+class ChangeCommand extends AbstractCommand implements Instantiable
 {
+    /**
+     * @return ChangeCommand
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(ChangeCommand::class);
+    }
+
     /**
      * @param EntityReference $subject
      * @param array $data
      * @return ChangeCommand
      */
-    public static function instance(EntityReference $subject, array $data)
+    public static function create(EntityReference $subject, array $data)
     {
-        $command = GeneralUtility::makeInstance(ChangeCommand::class);
+        $command = static::instance();
         $command->setSubject($subject);
         $command->setData($data);
         return $command;

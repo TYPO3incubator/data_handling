@@ -18,6 +18,7 @@ use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class DatabaseConnectionInterceptor extends DatabaseConnection
@@ -102,7 +103,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
             );
         }
 
-        Generic\EventEmitter::instance()->emitRecordEvent($event);
+        EventManager::provide()->handle($event);
     }
 
     /**

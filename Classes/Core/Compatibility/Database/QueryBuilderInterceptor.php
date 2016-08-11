@@ -20,6 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class QueryBuilderInterceptor extends QueryBuilder
@@ -84,7 +85,7 @@ class QueryBuilderInterceptor extends QueryBuilder
             );
         }
 
-        Generic\EventEmitter::instance()->emitRecordEvent($event);
+        EventManager::provide()->handle($event);
     }
 
     /**

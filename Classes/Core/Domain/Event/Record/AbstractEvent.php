@@ -82,9 +82,9 @@ abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Core\Domain\Event\A
     }
 
     /**
-     * @return array
+     * @return null|array
      */
-    public function exportData(): array
+    public function exportData()
     {
         $array = [];
 
@@ -104,6 +104,10 @@ abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Core\Domain\Event\A
 
         if ($this->data !== null) {
             $array['data'] = $this->data;
+        }
+
+        if (empty($array)) {
+            $array = null;
         }
 
         return $array;

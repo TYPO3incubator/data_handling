@@ -79,7 +79,7 @@ abstract class AbstractEvent
     /**
      * @return array
      */
-    abstract public function exportData(): array;
+    abstract public function exportData();
 
     /**
      * @param array|null $metadata

@@ -41,7 +41,7 @@ abstract class AbstractEvent
 
     public function __construct()
     {
-        $this->uuid = Uuid::uuid4();
+        $this->uuid = Uuid::uuid4()->toString();
         $this->date = MicroDateTime::create('now');
     }
 

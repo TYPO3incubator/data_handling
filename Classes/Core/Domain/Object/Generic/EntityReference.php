@@ -48,7 +48,7 @@ class EntityReference implements RepresentableAsString
      */
     public static function create(string $name): EntityReference
     {
-        return static::instance()->setName($name)->setUuid(Uuid::uuid4());
+        return static::instance()->setName($name)->setUuid(Uuid::uuid4()->toString());
     }
 
     /**

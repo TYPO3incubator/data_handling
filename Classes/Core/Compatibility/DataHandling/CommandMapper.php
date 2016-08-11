@@ -201,7 +201,7 @@ class CommandMapper
             );
         } else {
             $change->setNew(true);
-            $targetStateReference->setUuid(Uuid::uuid4());
+            $targetStateReference->setUuid(Uuid::uuid4()->toString());
             // @todo Check whether NEW-id is defined already and throw exception
             $this->scope->newChangesMap[$targetStateReference->getUid()] = $targetStateReference->getUuid();
 

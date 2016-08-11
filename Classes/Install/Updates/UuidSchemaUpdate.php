@@ -85,7 +85,7 @@ class UuidSchemaUpdate extends AbstractUpdate
                 $updateQueryBuilder = $this->getQueryBuilderForTable($tableName);
                 $updateQueryBuilder
                     ->update($tableName)
-                    ->set(Common::FIELD_UUID, Uuid::uuid4())
+                    ->set(Common::FIELD_UUID, Uuid::uuid4()->toString())
                     ->where($updateQueryBuilder->expr()->eq('uid', $row['uid']))
                     ->execute();
                 $databaseQueries[] = $updateQueryBuilder->getSQL();

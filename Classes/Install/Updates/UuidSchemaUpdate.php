@@ -24,6 +24,7 @@ use TYPO3\CMS\Install\Updates\AbstractUpdate;
 
 /**
  * Fills generated uuid columns in schema
+ * @deprecated Is processed using events in EventInitializationUpdate
  */
 class UuidSchemaUpdate extends AbstractUpdate
 {

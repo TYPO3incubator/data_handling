@@ -71,6 +71,15 @@ class EntityReference implements RepresentableAsString
         return $this->name . ':' . ($this->uuid ?? $this->uid ?? uniqid('none'));
     }
 
+    public function __toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'uuid' => $this->uuid,
+            'uid' => $this->uid,
+        ];
+    }
+
     /**
      * @return string
      */
@@ -85,6 +94,12 @@ class EntityReference implements RepresentableAsString
         return $this;
     }
 
+    public function unsetUid(): EntityReference
+    {
+        unset($this->uid);
+        return $this;
+    }
+
     /**
      * @return string
      */
@@ -96,6 +111,12 @@ class EntityReference implements RepresentableAsString
     public function setUuid(string $uuid): EntityReference
     {
         $this->uuid = $uuid;
+        return $this;
+    }
+
+    public function unsetUuid(): EntityReference
+    {
+        unset($this->uuid);
         return $this;
     }
 

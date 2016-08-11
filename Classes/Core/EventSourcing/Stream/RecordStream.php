@@ -14,15 +14,64 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class RecordStream extends AbstractStream
+class RecordStream extends AbstractStream implements Instantiable
 {
-    public function emit(AbstractEvent $event): AbstractStream
+    /**
+     * @var RecordStream[]
+     */
+    static protected $streams = [];
+
+    /**
+     * @return RecordStream
+     */
+    static public function instance()
     {
+        return GeneralUtility::makeInstance(RecordStream::class);
     }
 
-    public function subscribe(callable $handler)
+    /**
+     * @param string $name
+     * @return RecordStream
+     */
+    public function setName(string $name) {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @param AbstractEvent|Record\AbstractEvent $event
+     * @return RecordStream
+     */
+    public function publish(AbstractEvent $event)
     {
+        if ($event instanceof Storable) {
+            EventStore::instance()->append($this->name, $event);
+        }
+        foreach ($this->consumers as $consumer) {
+            call_user_func($consumer, $event);
+        }
+        return $this;
+    }
+
+    /**
+     * @param callable $consumer
+     * @return RecordStream
+     */
+    public function subscribe(callable $consumer)
+    {
+        if (!is_callable($consumer)) {
+            throw new \RuntimeException('Consumer is not callable', 1470853146);
+        }
+        if (!in_array($consumer, $this->consumers, true)) {
+            $this->consumers[] = $consumer;
+        }
+        return $this;
     }
 }

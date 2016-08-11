@@ -18,6 +18,31 @@ use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
 abstract class AbstractStream
 {
-    abstract public function emit(AbstractEvent $event): AbstractStream;
+    /**
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @var callable[]
+     */
+    protected $consumers = [];
+
+    /**
+     * @param string $name
+     * @return AbstractStream
+     */
+    abstract public function setName(string $name);
+
+    /**
+     * @param AbstractEvent $event
+     * @return AbstractStream
+     */
+    abstract public function publish(AbstractEvent $event);
+
+    /**
+     * @param callable $handler
+     * @return AbstractStream
+     */
     abstract public function subscribe(callable $handler);
 }

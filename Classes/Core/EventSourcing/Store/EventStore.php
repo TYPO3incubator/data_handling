@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\DriverInterface;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
 
@@ -42,6 +43,10 @@ class EventStore implements SingletonInterface
 
     public function append($streamName, AbstractEvent $event, $expectedVersion = null)
     {
+        if (!$event instanceof Storable) {
+            throw new \RuntimeException('Event "' . get_class($event) . '" cannot be stored', 1470871139);
+        }
+
         $this->driver->append($streamName, $event);
     }
 

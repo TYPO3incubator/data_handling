@@ -42,6 +42,14 @@ class PropertyReference implements RepresentableAsString
         return $this->entityReference->__toString() . ':' . $this->name;
     }
 
+    public function __toArray(): array
+    {
+        return [
+            'entity' => $this->entityReference->__toArray(),
+            'name' => $this->name
+        ];
+    }
+
     public function getEntityReference(): EntityReference
     {
         return $this->entityReference;

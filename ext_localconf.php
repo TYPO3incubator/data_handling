@@ -25,11 +25,21 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\DatabaseC
  */
 
 // create initial uuid values
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class]
-    = \TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class;
+//$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class]
+//    = \TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate::class]
+    = \TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate::class;
 
 // integration: hooks & slots
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ac3c06f089776446875c4957a7f35a56'] =
     \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ac3c06f089776446875c4957a7f35a56'] =
     \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
+
+// bind stream, listening to all generic events
+\TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager::provide()->bindStream(
+    \TYPO3\CMS\DataHandling\Core\EventSourcing\StreamManager::provide()->provideStream(
+        'generic-redord', \TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\RecordStream::class
+    ),
+    \TYPO3\CMS\DataHandling\Core\Domain\Event\Record\AbstractEvent::class
+);

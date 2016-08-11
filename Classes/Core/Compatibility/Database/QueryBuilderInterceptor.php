@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
@@ -33,10 +33,10 @@ class QueryBuilderInterceptor extends QueryBuilder
                 $reference = EntityReference::create($tableName);
                 $values = $this->determineValues();
                 $this->emitRecordEvent(
-                    Record\CreatedEvent::instance($reference)
+                    Generic\CreatedEvent::instance($reference)
                 );
                 $this->emitRecordEvent(
-                    Record\ChangedEvent::instance($reference, $values)
+                    Generic\ChangedEvent::instance($reference, $values)
                 );
                 $this->set(Common::FIELD_UUID, $reference->getUuid());
             }
@@ -48,11 +48,11 @@ class QueryBuilderInterceptor extends QueryBuilder
                     $values = $this->determineValues();
                     if (!GenericService::instance()->isDeleteCommand($tableName, $values)) {
                         $this->emitRecordEvent(
-                            Record\ChangedEvent::instance($reference, $values)
+                            Generic\ChangedEvent::instance($reference, $values)
                         );
                     } else {
                         $this->emitRecordEvent(
-                            Record\DeletedEvent::instance($reference)
+                            Generic\DeletedEvent::instance($reference)
                         );
                     }
                 }
@@ -63,7 +63,7 @@ class QueryBuilderInterceptor extends QueryBuilder
             if (!GenericService::instance()->isSystemInternal($tableName)) {
                 foreach ($this->determineReferences() as $reference) {
                     $this->emitRecordEvent(
-                        Record\PurgedEvent::instance($reference)
+                        Generic\PurgedEvent::instance($reference)
                     );
                 }
             }
@@ -72,7 +72,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         return parent::execute();
     }
 
-    protected function emitRecordEvent(Record\AbstractEvent $event)
+    protected function emitRecordEvent(Generic\AbstractEvent $event)
     {
         $metadata = ['trigger' => QueryBuilderInterceptor::class];
 
@@ -84,7 +84,7 @@ class QueryBuilderInterceptor extends QueryBuilder
             );
         }
 
-        Record\EventEmitter::instance()->emitRecordEvent($event);
+        Generic\EventEmitter::instance()->emitRecordEvent($event);
     }
 
     /**

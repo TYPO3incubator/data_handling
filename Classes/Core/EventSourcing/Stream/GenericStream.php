@@ -16,30 +16,30 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class RecordStream extends AbstractStream implements Instantiable
+class GenericStream extends AbstractStream implements Instantiable
 {
     /**
-     * @var RecordStream[]
+     * @var GenericStream[]
      */
     static protected $streams = [];
 
     /**
-     * @return RecordStream
+     * @return GenericStream
      */
     static public function instance()
     {
-        return GeneralUtility::makeInstance(RecordStream::class);
+        return GeneralUtility::makeInstance(GenericStream::class);
     }
 
     /**
      * @param string $name
-     * @return RecordStream
+     * @return GenericStream
      */
     public function setName(string $name) {
         $this->name = $name;
@@ -47,8 +47,8 @@ class RecordStream extends AbstractStream implements Instantiable
     }
 
     /**
-     * @param AbstractEvent|Record\AbstractEvent $event
-     * @return RecordStream
+     * @param AbstractEvent|Generic\AbstractEvent $event
+     * @return GenericStream
      */
     public function publish(AbstractEvent $event)
     {
@@ -66,7 +66,7 @@ class RecordStream extends AbstractStream implements Instantiable
 
     /**
      * @param callable $consumer
-     * @return RecordStream
+     * @return GenericStream
      */
     public function subscribe(callable $consumer)
     {
@@ -80,10 +80,10 @@ class RecordStream extends AbstractStream implements Instantiable
     }
 
     /**
-     * @param Record\AbstractEvent $event
+     * @param Generic\AbstractEvent $event
      * @return string
      */
-    protected function determineStreamName(Record\AbstractEvent $event): string
+    protected function determineStreamName(Generic\AbstractEvent $event): string
     {
         $streamName = $this->name;
 

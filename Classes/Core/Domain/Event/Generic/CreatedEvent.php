@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,17 +16,21 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 
-class PurgedEvent extends AbstractEvent
+class CreatedEvent extends AbstractEvent implements Identifiable
 {
+    use IdentifiableTrait;
+
     /**
-     * @param EntityReference $subject
-     * @return PurgedEvent
+     * @param EntityReference $identity
+     * @return CreatedEvent
      */
-    public static function instance(EntityReference $subject)
+    public static function instance(EntityReference $identity)
     {
-        $event = GeneralUtility::makeInstance(PurgedEvent::class);
-        $event->setSubject($subject);
+        $event = GeneralUtility::makeInstance(CreatedEvent::class);
+        $event->setIdentity($identity);
         return $event;
     }
 }

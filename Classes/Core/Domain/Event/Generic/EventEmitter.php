@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.

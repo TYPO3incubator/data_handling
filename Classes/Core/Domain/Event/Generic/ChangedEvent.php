@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -17,16 +17,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 
-class DeletedEvent extends AbstractEvent
+class ChangedEvent extends AbstractEvent
 {
     /**
      * @param EntityReference $subject
-     * @return DeletedEvent
+     * @param array $data
+     * @return ChangedEvent
      */
-    public static function instance(EntityReference $subject)
+    public static function instance(EntityReference $subject, array $data)
     {
-        $event = GeneralUtility::makeInstance(DeletedEvent::class);
+        $event = GeneralUtility::makeInstance(ChangedEvent::class);
         $event->setSubject($subject);
+        $event->setData($data);
         return $event;
     }
 }

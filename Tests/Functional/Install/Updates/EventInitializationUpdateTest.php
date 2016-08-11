@@ -16,9 +16,9 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Install\Updates;
 
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\AbstractDataHandlerActionTestCase;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\RecordStream;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\StreamManager;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
@@ -47,7 +47,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
     protected $update;
 
     /**
-     * @var RecordStream
+     * @var GenericStream
      */
     protected $stream;
 
@@ -64,7 +64,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
         $this->importScenarioDataSet('LiveDefaultElements');
 
         $this->update = EventInitializationUpdate::instance();
-        $this->stream = StreamManager::provide()->provideStream('generic-record', RecordStream::class);
+        $this->stream = StreamManager::provide()->provideStream('generic', GenericStream::class);
 
         EventManager::provide()->bindStream($this->stream);
     }
@@ -97,7 +97,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
         $metadataUpgradeKey = 'metadata.' . EventInitializationService::KEY_UPGRADE . '.uid';
 
         $this->expectedEvents = [
-            Record\CreatedEvent::class => [
+            Generic\CreatedEvent::class => [
                 array_merge($baseCreatedExpectation, [
                     'identity.name' => 'pages',
                     $metadataUpgradeKey => 1,
@@ -131,7 +131,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
                     $metadataUpgradeKey => 300,
                 ]),
             ],
-            Record\ChangedEvent::class => [
+            Generic\ChangedEvent::class => [
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'pages',
                     'data.title' => 'FunctionalTest',

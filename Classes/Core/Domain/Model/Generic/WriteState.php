@@ -16,8 +16,8 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Generic;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic as GenericEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
@@ -68,27 +68,27 @@ class WriteState extends State
     }
 
     /**
-     * @param Generic\CreateCommand $command
+     * @param GenericCommand\CreateCommand $command
      * @return WriteState
      */
-    public function handleCreateCommand(Generic\CreateCommand $command)
+    public function handleCreateCommand(GenericCommand\CreateCommand $command)
     {
         $this->reference = $command->getIdentity();
         EventManager::provide()->handle(
-            Record\CreatedEvent::fromCommand($command)
+            GenericEvent\CreatedEvent::fromCommand($command)
         );
         return $this;
     }
 
     /**
-     * @param Generic\ChangeCommand $command
+     * @param GenericCommand\ChangeCommand $command
      * @return WriteState
      */
-    public function handleChangeCommand(Generic\ChangeCommand $command)
+    public function handleChangeCommand(GenericCommand\ChangeCommand $command)
     {
         $this->values = $command->getData();
         EventManager::provide()->handle(
-            Record\ChangedEvent::fromCommand($command)
+            GenericEvent\ChangedEvent::fromCommand($command)
         );
         return $this;
     }

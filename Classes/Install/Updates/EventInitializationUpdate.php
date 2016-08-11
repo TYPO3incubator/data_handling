@@ -20,10 +20,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\RecordStream;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
 use TYPO3\CMS\Install\Updates\AbstractUpdate;
 
@@ -78,7 +78,7 @@ class EventInitializationUpdate extends AbstractUpdate
      */
     public function performUpdate(array &$databaseQueries, &$customMessages)
     {
-        foreach (EventManager::provide()->findStreams(RecordStream::class) as $stream) {
+        foreach (EventManager::provide()->findStreams(GenericStream::class) as $stream) {
             $stream->subscribe(array($this, 'handleCreatedEvent'));
         }
 
@@ -115,10 +115,10 @@ class EventInitializationUpdate extends AbstractUpdate
     }
 
     /**
-     * @param Record\AbstractEvent $event
+     * @param Generic\AbstractEvent $event
      */
-    public function handleCreatedEvent(Record\AbstractEvent $event) {
-        if (!($event instanceof Record\CreatedEvent)) {
+    public function handleCreatedEvent(Generic\AbstractEvent $event) {
+        if (!($event instanceof Generic\CreatedEvent)) {
             return;
         }
 

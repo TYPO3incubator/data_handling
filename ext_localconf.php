@@ -25,8 +25,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\DatabaseC
  */
 
 // create initial uuid values
-//$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class]
-//    = \TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'][\TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate::class]
     = \TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate::class;
 

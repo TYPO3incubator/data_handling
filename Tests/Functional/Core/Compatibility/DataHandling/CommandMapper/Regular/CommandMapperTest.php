@@ -18,10 +18,9 @@ use TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
-use TYPO3\CMS\DataHandling\Install\Updates\UuidSchemaUpdate;
+use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandManagerFixture;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class CommandMapperTest extends AbstractActionTestCase
 {
@@ -41,7 +40,7 @@ class CommandMapperTest extends AbstractActionTestCase
     {
         parent::setUp();
 
-        UuidSchemaUpdate::instance()->performUpdate($queriesReference = [], $messagesReference = []);
+        EventInitializationUpdate::instance()->performUpdate($queriesReference = [], $messagesReference = []);
 
         $this->commandManager = new CommandManagerFixture();
 

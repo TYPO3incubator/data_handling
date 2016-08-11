@@ -22,4 +22,9 @@ interface Relational
      * @return null|PropertyReference
      */
     public function getRelation();
+
+    /**
+     * @param PropertyReference $relation
+     */
+    public function setRelation(PropertyReference $relation);
 }

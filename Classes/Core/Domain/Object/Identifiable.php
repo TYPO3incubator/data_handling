@@ -22,4 +22,9 @@ interface Identifiable
      * @return null|EntityReference
      */
     public function getIdentity();
+
+    /**
+     * @param EntityReference $reference
+     */
+    public function setIdentity(EntityReference $reference);
 }

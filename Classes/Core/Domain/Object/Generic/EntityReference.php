@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
 
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Object\RepresentableAsString;
 
 class EntityReference implements RepresentableAsString
@@ -26,6 +27,19 @@ class EntityReference implements RepresentableAsString
     public static function instance()
     {
         return GeneralUtility::makeInstance(EntityReference::class);
+    }
+
+    /**
+     * @param string $name
+     * @param array $record
+     * @return EntityReference
+     */
+    public static function fromRecord(string $name, array $record): EntityReference
+    {
+        if (empty($record['uid']) && empty($record[Common::FIELD_UUID])) {
+            throw new \RuntimeException('Both uid and uuid are required', 1470910287);
+        }
+        return static::instance()->setName($name)->setUid($record['uid'])->setUuid($record[Common::FIELD_UUID]);
     }
 
     /**

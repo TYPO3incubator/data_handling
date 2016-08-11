@@ -15,14 +15,20 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 
 class ChangedEvent extends AbstractEvent
 {
     /**
+     * @param EntityReference $subject
+     * @param array $data
      * @return ChangedEvent
      */
-    public static function instance()
+    public static function instance(EntityReference $subject, array $data)
     {
-        return GeneralUtility::makeInstance(ChangedEvent::class);
+        $event = GeneralUtility::makeInstance(ChangedEvent::class);
+        $event->setSubject($subject);
+        $event->setData($data);
+        return $event;
     }
 }

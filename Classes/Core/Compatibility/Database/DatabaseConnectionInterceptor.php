@@ -15,9 +15,9 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\Database;
  */
 
 use TYPO3\CMS\Core\Database\DatabaseConnection;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record\EventEmitter;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record\EventFactory;
+use TYPO3\CMS\DataHandling\Common;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class DatabaseConnectionInterceptor extends DatabaseConnection
@@ -25,20 +25,34 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
     public function exec_INSERTquery($table, $fields_values, $no_quote_fields = false)
     {
         if (!GenericService::instance()->isSystemInternal($table)) {
-            $event = EventFactory::instance()->createCreatedEvent($table, $fields_values);
-            $this->emitRecordEvent($event);
+            $reference = EntityReference::create($table);
+            $this->emitRecordEvent(
+                Record\CreatedEvent::instance($reference)
+            );
+            $this->emitRecordEvent(
+                Record\ChangedEvent::instance($reference, $fields_values)
+            );
+            $fields_values[Common::FIELD_UUID] = $reference->getUuid();
         }
+
         return parent::exec_INSERTquery($table, $fields_values, $no_quote_fields);
     }
 
     public function exec_INSERTmultipleRows($table, array $fields, array $rows, $no_quote_fields = false)
     {
         if (!GenericService::instance()->isSystemInternal($table)) {
-            foreach ($rows as $row) {
+            foreach ($rows as $index => $row) {
+                $reference = EntityReference::create($table);
                 $fieldValues = array_combine($fields, $row);
-                $event = EventFactory::instance()->createCreatedEvent($table, $fieldValues);
-                $this->emitRecordEvent($event);
+                $this->emitRecordEvent(
+                    Record\CreatedEvent::instance($reference)
+                );
+                $this->emitRecordEvent(
+                    Record\ChangedEvent::instance($reference, $fieldValues)
+                );
+                $rows[$index][] = $reference->getUuid();
             }
+            $fields[] = Common::FIELD_UUID;
         }
 
         return parent::exec_INSERTmultipleRows($table, $fields, $rows, $no_quote_fields);
@@ -47,32 +61,36 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
     public function exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields = false)
     {
         if (!GenericService::instance()->isSystemInternal($table)) {
-            $identifier = $this->determineIdentifier($table, $where);
-            if (!empty($identifier)) {
+            foreach ($this->determineReferences($table, $where) as $reference) {
                 if (!GenericService::instance()->isDeleteCommand($table, $fields_values)) {
-                    $event = EventFactory::instance()->createChangedEvent($table, $fields_values, $identifier);
+                    $this->emitRecordEvent(
+                        Record\ChangedEvent::instance($reference, $fields_values)
+                    );
                 } else {
-                    $event = EventFactory::instance()->createDeletedEvent($table, $fields_values, $identifier);
+                    $this->emitRecordEvent(
+                        Record\DeletedEvent::instance($reference)
+                    );
                 }
-                $this->emitRecordEvent($event);
             }
         }
+
         return parent::exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields);
     }
 
     public function exec_DELETEquery($table, $where)
     {
         if (!GenericService::instance()->isSystemInternal($table)) {
-            $identifier = $this->determineIdentifier($table, $where);
-            if (!empty($identifier)) {
-                $event = EventFactory::instance()->createPurgeEvent($table, $identifier);
-                $this->emitRecordEvent($event);
+            foreach ($this->determineReferences($table, $where) as $reference) {
+                $this->emitRecordEvent(
+                    Record\PurgedEvent::instance($reference)
+                );
             }
         }
+
         return parent::exec_DELETEquery($table, $where);
     }
 
-    protected function emitRecordEvent(AbstractEvent $event)
+    protected function emitRecordEvent(Record\AbstractEvent $event)
     {
         $metadata = ['trigger' => DatabaseConnectionInterceptor::class];
 
@@ -84,20 +102,21 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
             );
         }
 
-        EventEmitter::instance()->emitRecordEvent($event);
+        Record\EventEmitter::instance()->emitRecordEvent($event);
     }
 
     /**
      * @param string $tableName
      * @param string $whereClause
-     * @return null|int
+     * @return EntityReference[]
      */
-    protected function determineIdentifier($tableName, $whereClause)
+    protected function determineReferences($tableName, $whereClause): array
     {
-        $rows = $this->exec_SELECTgetRows('*', $tableName, $whereClause);
-        if (count($rows) !== 1 || empty($rows[0]['uid'])) {
-            return null;
+        $references = [];
+        $rows = $this->exec_SELECTgetRows('uid,' . Common::FIELD_UUID, $tableName, $whereClause);
+        foreach ($rows as $row) {
+            $references[] = EntityReference::fromRecord($tableName, $row);
         }
-        return (int)$rows[0]['uid'];
+        return $references;
     }
 }

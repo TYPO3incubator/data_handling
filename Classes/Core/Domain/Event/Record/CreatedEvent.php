@@ -15,14 +15,23 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 
-class CreatedEvent extends AbstractEvent
+class CreatedEvent extends AbstractEvent implements Storable, Identifiable
 {
+    use IdentifiableTrait;
+
     /**
+     * @param EntityReference $identity
      * @return CreatedEvent
      */
-    public static function instance()
+    public static function instance(EntityReference $identity)
     {
-        return GeneralUtility::makeInstance(CreatedEvent::class);
+        $event = GeneralUtility::makeInstance(CreatedEvent::class);
+        $event->setIdentity($identity);
+        return $event;
     }
 }

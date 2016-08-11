@@ -15,14 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 
 class DeletedEvent extends AbstractEvent
 {
     /**
+     * @param EntityReference $subject
      * @return DeletedEvent
      */
-    public static function instance()
+    public static function instance(EntityReference $subject)
     {
-        return GeneralUtility::makeInstance(DeletedEvent::class);
+        $event = GeneralUtility::makeInstance(DeletedEvent::class);
+        $event->setSubject($subject);
+        return $event;
     }
 }

@@ -17,9 +17,9 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\Database;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record\EventEmitter;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Record\EventFactory;
+use TYPO3\CMS\DataHandling\Common;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class QueryBuilderInterceptor extends QueryBuilder
@@ -30,33 +30,41 @@ class QueryBuilderInterceptor extends QueryBuilder
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
             if (!GenericService::instance()->isSystemInternal($tableName)) {
+                $reference = EntityReference::create($tableName);
                 $values = $this->determineValues();
-                $event = EventFactory::instance()->createCreatedEvent($tableName, $values);
-                $this->emitRecordEvent($event);
+                $this->emitRecordEvent(
+                    Record\CreatedEvent::instance($reference)
+                );
+                $this->emitRecordEvent(
+                    Record\ChangedEvent::instance($reference, $values)
+                );
+                $this->set(Common::FIELD_UUID, $reference->getUuid());
             }
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
             if (!GenericService::instance()->isSystemInternal($tableName)) {
-                $identifier = $this->determineIdentifier();
-                if (!empty($identifier)) {
+                foreach ($this->determineReferences() as $reference) {
                     $values = $this->determineValues();
                     if (!GenericService::instance()->isDeleteCommand($tableName, $values)) {
-                        $event = EventFactory::instance()->createChangedEvent($tableName, $values, $identifier);
+                        $this->emitRecordEvent(
+                            Record\ChangedEvent::instance($reference, $values)
+                        );
                     } else {
-                        $event = EventFactory::instance()->createDeletedEvent($tableName, $values, $identifier);
+                        $this->emitRecordEvent(
+                            Record\DeletedEvent::instance($reference)
+                        );
                     }
-                    $this->emitRecordEvent($event);
                 }
             }
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::DELETE) {
             if (!GenericService::instance()->isSystemInternal($tableName)) {
-                $identifier = $this->determineIdentifier();
-                if (!empty($identifier)) {
-                    $event = EventFactory::instance()->createPurgeEvent($tableName, $identifier);
-                    $this->emitRecordEvent($event);
+                foreach ($this->determineReferences() as $reference) {
+                    $this->emitRecordEvent(
+                        Record\PurgedEvent::instance($reference)
+                    );
                 }
             }
         }
@@ -64,7 +72,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         return parent::execute();
     }
 
-    protected function emitRecordEvent(AbstractEvent $event)
+    protected function emitRecordEvent(Record\AbstractEvent $event)
     {
         $metadata = ['trigger' => QueryBuilderInterceptor::class];
 
@@ -76,7 +84,7 @@ class QueryBuilderInterceptor extends QueryBuilder
             );
         }
 
-        EventEmitter::instance()->emitRecordEvent($event);
+        Record\EventEmitter::instance()->emitRecordEvent($event);
     }
 
     /**
@@ -100,8 +108,12 @@ class QueryBuilderInterceptor extends QueryBuilder
         return $tableName;
     }
 
-    protected function determineIdentifier()
+    /**
+     * @return EntityReference[]
+     */
+    protected function determineReferences(): array
     {
+        $references = [];
         $tableName = $this->determineTableName();
         $where = $this->concreteQueryBuilder->getQueryPart('where');
 
@@ -110,17 +122,17 @@ class QueryBuilderInterceptor extends QueryBuilder
             ->getQueryBuilderForTable($tableName);
         $queryBuilder->getRestrictions()
             ->removeAll();
-        $rows = $queryBuilder
-            ->select('*')
+        $statement = $queryBuilder
+            ->select('uid', Common::FIELD_UUID)
             ->from($tableName)
             ->where($where)
-            ->execute()
-            ->fetchAll();
+            ->execute();
 
-        if (count($rows) !== 1 || empty($rows[0]['uid'])) {
-            return null;
+        while ($row = $statement->fetch()) {
+            $references[] = EntityReference::fromRecord($tableName, $row);
         }
-        return (int)$rows[0]['uid'];
+
+        return $references;
     }
 
     /**

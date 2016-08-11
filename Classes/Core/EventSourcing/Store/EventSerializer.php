@@ -16,6 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
+/**
+ * @deprecated Not used
+ */
 class EventSerializer
 {
     public function normalize(AbstractEvent $event): array

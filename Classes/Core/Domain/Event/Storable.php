@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,17 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
-
-interface Sequenceable
+interface Storable
 {
-    /**
-     * @return null|AbstractSequence
-     */
-    public function getSequence();
-
-    /**
-     * @param AbstractSequence $sequence
-     */
-    public function setSequence(AbstractSequence $sequence);
 }

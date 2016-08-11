@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\Uuid;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
@@ -30,9 +28,14 @@ class SqlDriver implements DriverInterface
 
     public function append(string $streamName, AbstractEvent $event)
     {
-        $rawEvent = $event->toArray();
-        $rawEvent['event_stream'] = $streamName;
-        $rawEvent['event_id'] = Uuid::uuid4();
+        $rawEvent = [
+            'event_stream' => '',
+            'event_uuid' => $event->getUuid(),
+            'event_name' => get_class($event),
+            'event_date' => $event->getDate()->format('Y-m-d H:i:s.u'),
+            'data' => $event->exportData(),
+            'metadata' => $event->getMetadata(),
+        ];
 
         ConnectionPool::instance()
             ->getOriginConnection()

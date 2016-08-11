@@ -15,49 +15,98 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
  */
 
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
+
 abstract class AbstractEvent extends \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent
 {
     /**
-     * @var string
+     * @param AbstractCommand $command
+     * @return AbstractEvent
      */
-    protected $tableName;
+    static public function fromCommand(AbstractCommand $command)
+    {
+        $event = GeneralUtility::makeInstance(static::class);
+
+        if ($command->getSubject() !== null) {
+            $event->setSubject($command->getSubject());
+        }
+
+        if ($command instanceof Identifiable && $event instanceof Identifiable) {
+            $event->setIdentity($command->getIdentity());
+        }
+        if ($command instanceof Relational && $event instanceof Relational) {
+            $event->setRelation($command->getRelation());
+        }
+        if ($command instanceof Sequenceable && $event instanceof Sequenceable) {
+            $event->setSequence($command->getSequence());
+        }
+
+        if ($command->getData() !== null) {
+            $event->setData($command->getData());
+        }
+        if ($command->getMetadata() !== null) {
+            $event->setMetadata($command->getMetadata());
+        }
+
+        return $event;
+    }
 
     /**
-     * @var int
+     * Subject the event was applied to.
+     *
+     * @var EntityReference
      */
-    protected $identifier;
+    protected $subject;
 
-    public function getTableName()
+    /**
+     * @return null|EntityReference
+     */
+    public function getSubject()
     {
-        return $this->tableName;
+        return $this->subject;
     }
 
     /**
-     * @param string $tableName
+     * @param EntityReference $subject
+     * @return AbstractEvent
      */
-    public function setTableName(string $tableName)
+    public function setSubject(EntityReference $subject)
     {
-        $this->tableName = $tableName;
+        $this->subject = $subject;
+        return $this;
     }
 
-    public function getIdentifier()
+    /**
+     * @return array
+     */
+    public function exportData(): array
     {
-        return $this->identifier;
-    }
+        $array = [];
 
-    public function setIdentifier(int $identifier)
-    {
-        $this->identifier = $identifier;
-    }
+        if ($this->subject !== null) {
+            $array['subject'] = $this->subject->__toArray();
+        }
 
-    public function toArray(): array
-    {
-        return [
-            'event_name' => $this->getEventName(),
-            'event_date' => $this->getEventDate()->format('Y-m-d H:i:s.u'),
-            'data' => json_encode($this->getData()),
-            'metadata' => json_encode($this->getMetadata()),
-        ];
+        if ($this instanceof IdentifiableTrait) {
+            $array['identity'] = $this->getIdentity()->__toArray();
+        }
+        if ($this instanceof RelationalTrait) {
+            $array['relation'] = $this->getRelation()->__toArray();
+        }
+        if ($this instanceof SequenceableTrait) {
+            $array['sequence'] = $this->getSequence()->__toArray();
+        }
+
+        if ($this->data !== null) {
+            $array['data'] = $this->data;
+        }
+
+        return $array;
     }
 
     /**

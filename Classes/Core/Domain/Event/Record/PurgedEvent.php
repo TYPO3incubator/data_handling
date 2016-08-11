@@ -15,14 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Record;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 
 class PurgedEvent extends AbstractEvent
 {
     /**
+     * @param EntityReference $subject
      * @return PurgedEvent
      */
-    public static function instance()
+    public static function instance(EntityReference $subject)
     {
-        return GeneralUtility::makeInstance(PurgedEvent::class);
+        $event = GeneralUtility::makeInstance(PurgedEvent::class);
+        $event->setSubject($subject);
+        return $event;
     }
 }

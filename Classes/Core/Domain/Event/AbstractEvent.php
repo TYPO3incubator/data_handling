@@ -14,14 +14,20 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\DataHandling\Core\Type\MicroDateTime;
 
 abstract class AbstractEvent
 {
     /**
+     * @var string
+     */
+    protected $uuid;
+
+    /**
      * @var \DateTime
      */
-    protected $eventDate;
+    protected $date;
 
     /**
      * @var array|null
@@ -35,33 +41,61 @@ abstract class AbstractEvent
 
     public function __construct()
     {
-        $this->eventDate = MicroDateTime::create('now');
+        $this->uuid = Uuid::uuid4();
+        $this->date = MicroDateTime::create('now');
     }
 
-    public function getEventDate()
+    public function getUuid(): string
     {
-        return $this->eventDate;
+        return $this->uuid;
     }
 
+    /**
+     * @return \DateTime
+     */
+    public function getDate(): \DateTime
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param array|null $data
+     * @return AbstractEvent
+     */
     public function setData(array $data = null)
     {
         $this->data = $data;
+        return $this;
     }
 
+    /**
+     * @return array|null
+     */
     public function getData()
     {
         return $this->data;
     }
 
+    /**
+     * @return array
+     */
+    abstract public function exportData(): array;
+
+    /**
+     * @param array|null $metadata
+     * @return AbstractEvent
+     */
     public function setMetadata(array $metadata = null)
     {
         $this->metadata = $metadata;
+        return $this;
     }
 
+    /**
+     * @return array|null
+     */
     public function getMetadata()
     {
         return $this->metadata;
     }
-
-    abstract public function toArray(): array;
 }

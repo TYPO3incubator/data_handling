@@ -148,7 +148,7 @@ class EventInitializationUpdate extends AbstractUpdate
             ->select('uid')
             ->from('sys_language')
             ->execute();
-        $languages = $languages + array_column($statement->fetchAll(), 'uid');
+        $languages = array_merge($languages, array_column($statement->fetchAll(), 'uid'));
         return $languages;
     }
 
@@ -161,7 +161,7 @@ class EventInitializationUpdate extends AbstractUpdate
                 ->select('uid')
                 ->from('sys_language')
                 ->execute();
-            $workspaces = $workspaces + array_column($statement->fetchAll(), 'uid');
+            $workspaces = array_merge($workspaces, array_column($statement->fetchAll(), 'uid'));
         }
 
         return $workspaces;

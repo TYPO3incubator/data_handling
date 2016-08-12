@@ -53,9 +53,6 @@ class GenericStream extends AbstractStream implements Instantiable
      */
     public function publish(AbstractEvent $event)
     {
-        if ($event instanceof Storable) {
-            EventStorePool::provide()->getDefault()->append($this->name, $event);
-        }
         foreach ($this->consumers as $consumer) {
             call_user_func($consumer, $event);
         }
@@ -68,9 +65,6 @@ class GenericStream extends AbstractStream implements Instantiable
      */
     public function subscribe(callable $consumer)
     {
-        if (!is_callable($consumer)) {
-            throw new \RuntimeException('Consumer is not callable', 1470853146);
-        }
         if (!in_array($consumer, $this->consumers, true)) {
             $this->consumers[] = $consumer;
         }
@@ -78,10 +72,10 @@ class GenericStream extends AbstractStream implements Instantiable
     }
 
     /**
-     * @param Generic\AbstractEvent $event
+     * @param AbstractEvent|Generic\AbstractEvent $event
      * @return string
      */
-    protected function determineStreamName(Generic\AbstractEvent $event): string
+    public function determineStreamName(AbstractEvent $event): string
     {
         $streamName = $this->name;
 

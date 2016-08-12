@@ -103,7 +103,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
             );
         }
 
-        EventManager::provide()->handle($event);
+        EventManager::provide()->manage($event);
     }
 
     /**

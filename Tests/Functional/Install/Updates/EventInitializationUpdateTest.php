@@ -18,8 +18,10 @@ use TYPO3\CMS\Core\Tests\Functional\DataHandling\AbstractDataHandlerActionTestCa
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\NullDriver;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\StreamManager;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
@@ -52,6 +54,11 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
     protected $stream;
 
     /**
+     * @var string
+     */
+    protected $streamName;
+
+    /**
      * @var array
      */
     protected $expectedEvents;
@@ -63,14 +70,23 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
         $this->importScenarioDataSet('LiveDefaultPages');
         $this->importScenarioDataSet('LiveDefaultElements');
 
+        $this->streamName = uniqid('test');
         $this->update = EventInitializationUpdate::instance();
-        $this->stream = StreamManager::provide()->provideStream('generic', GenericStream::class);
+        $this->stream = GenericStream::instance();
 
-        EventManager::provide()->bindStream($this->stream);
+        // it would be possible to bind to $this->stream directly,
+        // but the path through StreamProvider is tested as well
+        EventManager::provide()->bind(
+            StreamProvider::provideFor($this->streamName)
+                ->setStream($this->stream)
+                ->setStore(EventStore::create(NullDriver::instance()))
+                ->setEventNames([AbstractEvent::class])
+        );
     }
 
     protected function tearDown()
     {
+        unset($this->streamName);
         unset($this->stream);
         unset($this->update);
         parent::tearDown();

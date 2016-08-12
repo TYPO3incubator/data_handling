@@ -85,7 +85,7 @@ class QueryBuilderInterceptor extends QueryBuilder
             );
         }
 
-        EventManager::provide()->handle($event);
+        EventManager::provide()->manage($event);
     }
 
     /**

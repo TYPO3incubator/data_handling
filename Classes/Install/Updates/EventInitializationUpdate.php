@@ -78,9 +78,10 @@ class EventInitializationUpdate extends AbstractUpdate
      */
     public function performUpdate(array &$databaseQueries, &$customMessages)
     {
-        foreach (EventManager::provide()->findStreams(GenericStream::class) as $stream) {
-            $stream->subscribe(array($this, 'handleCreatedEvent'));
-        }
+        EventManager::provide()->on(
+            EventManager::LISTEN_BEFORE,
+            array($this, 'handleCreatedEvent')
+        );
 
         $tableNames = array_keys($GLOBALS['TCA']);
         $recordTableNames = array_diff($tableNames, ['pages']);

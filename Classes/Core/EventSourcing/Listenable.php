@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
+namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,24 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-/**
- * @deprecated Not used
- */
-class EventSerializer
+interface Listenable
 {
-    public function normalize(AbstractEvent $event): array
-    {
-        return [
-            'type' => '',
-            'source' => '',
-            'timestamp' => new \DateTime(),
-            'data' => [],
-            'metadata' => [],
-        ];
-    }
+    public function on(string $type, callable $listener);
 
-    public function toArray(AbstractEvent $event): array
-    {
-
-    }
+    public function off(string $type, callable $listener);
 }

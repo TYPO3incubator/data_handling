@@ -42,10 +42,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
         )
     );
 
-// bind stream, listening to all generic events
-\TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager::provide()->bindStream(
-    \TYPO3\CMS\DataHandling\Core\EventSourcing\StreamManager::provide()->provideStream(
-        'generic', \TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream::class
-    ),
-    \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class
+// bind stream, managing generic events
+\TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager::provide()->bind(
+    \TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider::create('generic')
+        ->setStore(\TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool::provide()->getDefault())
+        ->setStream(\TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream::instance())
+        ->setEventNames([\TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class])
 );

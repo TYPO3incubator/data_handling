@@ -17,7 +17,6 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSerializer;
 
 class SqlDriver implements DriverInterface
 {

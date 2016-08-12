@@ -74,7 +74,7 @@ class WriteState extends State
     public function handleCreateCommand(GenericCommand\CreateCommand $command)
     {
         $this->reference = $command->getIdentity();
-        EventManager::provide()->handle(
+        EventManager::provide()->manage(
             GenericEvent\CreatedEvent::fromCommand($command)
         );
         return $this;
@@ -87,7 +87,7 @@ class WriteState extends State
     public function handleChangeCommand(GenericCommand\ChangeCommand $command)
     {
         $this->values = $command->getData();
-        EventManager::provide()->handle(
+        EventManager::provide()->manage(
             GenericEvent\ChangedEvent::fromCommand($command)
         );
         return $this;

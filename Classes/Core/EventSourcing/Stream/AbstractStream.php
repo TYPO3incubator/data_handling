@@ -15,8 +15,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Publishable;
 
-abstract class AbstractStream
+abstract class AbstractStream implements Publishable
 {
     /**
      * @var string
@@ -45,4 +46,10 @@ abstract class AbstractStream
      * @return AbstractStream
      */
     abstract public function subscribe(callable $handler);
+
+    /**
+     * @param AbstractEvent $event
+     * @return string
+     */
+    abstract public function determineStreamName(AbstractEvent $event): string;
 }

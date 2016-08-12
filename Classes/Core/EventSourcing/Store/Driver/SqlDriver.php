@@ -21,6 +21,8 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSerializer;
 
 class SqlDriver implements DriverInterface
 {
+    const FORMAT_DATETIME = 'Y-m-d H:i:s.u';
+
     /**
      * @return SqlDriver
      */
@@ -29,13 +31,18 @@ class SqlDriver implements DriverInterface
         return GeneralUtility::makeInstance(SqlDriver::class);
     }
 
-    public function append(string $streamName, AbstractEvent $event)
+    /**
+     * @param string $streamName
+     * @param AbstractEvent $event
+     * @return bool
+     */
+    public function append(string $streamName, AbstractEvent $event): bool
     {
         $rawEvent = [
             'event_stream' => $streamName,
             'event_uuid' => $event->getUuid(),
             'event_name' => get_class($event),
-            'event_date' => $event->getDate()->format('Y-m-d H:i:s.u'),
+            'event_date' => $event->getDate()->format(static::FORMAT_DATETIME),
             'data' => $event->exportData(),
             'metadata' => $event->getMetadata(),
         ];
@@ -48,13 +55,30 @@ class SqlDriver implements DriverInterface
             }
         }
 
-        ConnectionPool::instance()
+        $result = ConnectionPool::instance()
             ->getOriginConnection()
             ->insert('sys_event_store', $rawEvent);
+
+        return ($result > 0);
     }
 
+    /**
+     * @param string $eventStream
+     * @return SqlDriverIterator
+     */
     public function open(string $eventStream)
     {
+        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
+        $queryBuilder->getRestrictions()->removeAll();
+        $queryBuilder
+            ->from('sys_event_store')
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'event_stream',
+                    $queryBuilder->createNamedParameter($eventStream)
+                )
+            );
 
+        return SqlDriverIterator::create($queryBuilder->execute());
     }
 }

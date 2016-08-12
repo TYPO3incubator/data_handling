@@ -52,7 +52,12 @@ class EventStore
         $this->setDriver($driver);
     }
 
-    public function append($streamName, AbstractEvent $event, $expectedVersion = null)
+    /**
+     * @param string $streamName
+     * @param AbstractEvent $event
+     * @param null $expectedVersion
+     */
+    public function append(string $streamName, AbstractEvent $event, $expectedVersion = null)
     {
         if (!$event instanceof Storable) {
             throw new \RuntimeException('Event "' . get_class($event) . '" cannot be stored', 1470871139);
@@ -61,8 +66,12 @@ class EventStore
         $this->driver->append($streamName, $event);
     }
 
-    public function open($streamName)
+    /**
+     * @param string $streamName
+     * @return \Iterator
+     */
+    public function open(string $streamName)
     {
-
+        return $this->driver->open($streamName);
     }
 }

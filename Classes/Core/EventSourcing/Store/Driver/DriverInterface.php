@@ -18,6 +18,16 @@ use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
 interface DriverInterface
 {
-    public function append(string $streamName, AbstractEvent $event);
+    /**
+     * @param string $streamName
+     * @param AbstractEvent $event
+     * @return bool
+     */
+    public function append(string $streamName, AbstractEvent $event): bool;
+
+    /**
+     * @param string $eventStream
+     * @return \Iterator
+     */
     public function open(string $eventStream);
 }

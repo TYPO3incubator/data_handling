@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\DataHandling\Core\Database\Query\Restriction\LanguageRestriction;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
@@ -187,8 +188,40 @@ class EventInitializationService
         $queryBuilder->getRestrictions()
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
-            ->add(GeneralUtility::makeInstance(BackendWorkspaceRestriction::class, $this->context->getWorkspace()));
+            ->add($this->getWorkspaceRestriction())
+            ->add($this->getLanguageRestriction());
 
         return $queryBuilder;
+    }
+
+    /**
+     * @return BackendWorkspaceRestriction
+     */
+    protected function getWorkspaceRestriction()
+    {
+        if ($this->context->getWorkspace() === 0) {
+            // in live workspace, don't include overlays
+            $workspaceRestriction = GeneralUtility::makeInstance(
+                BackendWorkspaceRestriction::class,
+                $this->context->getWorkspace(),
+                false
+            );
+        } else {
+            // in a real workspace include overlays
+            $workspaceRestriction = GeneralUtility::makeInstance(
+                BackendWorkspaceRestriction::class,
+                $this->context->getWorkspace(),
+                true
+            );
+        }
+        return $workspaceRestriction;
+    }
+
+    /**
+     * @return LanguageRestriction
+     */
+    protected function getLanguageRestriction()
+    {
+        return LanguageRestriction::create($this->context->getLanguage());
     }
 }

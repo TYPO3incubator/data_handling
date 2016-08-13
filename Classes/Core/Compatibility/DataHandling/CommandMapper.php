@@ -29,6 +29,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Generic\ReadState;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga\GenericSaga;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
@@ -308,14 +309,9 @@ class CommandMapper
         // @todo lookup in context-based projection
 
         $readState = ReadState::instance();
-        $applicableReadState = array($readState, 'apply');
 
-        // use new instance, thus create instead of provideFor
-        StreamProvider::create('generic')
-            ->setStore(EventStorePool::provide()->getDefault())
-            ->setStream(GenericStream::instance())
-            ->subscribe($applicableReadState)
-            ->replay($reference->__toString());
+        GenericSaga::create('generic')
+            ->tell($readState, $reference->__toString());
 
         return $readState;
     }

@@ -124,9 +124,40 @@ class WriteState extends State
      */
     public function handleDeleteCommand(GenericCommand\DeleteCommand $command)
     {
+        // @todo Create and apply meta-state for entity
         EventManager::provide()->manage(
             GenericEvent\DeletedEvent::fromCommand($command)
         );
+        return $this;
+    }
+
+    /**
+     * @param GenericCommand\AttachRelationCommand $command
+     * @return WriteState
+     */
+    public function handleAttachRelationCommand(GenericCommand\AttachRelationCommand $command)
+    {
+        $this->attachRelation($command->getRelation());
+        return $this;
+    }
+
+    /**
+     * @param GenericCommand\RemoveRelationCommand $command
+     * @return WriteState
+     */
+    public function handleRemoveRelationCommand(GenericCommand\RemoveRelationCommand $command)
+    {
+        $this->removeRelation($command->getRelation());
+        return $this;
+    }
+
+    /**
+     * @param GenericCommand\OrderRelationsCommand $command
+     * @return WriteState
+     */
+    public function handleOrderRelationsCommand(GenericCommand\OrderRelationsCommand $command)
+    {
+        $this->orderRelations($command->getSequence()->get());
         return $this;
     }
 }

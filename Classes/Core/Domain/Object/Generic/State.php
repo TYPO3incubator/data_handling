@@ -15,6 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 
 class State
 {
@@ -139,5 +141,41 @@ class State
             }
         }
         return $relations;
+    }
+
+    /**
+     * @param PropertyReference $relation
+     */
+    protected function attachRelation(PropertyReference $relation)
+    {
+        $this->relations[] = $relation;
+    }
+
+    /**
+     * @param PropertyReference $relation
+     */
+    protected function removeRelation(PropertyReference $relation)
+    {
+        $relationIndex = array_search($relation, $this->relations, true);
+        if ($relationIndex !== false) {
+            unset($this->relations[$relationIndex]);
+        }
+    }
+
+    /**
+     * @param array $orderedRelations
+     */
+    protected function orderRelations(array $orderedRelations)
+    {
+        $relations = [];
+
+        foreach($orderedRelations as $orderedRelation) {
+            if (!in_array($orderedRelation, $this->relations, true)) {
+                throw new \RuntimeException('Cannot define order with non-existing relation', 1471101357);
+            }
+            $relations[] = $orderedRelation;
+        }
+
+        $this->relations = $relations;
     }
 }

@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
@@ -22,7 +21,7 @@ use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandManagerFixture;
 
-class CommandMapperTest extends AbstractActionTestCase
+class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase
 {
     /**
      * @var string[]

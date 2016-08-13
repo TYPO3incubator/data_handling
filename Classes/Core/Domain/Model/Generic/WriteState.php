@@ -25,7 +25,6 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 class WriteState extends State
 {
     /**
-     * @param EntityReference $reference
      * @return WriteState
      */
     public static function instance()
@@ -81,6 +80,32 @@ class WriteState extends State
     }
 
     /**
+     * @param GenericCommand\BranchCommand $command
+     * @return WriteState
+     */
+    public function handleBranchCommand(GenericCommand\BranchCommand $command)
+    {
+        $this->reference = $command->getIdentity();
+        EventManager::provide()->manage(
+            GenericEvent\BranchedEvent::fromCommand($command)
+        );
+        return $this;
+    }
+
+    /**
+     * @param GenericCommand\TranslateCommand $command
+     * @return WriteState
+     */
+    public function handleTranslateCommand(GenericCommand\TranslateCommand $command)
+    {
+        $this->reference = $command->getIdentity();
+        EventManager::provide()->manage(
+            GenericEvent\TranslatedEvent::fromCommand($command)
+        );
+        return $this;
+    }
+
+    /**
      * @param GenericCommand\ChangeCommand $command
      * @return WriteState
      */
@@ -89,6 +114,18 @@ class WriteState extends State
         $this->values = $command->getData();
         EventManager::provide()->manage(
             GenericEvent\ChangedEvent::fromCommand($command)
+        );
+        return $this;
+    }
+
+    /**
+     * @param GenericCommand\DeleteCommand $command
+     * @return WriteState
+     */
+    public function handleDeleteCommand(GenericCommand\DeleteCommand $command)
+    {
+        EventManager::provide()->manage(
+            GenericEvent\DeletedEvent::fromCommand($command)
         );
         return $this;
     }

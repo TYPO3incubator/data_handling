@@ -21,22 +21,22 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class BranchCommand extends AbstractCommand implements Instantiable, Identifiable, Derivable
+class TranslateCommand extends AbstractCommand implements Instantiable, Identifiable, Derivable
 {
     use IdentifiableTrait;
 
     /**
-     * @return BranchCommand
+     * @return TranslateCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(BranchCommand::class);
+        return GeneralUtility::makeInstance(TranslateCommand::class);
     }
 
     /**
      * @param EntityReference $subject
      * @param mixed $context
-     * @return BranchCommand
+     * @return TranslateCommand
      */
     public static function create(EntityReference $subject, $context = null)
     {

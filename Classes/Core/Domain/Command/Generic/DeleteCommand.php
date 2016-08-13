@@ -15,34 +15,27 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class BranchCommand extends AbstractCommand implements Instantiable, Identifiable, Derivable
+class DeleteCommand extends AbstractCommand implements Instantiable
 {
-    use IdentifiableTrait;
-
     /**
-     * @return BranchCommand
+     * @return DeleteCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(BranchCommand::class);
+        return GeneralUtility::makeInstance(DeleteCommand::class);
     }
 
     /**
      * @param EntityReference $subject
-     * @param mixed $context
-     * @return BranchCommand
+     * @return DeleteCommand
      */
-    public static function create(EntityReference $subject, $context = null)
+    public static function create(EntityReference $subject)
     {
         $command = static::instance();
         $command->setSubject($subject);
-        $command->setIdentity(EntityReference::create($subject->getName()));
         return $command;
     }
 }

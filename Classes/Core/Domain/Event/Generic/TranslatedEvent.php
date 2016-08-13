@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -21,28 +21,28 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
-class BranchCommand extends AbstractCommand implements Instantiable, Identifiable, Derivable
+class TranslatedEvent extends AbstractEvent implements Instantiable, Identifiable, Derivable
 {
     use IdentifiableTrait;
 
     /**
-     * @return BranchCommand
+     * @return TranslatedEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(BranchCommand::class);
+        return GeneralUtility::makeInstance(TranslatedEvent::class);
     }
 
     /**
      * @param EntityReference $subject
-     * @param mixed $context
-     * @return BranchCommand
+     * @param EntityReference $identity
+     * @return CreatedEvent
      */
-    public static function create(EntityReference $subject, $context = null)
+    public static function create(EntityReference $subject, EntityReference $identity)
     {
-        $command = static::instance();
-        $command->setSubject($subject);
-        $command->setIdentity(EntityReference::create($subject->getName()));
-        return $command;
+        $event = static::instance();
+        $event->setSubject($subject);
+        $event->setIdentity($identity);
+        return $event;
     }
 }

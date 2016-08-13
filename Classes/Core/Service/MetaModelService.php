@@ -27,6 +27,11 @@ class MetaModelService implements SingletonInterface
         return GeneralUtility::makeInstance(MetaModelService::class);
     }
 
+    public function isWorkspaceAware(string $tableName)
+    {
+        return (bool)($GLOBALS['TCA'][$tableName]['ctrl']['versioningWS'] ?? false);
+    }
+
     public function getDeletedFieldName(string $tableName)
     {
         return ($GLOBALS['TCA'][$tableName]['ctrl']['delete'] ?? null);
@@ -35,6 +40,26 @@ class MetaModelService implements SingletonInterface
     public function getDisabledFieldName(string $tableName)
     {
         return ($GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns']['disabled'] ?? null);
+    }
+
+    public function getLanguageFieldName(string $tableName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['languageField'] ?? null);
+    }
+
+    public function getLanguagePointerFieldName(string $tableName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['transOrigPointerField'] ?? null);
+    }
+
+    public function getLanguagePointerTableName(string $tableName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['transOrigPointerTable'] ?? $tableName);
+    }
+
+    public function getLanguageTableName(string $tableName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['transForeignTable'] ?? $tableName);
     }
 
     public function getColumnConfiguration(string $tableName, string $propertyName)

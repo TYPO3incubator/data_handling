@@ -36,6 +36,14 @@ class Context
      */
     protected $language = 0;
 
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return sprintf('workspace-%d-language-%d', $this->workspace, $this->language);
+    }
+
     public function getWorkspace(): int
     {
         return $this->workspace;

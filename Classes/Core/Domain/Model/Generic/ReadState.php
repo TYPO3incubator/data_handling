@@ -47,17 +47,17 @@ class ReadState extends State implements Applicable
         return $this;
     }
 
-    public function applyCreateEvent(GenericEvent\CreatedEvent $event)
+    public function applyCreatedEvent(GenericEvent\CreatedEvent $event)
     {
         $this->reference = $event->getIdentity();
     }
 
-    public function applyBranchEvent(GenericEvent\BranchedEvent $event)
+    public function applyBranchedEvent(GenericEvent\BranchedEvent $event)
     {
         $this->reference = $event->getIdentity();
     }
 
-    public function applyTranslateEvent(GenericEvent\TranslatedEvent $event)
+    public function applyTranslatedEvent(GenericEvent\TranslatedEvent $event)
     {
         $this->reference = $event->getIdentity();
     }
@@ -72,19 +72,19 @@ class ReadState extends State implements Applicable
         // @todo Create and apply meta-state for entity
     }
 
-    public function handleAttachRelationCommand(GenericEvent\AttachedRelationEvent $event)
+    public function handleAttachedRelationEvent(GenericEvent\AttachedRelationEvent $event)
     {
         $this->attachRelation($event->getRelation());
         return $this;
     }
 
-    public function handleRemoveRelationCommand(GenericEvent\RemovedRelationEvent $event)
+    public function handleRemovedRelationEvent(GenericEvent\RemovedRelationEvent $event)
     {
         $this->removeRelation($event->getRelation());
         return $this;
     }
 
-    public function handleOrderRelationsCommand(GenericEvent\OrderedRelationsEvent $event)
+    public function handleOrderedRelationsEvent(GenericEvent\OrderedRelationsEvent $event)
     {
         $this->orderRelations($event->getSequence()->get());
         return $this;

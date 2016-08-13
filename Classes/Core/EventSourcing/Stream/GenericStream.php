@@ -81,9 +81,9 @@ class GenericStream extends AbstractStream implements Instantiable
         if ($event->getSubject() !== null) {
             $streamName .= '-' . $event->getSubject()->__toString();
         // event is identifiable, but does not have a subject
-        // (most probably used for CreatedEvent, thus bind to table-name only)
+        // (most probably used for CreatedEvent and others providing a new identity)
         } elseif ($event instanceof Identifiable) {
-            $streamName .= '-' . $event->getIdentity()->getName();
+            $streamName .= '-' . $event->getIdentity()->__toString();
         }
 
         return $streamName;

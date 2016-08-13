@@ -17,10 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
 class GenericStream extends AbstractStream implements Instantiable

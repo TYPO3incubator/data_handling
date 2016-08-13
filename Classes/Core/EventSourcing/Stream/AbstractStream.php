@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Publishable;
 
 abstract class AbstractStream implements Publishable
@@ -36,20 +37,32 @@ abstract class AbstractStream implements Publishable
     abstract public function setName(string $name);
 
     /**
+     * @param string $streamName
+     * @return string
+     */
+    abstract public function prefix(string $streamName): string;
+
+    /**
      * @param AbstractEvent $event
      * @return AbstractStream
      */
     abstract public function publish(AbstractEvent $event);
 
     /**
-     * @param callable $handler
+     * @param callable $consumer
      * @return AbstractStream
      */
-    abstract public function subscribe(callable $handler);
+    abstract public function subscribe(callable $consumer);
 
     /**
      * @param AbstractEvent $event
      * @return string
      */
-    abstract public function determineStreamName(AbstractEvent $event): string;
+    abstract public function determineNameByEvent(AbstractEvent $event): string;
+
+    /**
+     * @param EntityReference $reference
+     * @return string
+     */
+    abstract public function determineNameByReference(EntityReference $reference): string;
 }

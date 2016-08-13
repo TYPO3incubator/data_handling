@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
@@ -42,6 +43,15 @@ class GenericStream extends AbstractStream implements Instantiable
     public function setName(string $name) {
         $this->name = $name;
         return $this;
+    }
+
+    /**
+     * @param string $streamName
+     * @return string
+     */
+    public function prefix(string $streamName): string
+    {
+        return $this->name . '-' . $streamName;
     }
 
     /**
@@ -72,20 +82,29 @@ class GenericStream extends AbstractStream implements Instantiable
      * @param AbstractEvent|Generic\AbstractEvent $event
      * @return string
      */
-    public function determineStreamName(AbstractEvent $event): string
+    public function determineNameByEvent(AbstractEvent $event): string
     {
-        $streamName = $this->name;
+        $name = $this->prefix('$any');
 
         // event has assigned subject
         // (bind to whole subject identity the event is emmited for)
         if ($event->getSubject() !== null) {
-            $streamName .= '-' . $event->getSubject()->__toString();
+            $name = $this->determineNameByReference($event->getSubject());
         // event is identifiable, but does not have a subject
         // (most probably used for CreatedEvent and others providing a new identity)
         } elseif ($event instanceof Identifiable) {
-            $streamName .= '-' . $event->getIdentity()->__toString();
+            $name = $this->determineNameByReference($event->getIdentity());
         }
 
-        return $streamName;
+        return $name;
+    }
+
+    /**
+     * @param EntityReference $reference
+     * @return string
+     */
+    public function determineNameByReference(EntityReference $reference): string
+    {
+        return $this->prefix($reference->__toString());
     }
 }

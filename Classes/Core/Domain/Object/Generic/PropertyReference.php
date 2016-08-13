@@ -50,7 +50,7 @@ class PropertyReference implements RepresentableAsString
 
     public function __toString(): string
     {
-        return $this->entityReference->__toString() . ':' . $this->name;
+        return $this->entityReference->__toString() . '::' . $this->name;
     }
 
     public function __toArray(): array

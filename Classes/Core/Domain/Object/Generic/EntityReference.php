@@ -83,7 +83,7 @@ class EntityReference implements RepresentableAsString
 
     public function __toString(): string
     {
-        return $this->name . ':' . ($this->uuid ?? $this->uid ?? uniqid('none'));
+        return $this->name . '::' . ($this->uuid ?? $this->uid ?? uniqid('none'));
     }
 
     public function __toArray(): array

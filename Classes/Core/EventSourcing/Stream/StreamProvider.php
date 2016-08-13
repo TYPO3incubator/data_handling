@@ -112,18 +112,35 @@ class StreamProvider implements Publishable
     public function publish(AbstractEvent $event)
     {
         if ($this->isValidEvent($event)) {
-            $this->store->append($this->stream->determineStreamName($event), $event);
+            $this->store->append($this->stream->determineNameByEvent($event), $event);
             $this->stream->publish($event);
         }
         return $this;
     }
 
     /**
-     * @param string $streamName
-     * @return \Iterator
+     * @param callable $consumer
+     * @return StreamProvider
      */
-    public function open(string $streamName) {
-        return $this->store->open($streamName);
+    public function subscribe(callable $consumer)
+    {
+        $this->stream->subscribe($consumer);
+        return $this;
+    }
+
+    /**
+     * @param string $streamName
+     * @return void
+     */
+    public function replay(string $streamName) {
+        $iterator = $this->store->open(
+            $this->stream->prefix($streamName)
+        );
+        foreach ($iterator as $event) {
+            $this->stream->publish($event);
+        }
+        // no return value, since replay should be the last action
+        // and subscriptions have to be applied for this action
     }
 
     /**

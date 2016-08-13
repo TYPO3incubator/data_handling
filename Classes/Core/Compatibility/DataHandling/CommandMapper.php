@@ -20,13 +20,18 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResolver;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Generic\ReadState;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
 
 class CommandMapper
 {
@@ -290,7 +295,37 @@ class CommandMapper
         return $statement->fetchColumn();
     }
 
-    protected function fetchState(EntityReference $reference): State
+    /**
+     * @param EntityReference $reference
+     * @return ReadState
+     */
+    protected function fetchState(EntityReference $reference): ReadState
+    {
+        if ($reference->getUuid() === null) {
+            $reference->setUuid($this->fetchUuid($reference));
+        }
+
+        // @todo lookup in context-based projection
+
+        $readState = ReadState::instance();
+        $applicableReadState = array($readState, 'apply');
+
+        // use new instance, thus create instead of provideFor
+        StreamProvider::create('generic')
+            ->setStore(EventStorePool::provide()->getDefault())
+            ->setStream(GenericStream::instance())
+            ->subscribe($applicableReadState)
+            ->replay($reference->__toString());
+
+        return $readState;
+    }
+
+    /**
+     * @param EntityReference $reference
+     * @return State
+     * @deprecated Kept for development, use fetchState() instead
+     */
+    protected function fetchOriginState(EntityReference $reference): State
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder

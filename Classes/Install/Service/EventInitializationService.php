@@ -159,16 +159,11 @@ class EventInitializationService
     protected function createEntityCommands(WriteState $writeState, array $data)
     {
         $tableName = $writeState->getReference()->getName();
+        $metadata = $this->getUpgradeMetadata($data);
 
         $isWorkspaceAspect = $this->isWorkspaceAspect($tableName);
         $isTranslationAspect = $this->isTranslationAspect($tableName, $data);
         $languagePointerField = MetaModelService::instance()->getLanguagePointerFieldName($tableName);
-
-        $metadata = [
-            static::KEY_UPGRADE => [
-                'uid' => $data['uid']
-            ]
-        ];
 
         // no workspace, no translation -> just CreateCommand
         if (!$isWorkspaceAspect && !$isTranslationAspect) {
@@ -229,6 +224,7 @@ class EventInitializationService
     protected function createValueCommands(WriteState $writeState, array $data)
     {
         $tableName = $writeState->getReference()->getName();
+        $metadata = $this->getUpgradeMetadata($data);
 
         // skip, if in valid workspace context, but record is
         // not in default version state, thus not only modified
@@ -244,7 +240,7 @@ class EventInitializationService
         );
         $this->handleCommand(
             $writeState,
-            Generic\ChangeCommand::create($writeState->getReference(), $temporaryState->getValues())
+            Generic\ChangeCommand::create($writeState->getReference(), $temporaryState->getValues())->setMetadata($metadata)
         );
     }
 
@@ -256,6 +252,8 @@ class EventInitializationService
      */
     protected function createRelationCommands(WriteState $writeState, array $data)
     {
+        $metadata = $this->getUpgradeMetadata($data);
+
         $temporaryState = State::instance()->setRelations(
             CoreResolver\RelationResolver::instance()->resolve($writeState->getReference(), $data)
         );
@@ -266,7 +264,7 @@ class EventInitializationService
             if ($metaModelProperty->hasActiveRelationTo($relation->getEntityReference()->getName())) {
                 $this->handleCommand(
                     $writeState,
-                    Generic\AttachRelationCommand::create($writeState->getReference(), $relation)
+                    Generic\AttachRelationCommand::create($writeState->getReference(), $relation)->setMetadata($metadata)
                 );
             }
         }
@@ -281,6 +279,7 @@ class EventInitializationService
     protected function createActionCommands(WriteState $writeState, array $data)
     {
         $tableName = $writeState->getReference()->getName();
+        $metadata = $this->getUpgradeMetadata($data);
 
         if ($this->isWorkspaceAspect($tableName)) {
             $versionState = VersionState::cast($data['t3ver_state']);
@@ -288,7 +287,7 @@ class EventInitializationService
             if ($versionState->equals(VersionState::DELETE_PLACEHOLDER)) {
                 $this->handleCommand(
                     $writeState,
-                    Generic\DeleteCommand::create($writeState->getReference())
+                    Generic\DeleteCommand::create($writeState->getReference())->setMetadata($metadata)
                 );
             } elseif ($versionState->equals(VersionState::MOVE_POINTER)) {
                 // MoveBeforeCommand or MoveAfterCommand (or OrderRelationsComman for parent node)
@@ -336,6 +335,19 @@ class EventInitializationService
             && $languagePointerField !== null
             && $data[$languagePointerField] > 0
         );
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    protected function getUpgradeMetadata(array $data)
+    {
+        return [
+            static::KEY_UPGRADE => [
+                'uid' => $data['uid']
+            ]
+        ];
     }
 
     /**

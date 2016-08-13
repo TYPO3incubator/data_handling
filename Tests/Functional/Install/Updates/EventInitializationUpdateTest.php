@@ -175,40 +175,48 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'pages',
                     'data.title' => 'FunctionalTest',
+                    $metadataUpgradeKey => 1,
                 ]),
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'pages',
                     'data.title' => 'DataHandlerTest',
+                    $metadataUpgradeKey => 88,
                 ]),
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'pages',
                     'data.title' => 'Relations',
+                    $metadataUpgradeKey => 89,
                 ]),
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'pages',
                     'data.title' => 'Target',
+                    $metadataUpgradeKey => 90,
                 ]),
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'tt_content',
                     'data.header' => 'Regular Element #1',
+                    $metadataUpgradeKey => 297,
                 ]),
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'tt_content',
                     'data.header' => 'Regular Element #2',
+                    $metadataUpgradeKey => 298,
                 ]),
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'tt_content',
                     'data.header' => 'Regular Element #3',
+                    $metadataUpgradeKey => 299,
                 ]),
-                // @todo Assert translation instead
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'tt_content',
                     'data.header' => '[Translate to Dansk:] Regular Element #3',
+                    $metadataUpgradeKey => 300,
                 ]),
             ],
             Generic\DeletedEvent::class => [
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'tt_content',
+                    $metadataUpgradeKey => 301,
                 ]),
             ]
         ];

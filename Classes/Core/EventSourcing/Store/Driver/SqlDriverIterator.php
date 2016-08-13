@@ -75,7 +75,7 @@ class SqlDriverIterator implements \Iterator
 
     public function rewind()
     {
-        throw new \RuntimeException('Cannot rewind iterator', 1471019079);
+        // ignore rewind
     }
 
     /**
@@ -89,22 +89,30 @@ class SqlDriverIterator implements \Iterator
         }
 
         $eventClassName = $rawEvent['event_name'];
-        if (is_a($eventClassName, AbstractEvent::class, true)) {
+        if (!is_a($eventClassName, AbstractEvent::class, true)) {
             return $this->invalidate();
         }
 
-        $eventDate = \DateTime::createFromFormat(
-            SqlDriver::FORMAT_DATETIME,
-            $rawEvent['event_date']
-        );
+        // @todo microsecond part is omitted if fetching from database
+        $eventDate = new \DateTime($rawEvent['event_date']);
+
+        $data = $rawEvent['data'];
+        $metadata = $rawEvent['metadata'];
+
+        if ($data !== null) {
+            $data = json_decode($data, true);
+        }
+        if ($metadata !== null) {
+            $metadata = json_decode($metadata, true);
+        }
 
         $this->event = call_user_func(
             $eventClassName . '::reconstitute',
             $rawEvent['event_name'],
             $rawEvent['event_uuid'],
             $eventDate,
-            $rawEvent['data'],
-            $rawEvent['metadata']
+            $data,
+            $metadata
         );
 
         return true;

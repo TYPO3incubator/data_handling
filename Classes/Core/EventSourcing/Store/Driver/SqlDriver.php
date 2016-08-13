@@ -70,6 +70,7 @@ class SqlDriver implements DriverInterface
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
         $queryBuilder
+            ->select('*')
             ->from('sys_event_store')
             ->where(
                 $queryBuilder->expr()->eq(

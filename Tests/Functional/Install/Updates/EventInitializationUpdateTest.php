@@ -32,6 +32,14 @@ use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
 {
     /**
+     * @var array
+     */
+    protected $coreExtensionsToLoad = [
+        'version',
+        'workspaces',
+    ];
+
+    /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
@@ -41,7 +49,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
     /**
      * @var string
      */
-    protected $scenarioDataSetDirectory = 'typo3/sysext/core/Tests/Functional/DataHandling/Regular/DataSet/';
+    protected $scenarioDataSetDirectory = 'typo3/sysext/workspaces/Tests/Functional/DataHandling/Regular/DataSet/';
 
     /**
      * @var EventInitializationUpdate
@@ -105,6 +113,12 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
             'date' => '@@VALUE@@',
             'identity.uuid' => '@@UUID@@',
         ];
+        $baseDerivedExpectation = [
+            'uuid' => '@@UUID@@',
+            'date' => '@@VALUE@@',
+            'subject.uuid' => '@@UUID@@',
+            'identity.uuid' => '@@UUID@@',
+        ];
         $baseChangedExpectation = [
             'uuid' => '@@UUID@@',
             'date' => '@@VALUE@@',
@@ -142,9 +156,19 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
                     'identity.name' => 'tt_content',
                     $metadataUpgradeKey => 299,
                 ]),
-                array_merge($baseCreatedExpectation, [
+            ],
+            Generic\TranslatedEvent::class => [
+                array_merge($baseDerivedExpectation, [
+                    'subject.name' => 'tt_content',
                     'identity.name' => 'tt_content',
                     $metadataUpgradeKey => 300,
+                ]),
+            ],
+            Generic\BranchedEvent::class => [
+                array_merge($baseDerivedExpectation, [
+                    'subject.name' => 'tt_content',
+                    'identity.name' => 'tt_content',
+                    $metadataUpgradeKey => 301,
                 ]),
             ],
             Generic\ChangedEvent::class => [
@@ -182,6 +206,11 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
                     'data.header' => '[Translate to Dansk:] Regular Element #3',
                 ]),
             ],
+            Generic\DeletedEvent::class => [
+                array_merge($baseChangedExpectation, [
+                    'subject.name' => 'tt_content',
+                ]),
+            ]
         ];
 
         $this->stream->subscribe(array($this, 'recordTablesAreUpdatedEventHandler'));

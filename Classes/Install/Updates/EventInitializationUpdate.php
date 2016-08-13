@@ -22,6 +22,7 @@ use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
@@ -33,9 +34,11 @@ use TYPO3\CMS\Install\Updates\AbstractUpdate;
 class EventInitializationUpdate extends AbstractUpdate
 {
     const INSTRUCTION_CREATE =
-        EventInitializationService::INSTRUCTION_ENTITY | EventInitializationService::INSTRUCTION_VALUES;
-    const INSTRUCTION_RELATIONS =
-        EventInitializationService::INSTRUCTION_RELATIONS;
+        EventInitializationService::INSTRUCTION_ENTITY
+        | EventInitializationService::INSTRUCTION_VALUES;
+    const INSTRUCTION_ACTION =
+        EventInitializationService::INSTRUCTION_RELATIONS
+        | EventInitializationService::INSTRUCTION_ACTIONS;
 
     /**
      * @return EventInitializationUpdate
@@ -80,7 +83,7 @@ class EventInitializationUpdate extends AbstractUpdate
     {
         EventManager::provide()->on(
             EventManager::LISTEN_BEFORE,
-            array($this, 'handleCreatedEvent')
+            array($this, 'handleIdentifiableEvent')
         );
 
         $tableNames = array_keys($GLOBALS['TCA']);
@@ -103,10 +106,11 @@ class EventInitializationUpdate extends AbstractUpdate
                         ->process($recordTableName);
                 }
 
-                // then process all records, just relations, ignore values
+                // then process all records, just relations (ignore values)
+                // and apply found actions (e.g. deletion in workspace context)
                 foreach ($tableNames as $tableName) {
                     $service
-                        ->setInstruction(static::INSTRUCTION_RELATIONS)
+                        ->setInstruction(static::INSTRUCTION_ACTION)
                         ->process($tableName);
                 }
             }
@@ -118,8 +122,8 @@ class EventInitializationUpdate extends AbstractUpdate
     /**
      * @param Generic\AbstractEvent $event
      */
-    public function handleCreatedEvent(Generic\AbstractEvent $event) {
-        if (!($event instanceof Generic\CreatedEvent)) {
+    public function handleIdentifiableEvent(Generic\AbstractEvent $event) {
+        if (!($event instanceof Identifiable)) {
             return;
         }
 

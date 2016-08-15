@@ -16,46 +16,75 @@ namespace TYPO3\CMS\DataHandling\Core\Context;
 
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Object\Providable;
 
-class ProjectionContext
+class ProjectionContext implements Instantiable, Providable
 {
+    /**
+     * @var ProjectionContext
+     */
+    static $projectionContext;
+
+    /**
+     * @param bool $force
+     * @return ProjectionContext
+     */
+    public static function provide(bool $force = false)
+    {
+        if ($force || !isset(static::$projectionContext)) {
+            static::$projectionContext = static::instance();
+        }
+        return static::$projectionContext;
+    }
+
+    /**
+     * @return ProjectionContext
+     */
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(ProjectionContext::class);
+    }
+
     /**
      * @var int
      */
-    protected $workspaceId;
+    protected $workspaceId = 0;
 
     /**
      * @var int[]
      */
-    protected $languageChain;
+    protected $languageChain = null;
 
     /**
      * @var mixed
+     * @todo Add meaning and handling
      */
     protected $permissions;
 
     /**
-     * @param int $workspaceId
-     * @param int[]|null $languageChain
-     * @return ProjectionContext
+     * @var bool
      */
-    public static function instance(int $workspaceId, array $languageChain = null)
+    protected $locked = false;
+
+    /**
+     * @return string
+     */
+    public function __toString()
     {
-        return GeneralUtility::makeInstance(
-            ProjectionContext::class,
-            $workspaceId,
-            $languageChain
-        );
+        $stringRepresentation = 'workspace-' . $this->workspaceId;
+        if (!empty($this->languageChain)) {
+            $stringRepresentation .= '-languages';
+            foreach ($this->languageChain as $languageId) {
+                $stringRepresentation .= '-' . $languageId;
+            }
+        }
+        return $stringRepresentation;
     }
 
-    public function __construct(int $workspaceId, array $languageChain = null)
+    public function lock()
     {
-        if ($languageChain === null) {
-            $languageChain = [0];
-        }
-
-        $this->workspaceId = $workspaceId;
-        $this->languageChain = $languageChain;
+        $this->locked = true;
     }
 
     public function getWorkspaceId()
@@ -63,8 +92,37 @@ class ProjectionContext
         return $this->workspaceId;
     }
 
+    /**
+     * @param int $workspaceId
+     * @return ProjectionContext
+     */
+    public function setWorkspaceId(int $workspaceId)
+    {
+        $this->handleLock();
+        $this->workspaceId = $workspaceId;
+        return $this;
+    }
+
     public function getLanguageChain()
     {
         return $this->languageChain;
+    }
+
+    /**
+     * @param array|null $languageChain
+     * @return ProjectionContext
+     */
+    public function setLanguageChain(array $languageChain = null)
+    {
+        $this->handleLock();
+        $this->languageChain = $languageChain;
+        return $this;
+    }
+
+    protected function handleLock()
+    {
+        if ($this->locked) {
+            throw new \RuntimeException('ProjectionContext is locked', 1471178669);
+        }
     }
 }

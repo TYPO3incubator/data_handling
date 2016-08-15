@@ -9,6 +9,8 @@ $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Default']['wrapperClass'] =
     \TYPO3\CMS\DataHandling\Core\Compatibility\Database\ConnectionInterceptor::class;
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\DatabaseConnection::class]['className']
     = \TYPO3\CMS\DataHandling\Core\Compatibility\Database\DatabaseConnectionInterceptor::class;
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class]['className']
+    = \TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication::class;
 
 /*
  * ext:core

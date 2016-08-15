@@ -13,9 +13,6 @@
 	"replace": {
 		"data-handling": "*"
 	},
-	"bin": [
-		"bin/typo3"
-	],
 	"autoload": {
 		"psr-4": {
 			"TYPO3\\CMS\\DataHandling\\": "Classes/",

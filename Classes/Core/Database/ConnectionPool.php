@@ -17,7 +17,9 @@ namespace TYPO3\CMS\DataHandling\Core\Database;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Context\ProjectionContext;
 use TYPO3\CMS\DataHandling\Core\Service\FileSystemService;
+use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
 {
@@ -29,6 +31,34 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     public static function instance()
     {
         return GeneralUtility::makeInstance(ConnectionPool::class);
+    }
+
+    /**
+     * @param string $connectionName
+     * @return Connection
+     */
+    public function getConnectionByName(string $connectionName): Connection
+    {
+        if ($connectionName !== static::DEFAULT_CONNECTION_NAME) {
+            return parent::getConnectionByName($connectionName);
+        }
+
+        return $this->provideLocalStorageConnection(
+            ProjectionContext::provide()->__toString()
+        );
+    }
+
+    /**
+     * @param string $tableName
+     * @return Connection
+     */
+    public function getConnectionForTable(string $tableName): Connection
+    {
+        if (GenericService::instance()->isSystemInternal($tableName)) {
+            return $this->getOriginConnection();
+        }
+
+        return parent::getConnectionForTable($tableName);
     }
 
     /**

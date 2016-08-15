@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\MetaModel;
  */
 
 use TYPO3\CMS\Core\Tests\FunctionalTestCase;
+use TYPO3\CMS\DataHandling\Core\Context\ProjectionContext;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\MetaModel\ActiveRelation;
@@ -56,12 +57,12 @@ class ConnectionPoolTest extends FunctionalTestCase
      */
     public function localStorageIsCreated()
     {
-        $context = Context::instance();
-        $this->subject->provideLocalStorageConnection($context);
+        $projectionContext = ProjectionContext::instance();
+        $this->subject->provideLocalStorageConnection($projectionContext->__toString());
 
         $basePath = rtrim($this->instancePath, '/') . '/typo3temp/var/LocalStorage';
 
         $this->assertFileExists($basePath . '/.htaccess');
-        # $this->assertFileExists($basePath . '/workspace-0-language-0.sqlite');
+        $this->assertFileExists($basePath . '/workspace-0.sqlite');
     }
 }

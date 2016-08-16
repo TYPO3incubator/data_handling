@@ -11,7 +11,7 @@
 		"dbellettini/eventstore-client": "dev-master"
 	},
 	"replace": {
-		"data-handling": "*"
+		"data_handling": "*"
 	},
 	"autoload": {
 		"psr-4": {

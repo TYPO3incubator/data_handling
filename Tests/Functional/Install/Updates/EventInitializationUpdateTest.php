@@ -43,7 +43,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/data-handling'
+        'typo3conf/ext/data_handling'
     ];
 
     /**

@@ -27,7 +27,7 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/data-handling'
+        'typo3conf/ext/data_handling'
     ];
 
     /**

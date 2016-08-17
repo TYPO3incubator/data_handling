@@ -31,7 +31,7 @@ class ConnectionPoolTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/data-handling',
+        'typo3conf/ext/data_handling',
         'typo3/sysext/core/Tests/Functional/Fixtures/Extensions/irre_tutorial',
     ];
 

@@ -91,12 +91,12 @@ class RevisionReference implements RepresentableAsString
         return $this;
     }
 
-    public function getRevision(): string
+    public function getRevision(): int
     {
         return $this->revision;
     }
 
-    public function setRevision(string $revision): RevisionReference
+    public function setRevision(int $revision): RevisionReference
     {
         $this->revision = $revision;
         return $this;

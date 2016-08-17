@@ -33,12 +33,14 @@ class SqlDriver implements DriverInterface
     /**
      * @param string $streamName
      * @param AbstractEvent $event
+     * @param string[] $categories
      * @return bool
      */
-    public function append(string $streamName, AbstractEvent $event): bool
+    public function append(string $streamName, AbstractEvent $event, array $categories = []): bool
     {
         $rawEvent = [
             'event_stream' => $streamName,
+            'event_categories' => (!empty($categories) ? implode(',', $categories) : null),
             'event_uuid' => $event->getUuid(),
             'event_name' => get_class($event),
             'event_date' => $event->getDate()->format(static::FORMAT_DATETIME),
@@ -63,22 +65,44 @@ class SqlDriver implements DriverInterface
 
     /**
      * @param string $eventStream
+     * @param array $categories
      * @return SqlDriverIterator
      */
-    public function open(string $eventStream)
+    public function open(string $eventStream, array $categories = [])
     {
+        if (empty($eventStream) && empty($categories)) {
+            throw new \RuntimeException('No selection criteria given', 1471441756);
+        }
+
+        $predicates = [];
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
-        $queryBuilder
+
+        if (!empty($eventStream)) {
+            $namedParameter = $queryBuilder->createNamedParameter($eventStream);
+            $predicates[] = $queryBuilder->expr()->eq('event_stream', $namedParameter);
+        }
+        if (!empty($categories)) {
+            $expression = $queryBuilder->expr()->orX();
+            foreach ($categories as $category) {
+                $namedParameter = $queryBuilder->createNamedParameter($category);
+                $escapedCategory = $queryBuilder->escapeLikeWildcards($category);
+                $expression->addMultiple([
+                    $queryBuilder->expr()->eq('event_categories', $namedParameter),
+                    $queryBuilder->expr()->like('event_categories', $queryBuilder->quote($escapedCategory . ',%')),
+                    $queryBuilder->expr()->like('event_categories', $queryBuilder->quote('%,' . $escapedCategory)),
+                    $queryBuilder->expr()->like('event_categories', $queryBuilder->quote('%,' . $escapedCategory . ',%')),
+                ]);
+            }
+            $predicates[] = $expression;
+        }
+
+        $statement = $queryBuilder
             ->select('*')
             ->from('sys_event_store')
-            ->where(
-                $queryBuilder->expr()->eq(
-                    'event_stream',
-                    $queryBuilder->createNamedParameter($eventStream)
-                )
-            );
+            ->where(...$predicates)
+            ->execute();
 
-        return SqlDriverIterator::create($queryBuilder->execute());
+        return SqlDriverIterator::create($statement);
     }
 }

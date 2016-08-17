@@ -18,6 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Committable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Publishable;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 
 class StreamProvider implements Committable, Publishable
@@ -143,12 +144,15 @@ class StreamProvider implements Committable, Publishable
     }
 
     /**
-     * @param string $streamName
+     * @param EventSelector $eventSelector
      * @return void
      */
-    public function replay(string $streamName) {
+    public function replay(EventSelector $eventSelector) {
         $iterator = $this->store->open(
-            $this->stream->prefix($streamName)
+            $this->stream->prefix(
+                $eventSelector->getStreamName()
+            ),
+            $eventSelector->getCategories()
         );
         foreach ($iterator as $event) {
             $this->stream->publish($event);

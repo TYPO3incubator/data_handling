@@ -30,6 +30,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga\GenericSaga;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
@@ -310,8 +311,10 @@ class CommandMapper
 
         $readState = ReadState::instance();
 
+        $epic = EventSelector::instance()
+            ->setStreamName($reference->__toString());
         GenericSaga::create('generic')
-            ->tell($readState, $reference->__toString());
+            ->tell($readState, $epic);
 
         return $readState;
     }

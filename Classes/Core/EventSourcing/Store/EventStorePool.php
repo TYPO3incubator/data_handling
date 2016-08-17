@@ -69,7 +69,11 @@ class EventStorePool implements Providable
      */
     public function registerDefault(EventStore $eventStore)
     {
-        return $this->register($eventStore, 'default');
+        try {
+            return $this->register($eventStore, 'default');
+        } catch (\Exception $exception) {
+        }
+        return $this;
     }
 
     /**

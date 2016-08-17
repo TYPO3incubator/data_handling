@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
  */
 
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Type\MicroDateTime;
 
@@ -36,7 +37,7 @@ abstract class AbstractEvent
 
         /** @var AbstractEvent $event */
         $event = call_user_func($eventType . '::instance');
-        $event->uuid = $uuid;
+        $event->uuid = Uuid::fromString($uuid);
         $event->date = $date;
         $event->metadata = $metadata;
         $event->importData($data);
@@ -44,7 +45,7 @@ abstract class AbstractEvent
     }
 
     /**
-     * @var string
+     * @var UuidInterface
      */
     protected $uuid;
 
@@ -65,11 +66,11 @@ abstract class AbstractEvent
 
     public function __construct()
     {
-        $this->uuid = Uuid::uuid4()->toString();
+        $this->uuid = Uuid::uuid4();
         $this->date = MicroDateTime::create('now');
     }
 
-    public function getUuid(): string
+    public function getUuid(): UuidInterface
     {
         return $this->uuid;
     }

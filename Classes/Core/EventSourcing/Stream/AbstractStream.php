@@ -40,7 +40,10 @@ abstract class AbstractStream implements Publishable
      * @param string $streamName
      * @return string
      */
-    abstract public function prefix(string $streamName): string;
+    public function prefix(string $streamName): string
+    {
+        return ($streamName ? $this->name . '-' . $streamName : '');
+    }
 
     /**
      * @param AbstractEvent $event
@@ -59,10 +62,4 @@ abstract class AbstractStream implements Publishable
      * @return string
      */
     abstract public function determineNameByEvent(AbstractEvent $event): string;
-
-    /**
-     * @param EntityReference $reference
-     * @return string
-     */
-    abstract public function determineNameByReference(EntityReference $reference): string;
 }

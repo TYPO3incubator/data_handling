@@ -24,11 +24,6 @@ use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 class GenericStream extends AbstractStream implements Instantiable
 {
     /**
-     * @var GenericStream[]
-     */
-    static protected $streams = [];
-
-    /**
      * @return GenericStream
      */
     static public function instance()
@@ -43,15 +38,6 @@ class GenericStream extends AbstractStream implements Instantiable
     public function setName(string $name) {
         $this->name = $name;
         return $this;
-    }
-
-    /**
-     * @param string $streamName
-     * @return string
-     */
-    public function prefix(string $streamName): string
-    {
-        return $this->name . '-' . $streamName;
     }
 
     /**

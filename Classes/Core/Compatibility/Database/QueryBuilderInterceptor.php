@@ -124,7 +124,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         $queryBuilder->getRestrictions()
             ->removeAll();
         $statement = $queryBuilder
-            ->select('uid', Common::FIELD_UUID)
+            ->select('uid', Common::FIELD_UUID, Common::FIELD_REVISION)
             ->from($tableName)
             ->where($where)
             ->execute();

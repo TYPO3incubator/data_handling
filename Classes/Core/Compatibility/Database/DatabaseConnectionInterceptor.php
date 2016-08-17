@@ -114,7 +114,8 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
     protected function determineReferences($tableName, $whereClause): array
     {
         $references = [];
-        $rows = $this->exec_SELECTgetRows('uid,' . Common::FIELD_UUID, $tableName, $whereClause);
+        $fieldNames = ['uid', Common::FIELD_UUID, Common::FIELD_REVISION];
+        $rows = $this->exec_SELECTgetRows(implode(',', $fieldNames), $tableName, $whereClause);
         foreach ($rows as $row) {
             $references[] = EntityReference::fromRecord($tableName, $row);
         }

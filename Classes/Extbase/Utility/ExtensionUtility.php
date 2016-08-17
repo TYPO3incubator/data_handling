@@ -1,0 +1,59 @@
+<?php
+namespace TYPO3\CMS\DataHandling\Extbase\Utility;
+
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\DataHandling\Common;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+
+class ExtensionUtility implements Instantiable
+{
+    /**
+     * @return ExtensionUtility
+     */
+    public static function instance()
+    {
+        return \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtensionUtility::class);
+    }
+
+    /**
+     * @param string $extensionKey
+     * @param string $tableName
+     * @param string $className
+     * @return ExtensionUtility
+     */
+    public function addMapping(string $extensionKey, string $tableName, string $className)
+    {
+        $extensionPrefix = ExtensionManagementUtility::getCN($extensionKey);
+        $prefix = $extensionPrefix . '.persistence.classes.' .$className . '.mapping.';
+
+        $settings = implode("\n\t", [
+            '',
+            $prefix . 'tableName = ' . $tableName,
+            $prefix . 'columns.' . Common::FIELD_UUID . '.mapOnProperty = uuid',
+            $prefix . 'columns.' . Common::FIELD_REVISION . '.mapOnProperty = revision',
+        ]);
+
+        $typoScript = sprintf(
+            "plugin {\n%s\n}\nmodule {\n%s\n}", $settings, $settings
+        );
+
+        ExtensionManagementUtility::addTypoScriptSetup($typoScript);
+
+        return $this;
+    }
+}

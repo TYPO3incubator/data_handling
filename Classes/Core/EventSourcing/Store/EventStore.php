@@ -55,23 +55,25 @@ class EventStore
     /**
      * @param string $streamName
      * @param AbstractEvent $event
+     * @param string[] $categories
      * @param null $expectedVersion
      */
-    public function append(string $streamName, AbstractEvent $event, $expectedVersion = null)
+    public function append(string $streamName, AbstractEvent $event, array $categories = [], $expectedVersion = null)
     {
         if (!$event instanceof Storable) {
             throw new \RuntimeException('Event "' . get_class($event) . '" cannot be stored', 1470871139);
         }
 
-        $this->driver->append($streamName, $event);
+        $this->driver->append($streamName, $event, $categories);
     }
 
     /**
      * @param string $streamName
+     * @param string[] $categories
      * @return \Iterator
      */
-    public function open(string $streamName)
+    public function open(string $streamName, array $categories = [])
     {
-        return $this->driver->open($streamName);
+        return $this->driver->open($streamName, $categories);
     }
 }

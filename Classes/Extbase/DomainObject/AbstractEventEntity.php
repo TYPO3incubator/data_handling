@@ -52,6 +52,14 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
     }
 
     /**
+     * @return UuidInterface
+     */
+    public function getUuidInterface()
+    {
+        return Uuid::fromString($this->uuid);
+    }
+
+    /**
      * @return int
      */
     public function getRevision()

@@ -15,6 +15,13 @@ namespace TYPO3\CMS\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 class Common
@@ -41,12 +48,13 @@ class Common
      */
     public static function overrideConfiguration()
     {
+        $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Origin'] =
+            $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Default'];
+
         if (!static::$enable) {
             return;
         }
 
-        $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Origin'] =
-            $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Default'];
         $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Default']['wrapperClass'] =
             \TYPO3\CMS\DataHandling\Core\Compatibility\Database\ConnectionInterceptor::class;
     }
@@ -96,37 +104,33 @@ class Common
 
     public static function registerSlots()
     {
-        if (!static::$enable) {
-            return;
-        }
-
         // provides new database fields
         \TYPO3\CMS\DataHandling\Common::getSignalSlotDispatcher()->connect(
             \TYPO3\CMS\Install\Service\SqlExpectedSchemaService::class, 'tablesDefinitionIsBeingBuilt',
             \TYPO3\CMS\DataHandling\Core\Slot\EventSourcingSchemaModificationSlot::class, 'generate'
         );
+
+        if (!static::$enable) {
+            return;
+        }
     }
 
     public static function registerEventSources()
     {
-        if (!static::$enable) {
-            return;
-        }
-
         // initialize default EventStore using SqlDriver
-        \TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool::provide()
+        EventStorePool::provide()
             ->registerDefault(
-                \TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore::create(
-                    \TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver::instance()
+                EventStore::create(
+                    SqlDriver::instance()
                 )
             );
 
         // bind stream, managing generic events
-        \TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager::provide()->bind(
-            \TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider::create('generic')
-                ->setStore(\TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool::provide()->getDefault())
-                ->setStream(\TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream::instance())
-                ->setEventNames([\TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class])
+        EventManager::provide()->bind(
+            StreamProvider::create('generic')
+                ->setEventNames([AbstractEvent::class])
+                ->setStream(GenericStream::instance())
+                ->setStore(EventStorePool::provide()->getDefault())
         );
     }
 }

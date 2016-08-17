@@ -15,13 +15,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
 
-class GenericSaga
+class GenericSaga extends AbstractSaga
 {
     /**
      * @param string $name
@@ -33,34 +29,10 @@ class GenericSaga
     }
 
     /**
-     * @var string
+     * @return GenericStream
      */
-    protected $name;
-
-    /**
-     * @param string $name
-     */
-    public function __construct(string $name)
+    protected function getStream()
     {
-        $this->name = $name;
-    }
-
-    /**
-     * @param State $state
-     * @param string $epic
-     */
-    public function tell(State $state, string $epic)
-    {
-        if (!($state instanceof Applicable)) {
-            throw new \RuntimeException('State "' . get_class($state). '" is not applicable', 1471109535);
-        }
-
-        $applicableState = array($state, 'apply');
-
-        StreamProvider::create($this->name)
-            ->setStore(EventStorePool::provide()->getDefault())
-            ->setStream(GenericStream::instance())
-            ->subscribe($applicableState)
-            ->replay($epic);
+        return GenericStream::instance();
     }
 }

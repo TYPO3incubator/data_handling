@@ -16,10 +16,11 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Committable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Publishable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 
-class StreamProvider implements Publishable
+class StreamProvider implements Committable, Publishable
 {
     /**
      * @var StreamProvider[]
@@ -112,10 +113,23 @@ class StreamProvider implements Publishable
     public function publish(AbstractEvent $event)
     {
         if ($this->isValidEvent($event)) {
-            $this->store->append($this->stream->determineNameByEvent($event), $event);
+            // @todo Decouple publish and commit
+            $this->commit($event);
             $this->stream->publish($event);
         }
         return $this;
+    }
+
+    /**
+     * @param AbstractEvent $event
+     * @param array $categories
+     */
+    public function commit(AbstractEvent $event, array $categories = [])
+    {
+        if ($this->isValidEvent($event)) {
+            $streamName = $this->stream->determineNameByEvent($event);
+            $this->store->append($streamName, $event, $categories);
+        }
     }
 
     /**

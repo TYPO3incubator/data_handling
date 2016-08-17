@@ -52,6 +52,11 @@ class EventManager implements Providable, Manageable, Listenable
     }
 
     /**
+     * @var Committable[]
+     */
+    protected $committers = [];
+
+    /**
      * @var Publishable[]
      */
     protected $publishers = [];
@@ -65,10 +70,42 @@ class EventManager implements Providable, Manageable, Listenable
     ];
 
     /**
+     * @param mixed $delegate
+     * @return EventManager
+     * @deprecated Either use bindCommitter() or bindPublisher()
+     */
+    public function bind($delegate) {
+        if (!($delegate instanceof Committable) && !($delegate instanceof Publishable)) {
+            throw new \RuntimeException('Committable or Publishable expected', 1471467847);
+        }
+
+        if ($delegate instanceof Committable) {
+            $this->bindCommitter($delegate);
+        }
+        if ($delegate instanceof Publishable) {
+            $this->bindPublisher($delegate);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Committable $committer
+     * @return EventManager
+     */
+    public function bindCommitter(Committable $committer)
+    {
+        if (!in_array($committer, $this->publishers, true)) {
+            $this->committers[] = $committer;
+        }
+        return $this;
+    }
+
+    /**
      * @param Publishable $publisher
      * @return EventManager
      */
-    public function bind(Publishable $publisher) {
+    public function bindPublisher(Publishable $publisher) {
         if (!in_array($publisher, $this->publishers, true)) {
             $this->publishers[] = $publisher;
         }
@@ -115,6 +152,9 @@ class EventManager implements Providable, Manageable, Listenable
     {
         foreach ($this->listeners[static::LISTEN_BEFORE] as $listener) {
             call_user_func($listener, $event);
+        }
+        foreach ($this->committers as $commiter) {
+            $commiter->commit($event);
         }
         foreach ($this->publishers as $publisher) {
             $publisher->publish($event);

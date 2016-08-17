@@ -126,7 +126,7 @@ class Common
             );
 
         // bind stream, managing generic events
-        EventManager::provide()->bind(
+        EventManager::provide()->bindCommitter(
             StreamProvider::create('generic')
                 ->setEventNames([AbstractEvent::class])
                 ->setStream(GenericStream::instance())

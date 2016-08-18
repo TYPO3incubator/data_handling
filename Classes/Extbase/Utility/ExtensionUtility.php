@@ -31,25 +31,22 @@ class ExtensionUtility implements Instantiable
     }
 
     /**
-     * @param string $extensionKey
      * @param string $tableName
      * @param string $className
      * @return ExtensionUtility
      */
-    public function addMapping(string $extensionKey, string $tableName, string $className)
+    public function addMapping(string $tableName, string $className)
     {
-        $extensionPrefix = ExtensionManagementUtility::getCN($extensionKey);
-        $prefix = $extensionPrefix . '.persistence.classes.' .$className . '.mapping.';
+        $prefix = 'persistence.classes.' .$className . '.mapping.';
 
         $settings = implode("\n\t", [
-            '',
             $prefix . 'tableName = ' . $tableName,
             $prefix . 'columns.' . Common::FIELD_UUID . '.mapOnProperty = uuid',
             $prefix . 'columns.' . Common::FIELD_REVISION . '.mapOnProperty = revision',
         ]);
 
         $typoScript = sprintf(
-            "plugin {\n%s\n}\nmodule {\n%s\n}", $settings, $settings
+            "config.tx_extbase {\n\t%s\n}\n", $settings
         );
 
         ExtensionManagementUtility::addTypoScriptSetup($typoScript);

@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\DomainObject;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
 abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
@@ -39,7 +40,7 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
     protected $revision;
 
     /**
-     * @var array
+     * @var AbstractEvent[]
      */
     protected $events = [];
 
@@ -80,12 +81,23 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
         $this->revision++;
     }
 
+    /**
+     * @return AbstractEvent[]
+     */
     public function getEvents()
     {
         return $this->events;
     }
 
-    protected function recordEvent($event)
+    /**
+     * @param array $events
+     */
+    protected function mergeEvents(array $events)
+    {
+        $this->events = array_merge($this->events, $events);
+    }
+
+    protected function recordEvent(AbstractEvent $event)
     {
         $this->events[] = $event;
     }

@@ -101,4 +101,90 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
     {
         $this->events[] = $event;
     }
+
+    public function _mergeProperties(AbstractEventEntity $entity)
+    {
+        foreach ($this->_getProperties() as $propertyName => $sourcePropertyValue) {
+            if (in_array($propertyName, ['uid', 'pid'])) {
+                continue;
+            }
+            $targetPropertyValue = $entity->_getProperty($propertyName);
+            if (empty($sourcePropertyValue) || empty($targetPropertyValue)) {
+                $this->_setProperty($propertyName, $targetPropertyValue);
+            } elseif ($sourcePropertyValue instanceof AbstractEventEntity && $targetPropertyValue instanceof AbstractEventEntity) {
+                $sourcePropertyValue->_mergeProperties($targetPropertyValue);
+            } elseif (
+                (is_array($sourcePropertyValue) || $sourcePropertyValue instanceof \Traversable && $sourcePropertyValue instanceof \ArrayAccess)
+                && (is_array($targetPropertyValue) || $targetPropertyValue instanceof \Traversable && $targetPropertyValue instanceof \ArrayAccess)
+            ) {
+                $this->_setProperty(
+                    $propertyName, $this->mergeTraversable($sourcePropertyValue, $targetPropertyValue)
+                );
+            } else {
+                $this->_setProperty($propertyName, $targetPropertyValue);
+            }
+        }
+    }
+
+    /**
+     * @param array|\Traversable|\ArrayAccess $source
+     * @param array|\Traversable|\ArrayAccess $target
+     * @return array|\Traversable|\ArrayAccess
+     */
+    protected function mergeTraversable(\Traversable $source, \Traversable $target)
+    {
+        $collection = [];
+        foreach ($target as $targetItem) {
+            if (!($targetItem instanceof AbstractEventEntity)) {
+                continue;
+            }
+            $sourceItem = $this->findInTraversable(
+                $source,
+                $targetItem
+            );
+            if ($sourceItem === null) {
+                $collection[] = $targetItem;
+            } else {
+                $sourceItem->_mergeProperties($targetItem);
+                $collection[] = $sourceItem;
+            }
+        }
+        if ($source instanceof \TYPO3\CMS\Extbase\Persistence\ObjectStorage) {
+            $source = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
+            foreach ($collection as $item) {
+                $source->attach($item);
+            }
+        } else {
+            foreach ($source as $sourceIndex => $sourceItem) {
+                if (isset($source[$sourceIndex])) {
+                    unset($source[$sourceIndex]);
+                }
+                if (isset($source[$sourceItem])) {
+                    unset($source[$sourceItem]);
+                }
+            }
+            foreach ($collection as $item) {
+                $source[] = $item;
+            }
+        }
+        return $source;
+    }
+
+    /**
+     * @param \Traversable $traversable
+     * @param AbstractEventEntity $needle
+     * @return null|AbstractEventEntity
+     */
+    protected function findInTraversable(\Traversable $traversable, AbstractEventEntity $needle)
+    {
+        foreach ($traversable as $item) {
+            if (!($item instanceof AbstractEventEntity)) {
+                continue;
+            }
+            if ($item->getUuid() === $needle->getUuid()) {
+                return $item;
+            }
+        }
+        return null;
+    }
 }

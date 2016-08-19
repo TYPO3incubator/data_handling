@@ -19,6 +19,8 @@ use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
 class EventSelector implements Instantiable
 {
+    const DELIMITER_STREAM_NAME = '/';
+
     const PATTERN = '#'
         . '^(?P<all>\*)$|'
         . '^(?:\$(?P<streamName>[^.\[]+)?)?'
@@ -181,5 +183,90 @@ class EventSelector implements Instantiable
     {
         $this->events = $events;
         return $this;
+    }
+
+    /**
+     * Determines whether this current selector is a
+     * super-set of a given selector to be compared to.
+     *
+     * @param EventSelector $selector
+     * @return bool
+     */
+    public function fulfills(EventSelector $selector)
+    {
+        if ($this->all) {
+            return true;
+        }
+
+        if (
+            !empty($this->streamName) && !empty($selector->getStreamName())
+            && !$this->compareWildcards($this->streamName, $selector->getStreamName())
+        ) {
+            // stream names are not matching (including wildcard comparison)
+            return false;
+        }
+
+        if (
+            !empty($this->categories) && !empty($selector->getCategories())
+            && count(array_intersect($this->categories, $selector->getCategories())) === 0
+        ) {
+            // if not a single category was matching
+            return false;
+        }
+
+        if (
+            !empty($this->events) && !empty($selector->getEvents())
+            && !$this->compareClassInheritances($this->events, $selector->getEvents())
+        ) {
+            // if none of the given events equals or inherits one of our events
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function compareWildcards(string $requirement, string $needle)
+    {
+        return (
+            strpos(
+                $this->getComparablePart($needle),
+                $this->getComparablePart($requirement)
+            ) === 0
+        );
+    }
+
+    /**
+     * @param string[] $requirements
+     * @param string[] $needles
+     * @return bool
+     */
+    protected function compareClassInheritances(array $requirements, array $needles)
+    {
+        foreach ($requirements as $requirement) {
+            foreach ($needles as $needle) {
+                // is $needle is or is a sub-class of $requirement
+                if (is_a($needle, $requirement, true)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    protected function getComparablePart(string $string)
+    {
+        $wildcardPosition = strpos($string, '*');
+        if ($wildcardPosition === false) {
+            return $string;
+        }
+
+        $comparablePart = substr($string, 0, $wildcardPosition);
+        $comparablePart = rtrim($comparablePart, static::DELIMITER_STREAM_NAME) . static::DELIMITER_STREAM_NAME;
+
+        return $comparablePart;
     }
 }

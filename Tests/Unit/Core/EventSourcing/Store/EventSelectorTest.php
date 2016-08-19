@@ -158,4 +158,82 @@ class EventSelectorTest extends UnitTestCase
             ],
         ];
     }
+
+    /**
+     * @param string $supervisor
+     * @param string $candidate
+     * @param bool $expectation
+     * @test
+     * @dataProvider isFulfilledDataProvider
+     */
+    public function isFulfilled(string $supervisor, string $candidate, bool $expectation)
+    {
+        $this->assertEquals(
+            $expectation,
+            EventSelector::create($supervisor)
+                ->fulfills(EventSelector::create($candidate))
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function isFulfilledDataProvider()
+    {
+        return [
+            'all' => [
+                '*', '*', true
+            ],
+            'all & anything' => [
+                '*', '$stream.category[event]', true
+            ],
+            'equal streams' => [
+                '$stream', '$stream', true
+            ],
+            'different streams' => [
+                '$stream', '$other', false
+            ],
+            'matching wildcard streams' => [
+                '$stream/*', '$stream/record/abcd', true
+            ],
+            'matching both wildcard streams' => [
+                '$stream/*', '$stream/record/*', true
+            ],
+            'different wildcard streams' => [
+                '$stream/record/abcd', '$stream/*', false
+            ],
+            'matching categories' => [
+                '.first.second', '.first.other-one', true
+            ],
+            'different categories' => [
+                '.dunno.second', '.first.other-one', false
+            ],
+            'matching events' => [
+                '[' . \stdClass::class . ']', '[' . \stdClass::class . ']', true
+            ],
+            'different events' => [
+                '[dunno,second]', '[first,other-one]', false
+            ],
+            'matching inherited events' => [
+                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
+                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class . ']',
+                true
+            ],
+            'different inherited events' => [
+                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class . ']',
+                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
+                false
+            ],
+            'matching chain' => [
+                '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
+                '$stream/record/abcd.first.other-one[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class . ']',
+                true
+            ],
+            'different chain' => [
+                '$stream/record/abcd.first.other-one[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class . ']',
+                '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
+                false
+            ],
+        ];
+    }
 }

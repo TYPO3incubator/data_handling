@@ -14,6 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
@@ -42,7 +43,9 @@ abstract class AbstractSaga
      */
     public function tell(Applicable $state, EventSelector $epic)
     {
-        $applicableState = array($state, 'apply');
+        $applicableState = function(AbstractEvent $event) use ($state) {
+            $state->apply($event);
+        };
 
         StreamProvider::create($this->name)
             ->setStore($this->getStore())

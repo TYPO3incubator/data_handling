@@ -119,12 +119,11 @@ class Common
     {
         // initialize default EventStore using SqlDriver
         EventStorePool::provide()
-            ->registerDefault(
-                EventStore::create(
-                    SqlDriver::instance()
-                )
+            ->enrolStore('sql')
+            ->concerning('*')
+            ->setStore(
+                EventStore::create(SqlDriver::instance())
             );
-
         // bind stream, managing generic events
         EventManager::provide()->bindCommitter(
             StreamProvider::create('generic')

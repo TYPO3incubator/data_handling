@@ -45,47 +45,18 @@ class EventStorePool implements Providable
     }
 
     /**
-     * @var EventStore[]
+     * @var EventStoreEnrolment[]
      */
-    protected $eventStores = [];
-
-    /**
-     * @param EventStore $eventStore
-     * @param string $name
-     * @return EventStorePool
-     */
-    public function register(EventStore $eventStore, string $name)
-    {
-        if (isset($this->eventStores[$name])) {
-            throw new \RuntimeException('Event store "' . $name . '" is already registered', 1470951132);
-        }
-        $this->eventStores[$name] = $eventStore;
-        return $this;
-    }
-
-    /**
-     * @param EventStore $eventStore
-     * @return EventStorePool
-     */
-    public function registerDefault(EventStore $eventStore)
-    {
-        try {
-            return $this->register($eventStore, 'default');
-        } catch (\Exception $exception) {
-        }
-        return $this;
-    }
+    protected $enrolments = [];
 
     /**
      * @param string $name
-     * @return EventStore
+     * @return EventStoreEnrolment
      */
-    public function get(string $name)
+    public function enrolStore(string $name)
     {
-        if (!isset($this->eventStores[$name])) {
-            throw new \RuntimeException('Event store "' . $name . '" does not exist', 1470951133);
-        }
-        return $this->eventStores[$name];
+        $this->enrolments[$name] = EventStoreEnrolment::instance()->setName($name);
+        return $this->enrolments[$name];
     }
 
     /**
@@ -93,6 +64,15 @@ class EventStorePool implements Providable
      */
     public function getDefault()
     {
-        return $this->get('default');
+        foreach ($this->enrolments as $enrolment) {
+            if (
+                $enrolment->getConcerning()->isAll()
+                || $enrolment->getConcerning()->getStreamName() === '*'
+            ) {
+                return $enrolment->getStore();
+            }
+        }
+
+        throw new \RuntimeException('Default store cannot be determined from enrolments', 1471614261);
     }
 }

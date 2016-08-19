@@ -42,46 +42,77 @@ class EventSelectorTest extends UnitTestCase
     public function eventSelectorIsCreatedDataProvider(): array
     {
         return [
+            'all' => [
+                '*',
+                [
+                    'all' => true,
+                    'streamName' => '',
+                    'categories' => [],
+                    'events' => [],
+                ]
+            ],
             'stream name' => [
                 '$stream',
                 [
                     'streamName' => 'stream',
                     'categories' => [],
-                ]
-            ],
-            'stream name with empty category' => [
-                '$stream[]',
-                [
-                    'streamName' => 'stream',
-                    'categories' => [],
+                    'events' => [],
                 ]
             ],
             'one category' => [
-                '[category]',
+                '.category',
                 [
                     'streamName' => '',
                     'categories' => ['category'],
+                    'events' => [],
+                ]
+            ],
+            'one event' => [
+                '[event]',
+                [
+                    'streamName' => '',
+                    'categories' => [],
+                    'events' => ['event'],
+                ]
+            ],
+            'many events' => [
+                '[created,changed]',
+                [
+                    'streamName' => '',
+                    'categories' => [],
+                    'events' => ['created', 'changed'],
                 ]
             ],
             'many categories' => [
-                '[first, second]',
+                '.first.second',
                 [
                     'streamName' => '',
                     'categories' => ['first', 'second'],
+                    'events' => [],
                 ]
             ],
-            'stream name with one category' => [
-                '$stream[category]',
+            'stream name with one category and one event' => [
+                '$stream.category[event]',
                 [
                     'streamName' => 'stream',
                     'categories' => ['category'],
+                    'events' => ['event'],
                 ]
             ],
-            'stream name with many categories' => [
-                '$stream[first, second]',
+            'stream name with many categories and events' => [
+                '$stream.first.second[created,changed]',
                 [
                     'streamName' => 'stream',
                     'categories' => ['first', 'second'],
+                    'events' => ['created', 'changed'],
+                ]
+            ],
+            'stream wildcard name with many categories and events' => [
+                '$stream/record/*.first.second[created,changed]',
+                [
+                    'streamName' => 'stream/record/*',
+                    'categories' => ['first', 'second'],
+                    'events' => ['created', 'changed'],
                 ]
             ],
         ];
@@ -107,13 +138,22 @@ class EventSelectorTest extends UnitTestCase
             'noting' => [
                 '',
             ],
+            'invalid all' => [
+                '*.category[event]'
+            ],
             'without stream prefix' => [
                 'stream',
             ],
+            'stream with empty events' => [
+                '$stream[]',
+            ],
             'empty category' => [
+                '.',
+            ],
+            'empty events' => [
                 '[]',
             ],
-            'empty category with comma' => [
+            'empty events with comma' => [
                 '[,]',
             ],
         ];

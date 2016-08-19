@@ -19,33 +19,65 @@ use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 
 class EventSelector implements Instantiable
 {
+    const PATTERN = '#'
+        . '^(?P<all>\*)$|'
+        . '^(?:\$(?P<streamName>[^.\[]+)?)?'
+            . '(?:(?P<categoryPart>(?:\.[^.\[]+)+))?'
+            . '(?:\[(?P<eventList>[^\]]+)\])?$'
+        . '#';
+
     /**
+     * Syntax: "$stream.category[event]"
+     *
+     * + "$prefix/record/abcd" -> select exact stream name
+     * + "$prefix/record/*" -> select matching wildcard stream name
+     * + "*" -> select everything
+     *
      * @param string $selector
      * @return EventSelector
      */
     public static function create(string $selector)
     {
-        // (?P<categories>\[[^\]]+\])?
-        if (!preg_match('#(?:\$(?P<streamName>[^\[]+)?)?(?:\[(?P<categories>[^\]]+)\])?#', $selector, $matches)) {
+        if (!preg_match(static::PATTERN, $selector, $matches)) {
             throw new \RuntimeException('Invalid event selector "' . $selector . '"', 1471435329);
-        }
-
-        if (
-            empty($matches['streamName'])
-            && (empty($matches['categories']) || trim($matches['categories'], ' ,') === '')
-        ) {
-            throw new \RuntimeException('Event selector without stream name and categories', 1471435330);
         }
 
         $eventSelector = static::instance();
 
-        if (!empty($matches['streamName'])) {
-            $eventSelector->setStreamName($matches['streamName']);
+        if (!empty($matches['all'])) {
+            $eventSelector->all = true;
+            return $eventSelector;
         }
-        if (!empty($matches['categories'])) {
-            $eventSelector->setCategories(
-                GeneralUtility::trimExplode(',', $matches['categories'], true)
-            );
+
+        $streamName = ($matches['streamName'] ?? null);
+        $categoryPart = ($matches['categoryPart'] ?? null);
+        $eventList = ($matches['eventList'] ?? null);
+
+        $categories = [];
+        $events = [];
+
+        if ($streamName !== null) {
+            trim($streamName);
+        }
+        if ($categoryPart !== null) {
+            $categories = GeneralUtility::trimExplode('.', $categoryPart, true);
+        }
+        if ($eventList) {
+            $events = GeneralUtility::trimExplode(',', $eventList, true);
+        }
+
+        if (empty($streamName) && empty($categories) && empty($events)) {
+            throw new \RuntimeException('Event selector without stream name, categories and events', 1471435330);
+        }
+
+        if (!empty($streamName)) {
+            $eventSelector->setStreamName($streamName);
+        }
+        if (!empty($categories)) {
+            $eventSelector->setCategories($categories);
+        }
+        if (!empty($events)) {
+            $eventSelector->setEvents($events);
         }
 
         return $eventSelector;
@@ -60,15 +92,46 @@ class EventSelector implements Instantiable
     }
 
     /**
+     * @var bool
+     */
+    protected $all = false;
+
+    /**
      * @var string
      */
     protected $streamName = '';
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $categories = [];
 
+    /**
+     * @var string[]
+     */
+    protected $events = [];
+
+    /**
+     * @return bool
+     */
+    public function isAll()
+    {
+        return $this->all;
+    }
+
+    /**
+     * @param bool $all
+     * @return EventSelector
+     */
+    public function setAll(bool $all)
+    {
+        $this->all = $all;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getStreamName()
     {
         return $this->streamName;
@@ -84,6 +147,9 @@ class EventSelector implements Instantiable
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getCategories()
     {
         return $this->categories;
@@ -96,6 +162,24 @@ class EventSelector implements Instantiable
     public function setCategories(array $categories)
     {
         $this->categories = $categories;
+        return $this;
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getEvents()
+    {
+        return $this->events;
+    }
+
+    /**
+     * @param array $events
+     * @return EventSelector
+     */
+    public function setEvents(array $events)
+    {
+        $this->events = $events;
         return $this;
     }
 }

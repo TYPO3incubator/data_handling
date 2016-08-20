@@ -44,7 +44,7 @@ class SqlDriver implements DriverInterface
         $rawEvent = [
             'event_stream' => $streamName,
             'event_categories' => (!empty($categories) ? implode(',', $categories) : null),
-            'event_uuid' => $event->getUuid(),
+            'event_id' => $event->getEventId(),
             'event_name' => get_class($event),
             'event_date' => $event->getDate()->format(static::FORMAT_DATETIME),
             'data' => $event->exportData(),

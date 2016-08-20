@@ -21,6 +21,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 class SqlDriverIterator implements \Iterator
 {
     /**
+     * @param Statement $statement
      * @return SqlDriverIterator
      */
     public static function create(Statement $statement)
@@ -57,7 +58,7 @@ class SqlDriverIterator implements \Iterator
      */
     public function key()
     {
-        return ($this->event->getUuid() ?? null);
+        return ($this->event->getEventId() ?? null);
     }
 
     public function next()
@@ -109,7 +110,7 @@ class SqlDriverIterator implements \Iterator
         $this->event = call_user_func(
             $eventClassName . '::reconstitute',
             $rawEvent['event_name'],
-            $rawEvent['event_uuid'],
+            $rawEvent['event_id'],
             $eventDate,
             $data,
             $metadata

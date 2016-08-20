@@ -23,13 +23,13 @@ abstract class AbstractEvent
 {
     /**
      * @param string $eventType
-     * @param string $uuid
+     * @param string $eventId
      * @param \DateTime $date
      * @param null|array $data
      * @param null|array $metadata
      * @return AbstractEvent
      */
-    static function reconstitute(string $eventType, string $uuid, \DateTime $date, $data, $metadata)
+    static function reconstitute(string $eventType, string $eventId, \DateTime $date, $data, $metadata)
     {
         if (!in_array(Instantiable::class, class_implements($eventType))) {
             throw new \RuntimeException('Cannot instantiate "' . $eventType . '"', 1470935798);
@@ -37,7 +37,7 @@ abstract class AbstractEvent
 
         /** @var AbstractEvent $event */
         $event = call_user_func($eventType . '::instance');
-        $event->uuid = Uuid::fromString($uuid);
+        $event->eventId = $eventId;
         $event->date = $date;
         $event->metadata = $metadata;
         $event->importData($data);
@@ -45,9 +45,9 @@ abstract class AbstractEvent
     }
 
     /**
-     * @var UuidInterface
+     * @var string
      */
-    protected $uuid;
+    protected $eventId;
 
     /**
      * @var \DateTime
@@ -66,13 +66,16 @@ abstract class AbstractEvent
 
     public function __construct()
     {
-        $this->uuid = Uuid::uuid4();
+        $this->eventId = Uuid::uuid4()->toString();
         $this->date = MicroDateTime::create('now');
     }
 
-    public function getUuid(): UuidInterface
+    /**
+     * @return string
+     */
+    public function getEventId(): string
     {
-        return $this->uuid;
+        return $this->eventId;
     }
 
     /**

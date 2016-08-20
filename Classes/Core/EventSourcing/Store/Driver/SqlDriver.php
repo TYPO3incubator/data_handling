@@ -14,9 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\Query\Expression\CompositeExpression;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 
 class SqlDriver implements DriverInterface
 {
@@ -79,23 +82,12 @@ class SqlDriver implements DriverInterface
         $queryBuilder->getRestrictions()->removeAll();
 
         if (!empty($eventStream)) {
-            $namedParameter = $queryBuilder->createNamedParameter($eventStream);
-            $predicates[] = $queryBuilder->expr()->eq('event_stream', $namedParameter);
+            $predicates[] = $this->createMatchesWildcardExpression($queryBuilder, 'event_stream', $eventStream);
         }
         if (!empty($categories)) {
-            $expression = $queryBuilder->expr()->orX();
-            foreach ($categories as $category) {
-                $namedParameter = $queryBuilder->createNamedParameter($category);
-                $escapedCategory = $queryBuilder->escapeLikeWildcards($category);
-                $expression->addMultiple([
-                    $queryBuilder->expr()->eq('event_categories', $namedParameter),
-                    $queryBuilder->expr()->like('event_categories', $queryBuilder->quote($escapedCategory . ',%')),
-                    $queryBuilder->expr()->like('event_categories', $queryBuilder->quote('%,' . $escapedCategory)),
-                    $queryBuilder->expr()->like('event_categories', $queryBuilder->quote('%,' . $escapedCategory . ',%')),
-                ]);
-            }
-            $predicates[] = $expression;
+            $predicates[] = $this->createFindInListExpression($queryBuilder, 'event_categories', $categories);
         }
+        // @todo Add event name selection
 
         $statement = $queryBuilder
             ->select('*')
@@ -104,5 +96,46 @@ class SqlDriver implements DriverInterface
             ->execute();
 
         return SqlDriverIterator::create($statement);
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param string $fieldName
+     * @param string $needle
+     * @return string
+     */
+    protected function createMatchesWildcardExpression(QueryBuilder $queryBuilder, string $fieldName, string $needle)
+    {
+        $comparableNeedle = EventSelector::getComparablePart($needle);
+        if ($needle === $comparableNeedle) {
+            $namedParameter = $queryBuilder->createNamedParameter($needle);
+            $expression = $queryBuilder->expr()->eq($fieldName, $namedParameter);
+        } else {
+            $escapedComparableNeedle = $queryBuilder->escapeLikeWildcards($comparableNeedle);
+            $expression = $queryBuilder->expr()->like($fieldName, $queryBuilder->quote($escapedComparableNeedle . '%'));
+        }
+        return $expression;
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param string $fieldName
+     * @param array $needles
+     * @return CompositeExpression
+     */
+    protected function createFindInListExpression(QueryBuilder $queryBuilder, string $fieldName, array $needles)
+    {
+        $expression = $queryBuilder->expr()->orX();
+        foreach ($needles as $needle) {
+            $namedParameter = $queryBuilder->createNamedParameter($needle);
+            $escapedNeedle = $queryBuilder->escapeLikeWildcards($needle);
+            $expression->addMultiple([
+                $queryBuilder->expr()->eq($fieldName, $namedParameter),
+                $queryBuilder->expr()->like($fieldName, $queryBuilder->quote($escapedNeedle . ',%')),
+                $queryBuilder->expr()->like($fieldName, $queryBuilder->quote('%,' . $escapedNeedle)),
+                $queryBuilder->expr()->like($fieldName, $queryBuilder->quote('%,' . $escapedNeedle . ',%')),
+            ]);
+        }
+        return $expression;
     }
 }

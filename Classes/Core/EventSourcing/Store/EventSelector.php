@@ -20,8 +20,8 @@ use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 class EventSelector implements Instantiable
 {
     const DELIMITER_STREAM_NAME = '/';
-
-    const PATTERN = '#'
+    const LITERAL_PATTERN = '#[~$.\[,\]]#';
+    const SELECTOR_PATTERN = '#'
         . '^(?P<all>\*)$|'
         . '^((?P<streamType>\$|~)(?P<streamName>[^.\[]+)?)?'
             . '(?:(?P<categoryPart>(?:\.[^.\[]+)+))?'
@@ -40,7 +40,7 @@ class EventSelector implements Instantiable
      */
     public static function create(string $selector)
     {
-        if (!preg_match(static::PATTERN, $selector, $matches)) {
+        if (!preg_match(static::SELECTOR_PATTERN, $selector, $matches)) {
             throw new \RuntimeException('Invalid event selector "' . $selector . '"', 1471435329);
         }
 
@@ -211,6 +211,7 @@ class EventSelector implements Instantiable
      */
     public function setStreamName(string $streamName)
     {
+        $this->validateLiterals($streamName);
         $this->streamName = $streamName;
         return $this;
     }
@@ -229,6 +230,10 @@ class EventSelector implements Instantiable
      */
     public function setCategories(array $categories)
     {
+        array_map(
+            $this->validateLiteralsClosure(),
+            $categories
+        );
         $this->categories = $categories;
         return $this;
     }
@@ -247,6 +252,10 @@ class EventSelector implements Instantiable
      */
     public function setEvents(array $events)
     {
+        array_map(
+            $this->validateLiteralsClosure(),
+            $events
+        );
         $this->events = $events;
         return $this;
     }
@@ -289,6 +298,26 @@ class EventSelector implements Instantiable
         }
 
         return true;
+    }
+
+    /**
+     * @param string $value
+     */
+    protected function validateLiterals(string $value)
+    {
+        if (preg_match(static::LITERAL_PATTERN, $value)) {
+            throw new \RuntimeException('Value "' . $value . '" contains invalid literal patterns', 1471690906);
+        }
+    }
+
+    /**
+     * @return \Closure
+     */
+    protected function validateLiteralsClosure()
+    {
+        return function(string $value) {
+            $this->validateLiterals($value);
+        };
     }
 
     /**

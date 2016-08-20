@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Unit\Core\EventSourcing\Store;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class EventSelectorTest extends UnitTestCase
 {
@@ -266,5 +267,50 @@ class EventSelectorTest extends UnitTestCase
         $this->assertTrue(
             AssertionUtility::matchesExpectations($expectations, $absoluteEventSelector)
         );
+    }
+
+    /**
+     * @param array $properties
+     * @test
+     * @dataProvider invalidLiteralsAreDeterminedDataProvider
+     * @expectedException \RuntimeException
+     */
+    public function invalidLiteralsAreDetermined(array $properties)
+    {
+        $eventSelector = EventSelector::instance();
+        foreach ($properties as $propertyPath => $propertyValue) {
+            ObjectAccess::setProperty($eventSelector, $propertyPath, $propertyValue);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidLiteralsAreDeterminedDataProvider()
+    {
+        return [
+            'streamName' => [
+                [
+                    'streamName' => '$stream',
+                ],
+            ],
+            'categories' => [
+                [
+                    'categories' => ['$category'],
+                ],
+            ],
+            'events' => [
+                [
+                    'events' => ['$event'],
+                ],
+            ],
+            'combined' => [
+                [
+                    'streamName' => '~stream.name',
+                    'categories' => ['category[mixed]'],
+                    'events' => ['event,event'],
+                ],
+            ],
+        ];
     }
 }

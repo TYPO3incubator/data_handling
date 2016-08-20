@@ -67,13 +67,13 @@ class SqlDriver implements DriverInterface
     }
 
     /**
-     * @param string $eventStream
+     * @param string $streamName
      * @param array $categories
      * @return SqlDriverIterator
      */
-    public function open(string $eventStream, array $categories = [])
+    public function open(string $streamName, array $categories = [])
     {
-        if (empty($eventStream) && empty($categories)) {
+        if (empty($streamName) && empty($categories)) {
             throw new \RuntimeException('No selection criteria given', 1471441756);
         }
 
@@ -81,8 +81,8 @@ class SqlDriver implements DriverInterface
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
 
-        if (!empty($eventStream)) {
-            $predicates[] = $this->createMatchesWildcardExpression($queryBuilder, 'event_stream', $eventStream);
+        if (!empty($streamName)) {
+            $predicates[] = $this->createMatchesWildcardExpression($queryBuilder, 'event_stream', $streamName);
         }
         if (!empty($categories)) {
             $predicates[] = $this->createFindInListExpression($queryBuilder, 'event_categories', $categories);

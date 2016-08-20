@@ -27,9 +27,9 @@ interface DriverInterface
     public function append(string $streamName, AbstractEvent $event, array $categories = []): bool;
 
     /**
-     * @param string $eventStream
+     * @param string $streamName
      * @param string[] $categories
      * @return \Iterator
      */
-    public function open(string $eventStream, array $categories = []);
+    public function open(string $streamName, array $categories = []);
 }

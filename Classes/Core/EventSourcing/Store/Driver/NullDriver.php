@@ -40,11 +40,11 @@ class NullDriver implements DriverInterface
     }
 
     /**
-     * @param string $eventStream
+     * @param string $streamName
      * @param string[] $categories
      * @return \ArrayIterator
      */
-    public function open(string $eventStream, array $categories = [])
+    public function open(string $streamName, array $categories = [])
     {
         return new \ArrayIterator([]);
     }

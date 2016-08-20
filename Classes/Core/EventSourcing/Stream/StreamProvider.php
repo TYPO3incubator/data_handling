@@ -15,166 +15,73 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Committable;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Publishable;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
+use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Object\Providable;
 
-class StreamProvider implements Committable, Publishable
+class StreamProvider implements Instantiable, Providable
 {
     /**
-     * @var StreamProvider[]
+     * @var StreamProvider
      */
-    static protected $streamProviders = [];
+    protected static $streamProvider;
 
     /**
-     * @param string $name
+     * @param bool $force
      * @return StreamProvider
      */
-    public static function provideFor(string $name)
+    public static function provide(bool $force = false)
     {
-        if (!isset(static::$streamProviders[$name])) {
-            static::$streamProviders[$name] = static::create($name);
+        if ($force || !isset(static::$streamProvider)) {
+            static::$streamProvider = static::instance();
         }
-        return static::$streamProviders[$name];
+        return static::$streamProvider;
     }
 
     /**
      * @return StreamProvider
      */
-    public static function create(string $name)
+    public static function instance()
     {
-        return GeneralUtility::makeInstance(StreamProvider::class, $name);
+        return GeneralUtility::makeInstance(StreamProvider::class);
     }
+
+    /**
+     * @var AbstractStream[]
+     */
+    protected $streams = [];
 
     /**
      * @param string $name
-     *
-     */
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string[]
-     */
-    protected $eventNames = [];
-
-    /**
-     * @var EventStore
-     */
-    protected $store;
-
-    /**
-     * @var AbstractStream
-     */
-    protected $stream;
-
-    /**
-     * @param array $eventNames
-     * @return StreamProvider
-     */
-    public function setEventNames(array $eventNames)
-    {
-        $this->eventNames = $eventNames;
-        return $this;
-    }
-
-    /**
-     * @param EventStore $store
-     * @return StreamProvider
-     */
-    public function setStore(EventStore $store)
-    {
-        $this->store = $store;
-        return $this;
-    }
-
-    /**
      * @param AbstractStream $stream
-     * @return StreamProvider
      */
-    public function setStream(AbstractStream $stream)
+    public function registerStream(string $name, AbstractStream $stream)
     {
-        $this->stream = $stream->setName($this->name);
-        return $this;
+        if (!($stream instanceof Instantiable)) {
+            throw new \RuntimeException('Stream must be instantiable', 1471614998);
+        }
+        $this->streams[$name] = $stream;
     }
 
     /**
-     * @param AbstractEvent $event
-     * @return StreamProvider
+     * @param string $name
+     * @return AbstractStream
      */
-    public function publish(AbstractEvent $event)
+    public function useStream(string $name)
     {
-        if ($this->isValidEvent($event)) {
-            // @todo Decouple publish and commit
-            $this->commit($event);
-            $this->stream->publish($event);
+        if (!isset($this->streams[$name])) {
+            throw new \RuntimeException('Stream "' . $name . '" is not registered', 1471614999);
         }
-        return $this;
+        return $this->streams[$name];
     }
 
     /**
-     * @param AbstractEvent $event
-     * @param array $categories
+     * @param string $name
+     * @return AbstractStream
      */
-    public function commit(AbstractEvent $event, array $categories = [])
+    public function newStream(string $name)
     {
-        if ($this->isValidEvent($event)) {
-            $streamName = $this->stream->determineNameByEvent($event);
-            $this->store->append($streamName, $event, $categories);
-        }
-    }
-
-    /**
-     * @param callable $consumer
-     * @return StreamProvider
-     */
-    public function subscribe(callable $consumer)
-    {
-        $this->stream->subscribe($consumer);
-        return $this;
-    }
-
-    /**
-     * @param EventSelector $eventSelector
-     * @return void
-     */
-    public function replay(EventSelector $eventSelector) {
-        $iterator = $this->store->open(
-            $this->stream->prefix(
-                $eventSelector->getStreamName()
-            ),
-            $eventSelector->getCategories()
-        );
-        foreach ($iterator as $event) {
-            $this->stream->publish($event);
-        }
-        // no return value, since replay should be the last action
-        // and subscriptions have to be applied for this action
-    }
-
-    /**
-     * @param AbstractEvent $event
-     * @return bool
-     */
-    protected function isValidEvent(AbstractEvent $event): bool
-    {
-        if (empty($this->eventNames)) {
-            return true;
-        }
-        foreach ($this->eventNames as $eventName) {
-            if (is_a($event, $eventName)) {
-                return true;
-            }
-        }
-        return false;
+        /** @var Instantiable $streamClassName */
+        $streamClassName = get_class($this->useStream($name));
+        return $streamClassName::instance();
     }
 }

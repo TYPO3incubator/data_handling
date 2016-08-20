@@ -70,26 +70,6 @@ class EventManager implements Providable, Manageable, Listenable
     ];
 
     /**
-     * @param mixed $delegate
-     * @return EventManager
-     * @deprecated Either use bindCommitter() or bindPublisher()
-     */
-    public function bind($delegate) {
-        if (!($delegate instanceof Committable) && !($delegate instanceof Publishable)) {
-            throw new \RuntimeException('Committable or Publishable expected', 1471467847);
-        }
-
-        if ($delegate instanceof Committable) {
-            $this->bindCommitter($delegate);
-        }
-        if ($delegate instanceof Publishable) {
-            $this->bindPublisher($delegate);
-        }
-
-        return $this;
-    }
-
-    /**
      * @param Committable $committer
      * @return EventManager
      */

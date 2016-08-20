@@ -84,12 +84,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
 
         // it would be possible to bind to $this->stream directly,
         // but the path through StreamProvider is tested as well
-        EventManager::provide()->bindPublisher(
-            StreamProvider::provideFor($this->streamName)
-                ->setStream($this->stream)
-                ->setStore(EventStore::create(NullDriver::instance()))
-                ->setEventNames([AbstractEvent::class])
-        );
+        EventManager::provide()->bindPublisher($this->stream);
     }
 
     protected function tearDown()

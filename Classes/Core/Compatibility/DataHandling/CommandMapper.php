@@ -310,11 +310,8 @@ class CommandMapper
         // @todo lookup in context-based projection
 
         $readState = ReadState::instance();
-
-        $epic = EventSelector::instance()
-            ->setStreamName($reference->__toString());
-        GenericSaga::create('generic')
-            ->tell($readState, $epic);
+        $desire = EventSelector::create('~' . $reference->__toString());
+        GenericSaga::create()->tell($readState, $desire);
 
         return $readState;
     }

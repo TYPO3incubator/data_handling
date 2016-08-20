@@ -20,12 +20,11 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 class GenericSaga extends AbstractSaga
 {
     /**
-     * @param string $name
      * @return GenericSaga
      */
-    public static function create(string $name)
+    public static function create()
     {
-        return GeneralUtility::makeInstance(GenericSaga::class, $name);
+        return GeneralUtility::makeInstance(GenericSaga::class);
     }
 
     /**

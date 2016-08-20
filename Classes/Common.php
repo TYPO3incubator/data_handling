@@ -124,12 +124,11 @@ class Common
             ->setStore(
                 EventStore::create(SqlDriver::instance())
             );
+
         // bind stream, managing generic events
-        EventManager::provide()->bindCommitter(
-            StreamProvider::create('generic')
-                ->setEventNames([AbstractEvent::class])
-                ->setStream(GenericStream::instance())
-                ->setStore(EventStorePool::provide()->getDefault())
-        );
+        $genericStream = GenericStream::instance()->setPrefix('generic');
+        StreamProvider::provide()->registerStream('generic', $genericStream);
+        // bind stream, managing generic events
+        EventManager::provide()->bindCommitter($genericStream);
     }
 }

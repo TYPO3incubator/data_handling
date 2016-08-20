@@ -15,15 +15,17 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Committable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Publishable;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 
-abstract class AbstractStream implements Publishable
+abstract class AbstractStream implements Publishable, Committable
 {
     /**
      * @var string
      */
-    protected $name;
+    protected $prefix = 'abstract-stream';
 
     /**
      * @var callable[]
@@ -31,10 +33,13 @@ abstract class AbstractStream implements Publishable
     protected $consumers = [];
 
     /**
-     * @param string $name
-     * @return AbstractStream
+     * @param string $prefix
+     * @return GenericStream
      */
-    abstract public function setName(string $name);
+    public function setPrefix(string $prefix) {
+        $this->prefix = $prefix;
+        return $this;
+    }
 
     /**
      * @param string $streamName
@@ -42,24 +47,83 @@ abstract class AbstractStream implements Publishable
      */
     public function prefix(string $streamName): string
     {
-        return ($streamName ? $this->name . '-' . $streamName : '');
+        return EventSelector::cleanPrefixPart($this->prefix)
+            . ($streamName ? EventSelector::DELIMITER_STREAM_NAME . $streamName : '');
     }
 
     /**
      * @param AbstractEvent $event
-     * @return AbstractStream
+     * @return GenericStream
      */
-    abstract public function publish(AbstractEvent $event);
+    public function publish(AbstractEvent $event)
+    {
+        // @todo Add check agains event type via EventSelector
+        foreach ($this->consumers as $consumer) {
+            call_user_func($consumer, $event);
+        }
+        return $this;
+    }
 
     /**
      * @param callable $consumer
-     * @return AbstractStream
+     * @return GenericStream
      */
-    abstract public function subscribe(callable $consumer);
+    public function subscribe(callable $consumer)
+    {
+        if (!in_array($consumer, $this->consumers, true)) {
+            $this->consumers[] = $consumer;
+        }
+        return $this;
+    }
+
+    /**
+     * @param AbstractEvent $event
+     * @param array $categories
+     * @return GenericStream
+     */
+    public function commit(AbstractEvent $event, array $categories = [])
+    {
+        $streamName = $this->determineStreamNameByEvent($event);
+
+        $eventSelector = EventSelector::instance()
+            ->setStreamName($streamName)
+            ->setEvents([get_class($event)])
+            ->setCategories($categories);
+
+        EventStorePool::provide()
+            ->getFor($eventSelector)
+            ->append($streamName, $event, $categories);
+
+        return $this;
+    }
+
+    /**
+     * @param EventSelector $selector
+     * @return void
+     */
+    public function replay(EventSelector $selector)
+    {
+        // create absolute selector by adding prefix (if required)
+        $absoluteSelector = $selector->toAbsolute($this->prefix);
+
+        $iterator = EventStorePool::provide()
+            ->getFor($absoluteSelector)
+            ->open(
+                $absoluteSelector->getStreamName(),
+                $absoluteSelector->getCategories()
+            );
+
+        foreach ($iterator as $event) {
+            $this->publish($event);
+        }
+
+        // no return value, since replay should be the last action
+        // and subscriptions have to be applied for this action
+    }
 
     /**
      * @param AbstractEvent $event
      * @return string
      */
-    abstract public function determineNameByEvent(AbstractEvent $event): string;
+    abstract protected function determineStreamNameByEvent(AbstractEvent $event): string;
 }

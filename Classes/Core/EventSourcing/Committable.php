@@ -18,5 +18,5 @@ use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
 interface Committable
 {
-    public function commit(AbstractEvent $event);
+    public function commit(AbstractEvent $event, array $categories = []);
 }

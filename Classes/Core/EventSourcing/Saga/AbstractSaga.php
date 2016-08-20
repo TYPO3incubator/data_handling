@@ -17,53 +17,45 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\AbstractStream;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
 
 abstract class AbstractSaga
 {
     /**
-     * @var string
+     * @var AbstractStream
      */
-    protected $name;
+    protected $stream;
 
     /**
-     * @param string $name
+     * @param $stream
+     * @return AbstractStream
      */
-    public function __construct(string $name)
+    public function setStream($stream)
     {
-        $this->name = $name;
+        $this->stream = $stream;
+        return $this;
     }
 
     /**
      * @param Applicable $state
-     * @param EventSelector $epic
+     * @param EventSelector $desire
      */
-    public function tell(Applicable $state, EventSelector $epic)
+    public function tell(Applicable $state, EventSelector $desire)
     {
         $applicableState = function(AbstractEvent $event) use ($state) {
             $state->apply($event);
         };
 
-        StreamProvider::create($this->name)
-            ->setStore($this->getStore())
-            ->setStream($this->getStream())
+        $this->getStream()
             ->subscribe($applicableState)
-            ->replay($epic);
-    }
-
-    /**
-     * @return EventStore
-     */
-    protected function getStore()
-    {
-        return EventStorePool::provide()->getDefault();
+            ->replay($desire);
     }
 
     /**
      * @return AbstractStream
      */
-    abstract protected function getStream();
+    protected function getStream()
+    {
+        return $this->stream;
+    }
 }

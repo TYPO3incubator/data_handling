@@ -60,6 +60,26 @@ class EventStorePool implements Providable
     }
 
     /**
+     * @param string|EventSelector $concerning
+     * @return EventStore
+     */
+    public function getFor($concerning)
+    {
+        if (!($concerning instanceof EventSelector)) {
+            $selector = EventSelector::create($concerning);
+        }
+
+        // @todo Improve to find best (better) matching store
+        foreach ($this->enrolments as $enrolment) {
+            if ($enrolment->getConcerning()->fulfills($concerning)) {
+                return $enrolment->getStore();
+            }
+        }
+
+        return $this->getDefault();
+    }
+
+    /**
      * @return EventStore
      */
     public function getDefault()

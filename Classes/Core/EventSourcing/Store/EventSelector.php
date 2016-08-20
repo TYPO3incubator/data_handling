@@ -98,6 +98,45 @@ class EventSelector implements Instantiable
     }
 
     /**
+     * @param string $string
+     * @return string
+     */
+    public static function sanitizePrefixPart(string $string)
+    {
+        return static::cleanPrefixPart($string) . static::DELIMITER_STREAM_NAME;
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    public static function cleanPrefixPart(string $string)
+    {
+        return rtrim($string, static::DELIMITER_STREAM_NAME);
+    }
+
+    /**
+     * Removes the wildcard literal and sanitizes the value
+     * by sanitizing for the stream delimiter at the end.
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function getComparablePart(string $string)
+    {
+        $wildcardPosition = strpos($string, '*');
+        if ($wildcardPosition === false) {
+            return $string;
+        }
+
+        $comparablePart = static::sanitizePrefixPart(
+            substr($string, 0, $wildcardPosition)
+        );
+
+        return $comparablePart;
+    }
+
+    /**
      * @var bool
      */
     protected $all = false;
@@ -269,7 +308,7 @@ class EventSelector implements Instantiable
         }
 
         $eventSelector = static::instance()
-            ->setStreamName($this->sanitizePrefixablePart($streamNamePrefix) . $this->streamName)
+            ->setStreamName(static::sanitizePrefixPart($streamNamePrefix) . $this->streamName)
             ->setCategories($this->categories)
             ->setEvents($this->events);
 
@@ -280,8 +319,8 @@ class EventSelector implements Instantiable
     {
         return (
             strpos(
-                $this->getComparablePart($needle),
-                $this->getComparablePart($requirement)
+                static::getComparablePart($needle),
+                static::getComparablePart($requirement)
             ) === 0
         );
     }
@@ -302,32 +341,5 @@ class EventSelector implements Instantiable
             }
         }
         return false;
-    }
-
-    /**
-     * @param string $string
-     * @return string
-     */
-    protected function getComparablePart(string $string)
-    {
-        $wildcardPosition = strpos($string, '*');
-        if ($wildcardPosition === false) {
-            return $string;
-        }
-
-        $comparablePart = $this->sanitizePrefixablePart(
-            substr($string, 0, $wildcardPosition)
-        );
-
-        return $comparablePart;
-    }
-
-    /**
-     * @param string $string
-     * @return string
-     */
-    protected function sanitizePrefixablePart(string $string)
-    {
-        return rtrim($string, static::DELIMITER_STREAM_NAME) . static::DELIMITER_STREAM_NAME;
     }
 }

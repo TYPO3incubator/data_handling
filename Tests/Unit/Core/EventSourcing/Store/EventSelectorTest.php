@@ -51,12 +51,22 @@ class EventSelectorTest extends UnitTestCase
                     'events' => [],
                 ]
             ],
-            'stream name' => [
+            'absolute stream name' => [
                 '$stream',
                 [
                     'streamName' => 'stream',
                     'categories' => [],
                     'events' => [],
+                    'relative' => false,
+                ]
+            ],
+            'relative stream name' => [
+                '~stream',
+                [
+                    'streamName' => 'stream',
+                    'categories' => [],
+                    'events' => [],
+                    'relative' => true,
                 ]
             ],
             'one category' => [
@@ -235,5 +245,26 @@ class EventSelectorTest extends UnitTestCase
                 false
             ],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function isConvertedToAbsolute()
+    {
+        $relativeEventSelector = EventSelector::create('~aspect.category[event]');
+        $absoluteEventSelector = $relativeEventSelector->toAbsolute('absolute');
+
+        $expectations = [
+            'streamName' => 'absolute/aspect',
+            'categories' => ['category'],
+            'events' => ['event'],
+            'relative' => false,
+            'all' => false,
+        ];
+
+        $this->assertTrue(
+            AssertionUtility::matchesExpectations($expectations, $absoluteEventSelector)
+        );
     }
 }

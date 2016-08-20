@@ -23,7 +23,7 @@ class EventSelector implements Instantiable
 
     const PATTERN = '#'
         . '^(?P<all>\*)$|'
-        . '^(?:\$(?P<streamName>[^.\[]+)?)?'
+        . '^((?P<streamType>\$|~)(?P<streamName>[^.\[]+)?)?'
             . '(?:(?P<categoryPart>(?:\.[^.\[]+)+))?'
             . '(?:\[(?P<eventList>[^\]]+)\])?$'
         . '#';
@@ -49,6 +49,10 @@ class EventSelector implements Instantiable
         if (!empty($matches['all'])) {
             $eventSelector->all = true;
             return $eventSelector;
+        }
+
+        if ($matches['streamType'] === '~') {
+            $eventSelector->relative = true;
         }
 
         $streamName = ($matches['streamName'] ?? null);
@@ -99,6 +103,11 @@ class EventSelector implements Instantiable
     protected $all = false;
 
     /**
+     * @var bool
+     */
+    protected $relative = false;
+
+    /**
      * @var string
      */
     protected $streamName = '';
@@ -128,6 +137,24 @@ class EventSelector implements Instantiable
     public function setAll(bool $all)
     {
         $this->all = $all;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRelative()
+    {
+        return $this->relative;
+    }
+
+    /**
+     * @param bool $relative
+     * @return EventSelector
+     */
+    public function setRelative(bool $relative)
+    {
+        $this->relative = $relative;
         return $this;
     }
 
@@ -225,6 +252,30 @@ class EventSelector implements Instantiable
         return true;
     }
 
+    /**
+     * Creates absolute event stream selector by adding
+     * prefix if the current selector is relative.
+     *
+     * @param string $streamNamePrefix
+     * @return EventSelector
+     */
+    public function toAbsolute(string $streamNamePrefix)
+    {
+        if (!$this->relative || $this->all) {
+            return $this;
+        }
+        if (empty($streamNamePrefix)) {
+            throw new \RuntimeException('Stream name prefix must not be empty', 1471681523);
+        }
+
+        $eventSelector = static::instance()
+            ->setStreamName($this->sanitizePrefixablePart($streamNamePrefix) . $this->streamName)
+            ->setCategories($this->categories)
+            ->setEvents($this->events);
+
+        return $eventSelector;
+    }
+
     protected function compareWildcards(string $requirement, string $needle)
     {
         return (
@@ -264,9 +315,19 @@ class EventSelector implements Instantiable
             return $string;
         }
 
-        $comparablePart = substr($string, 0, $wildcardPosition);
-        $comparablePart = rtrim($comparablePart, static::DELIMITER_STREAM_NAME) . static::DELIMITER_STREAM_NAME;
+        $comparablePart = $this->sanitizePrefixablePart(
+            substr($string, 0, $wildcardPosition)
+        );
 
         return $comparablePart;
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    protected function sanitizePrefixablePart(string $string)
+    {
+        return rtrim($string, static::DELIMITER_STREAM_NAME) . static::DELIMITER_STREAM_NAME;
     }
 }

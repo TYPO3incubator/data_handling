@@ -53,6 +53,7 @@ class StreamProvider implements Instantiable, Providable
     /**
      * @param string $name
      * @param AbstractStream $stream
+     * @return StreamProvider
      */
     public function registerStream(string $name, AbstractStream $stream)
     {
@@ -60,6 +61,7 @@ class StreamProvider implements Instantiable, Providable
             throw new \RuntimeException('Stream must be instantiable', 1471614998);
         }
         $this->streams[$name] = $stream;
+        return $this;
     }
 
     /**

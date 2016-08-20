@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\GetEventStoreDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
@@ -118,6 +119,14 @@ class Common
     public static function registerEventSources()
     {
         // initialize default EventStore using SqlDriver
+//        EventStorePool::provide()
+//            ->enrolStore('geteventstore.com')
+//            ->concerning('*')
+//            ->setStore(
+//                EventStore::create(
+//                    GetEventStoreDriver::create('http://127.0.0.1:2113', 'admin', 'changeit')
+//                )
+//            );
         EventStorePool::provide()
             ->enrolStore('sql')
             ->concerning('*')

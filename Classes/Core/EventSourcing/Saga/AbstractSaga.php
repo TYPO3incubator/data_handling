@@ -19,6 +19,9 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\AbstractStream;
 
+/**
+ * @deprecated
+ */
 abstract class AbstractSaga
 {
     /**

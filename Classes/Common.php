@@ -23,6 +23,7 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 class Common
@@ -139,5 +140,13 @@ class Common
         StreamProvider::provide()->registerStream('generic', $genericStream);
         // bind stream, managing generic events
         EventManager::provide()->bindCommitter($genericStream);
+    }
+
+    /**
+     * @return ObjectManager
+     */
+    public static function getObjectManager()
+    {
+        return GeneralUtility::makeInstance(ObjectManager::class);
     }
 }

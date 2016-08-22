@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
 
 use Ramsey\Uuid\UuidInterface;
 
-interface RelationalEvent extends AggregateEvent
+interface RelationalEvent extends StorableEvent
 {
     /**
      * @return UuidInterface

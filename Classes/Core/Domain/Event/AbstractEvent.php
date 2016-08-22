@@ -16,10 +16,11 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\DomainEvent;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Type\MicroDateTime;
 
-abstract class AbstractEvent
+abstract class AbstractEvent implements DomainEvent
 {
     /**
      * @param string $eventType
@@ -45,6 +46,11 @@ abstract class AbstractEvent
     }
 
     /**
+     * @var bool
+     */
+    protected $cancelled = false;
+
+    /**
      * @var string
      */
     protected $eventId;
@@ -68,6 +74,23 @@ abstract class AbstractEvent
     {
         $this->eventId = Uuid::uuid4()->toString();
         $this->date = MicroDateTime::create('now');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCancelled(): bool
+    {
+        return $this->cancelled;
+    }
+
+    /**
+     * @return $this
+     */
+    public function cancel()
+    {
+        $this->cancelled = true;
+        return $this;
     }
 
     /**

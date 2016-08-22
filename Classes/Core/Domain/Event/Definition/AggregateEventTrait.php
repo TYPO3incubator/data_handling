@@ -14,9 +14,23 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface DomainEvent
-{
-    public function isCancelled(): bool;
+use Ramsey\Uuid\UuidInterface;
 
-    public function cancel();
+/**
+ * AggregateEventTrait
+ */
+trait AggregateEventTrait
+{
+    /**
+     * @var UuidInterface
+     */
+    protected $aggregateId;
+
+    /**
+     * @return UuidInterface
+     */
+    public function getAggregateId(): UuidInterface
+    {
+        return $this->aggregateId;
+    }
 }

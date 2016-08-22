@@ -17,11 +17,14 @@ namespace TYPO3\CMS\DataHandling\Extbase\DomainObject;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\ProjectableEntity;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+abstract class AbstractProjectableEntity extends AbstractEntity implements ProjectableEntity
 {
     /**
      * @return UuidInterface
+     * @deprecated
      */
     protected static function createUuid()
     {
@@ -43,6 +46,25 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
      * @var AbstractEvent[]
      */
     protected $events = [];
+
+    /**
+     * @param string $uuid
+     */
+    public function _setUuid(string $uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * Increments the revision - anytime an event is applied.
+     */
+    public function _incrementRevision()
+    {
+        if ($this->revision === null) {
+            $this->revision = 0;
+        }
+        $this->revision++;
+    }
 
     /**
      * @return string
@@ -68,41 +90,11 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
         return $this->revision;
     }
 
-    protected function resetRevision()
-    {
-        $this->revision = 0;
-    }
-
-    protected function incrementRevision()
-    {
-        if ($this->revision === null) {
-            $this->resetRevision();
-        }
-        $this->revision++;
-    }
-
     /**
-     * @return AbstractEvent[]
+     * @param AbstractProjectableEntity $entity
+     * @deprecated
      */
-    public function getEvents()
-    {
-        return $this->events;
-    }
-
-    /**
-     * @param array $events
-     */
-    protected function mergeEvents(array $events)
-    {
-        $this->events = array_merge($this->events, $events);
-    }
-
-    protected function recordEvent(AbstractEvent $event)
-    {
-        $this->events[] = $event;
-    }
-
-    public function _mergeProperties(AbstractEventEntity $entity)
+    public function _mergeProperties(AbstractProjectableEntity $entity)
     {
         foreach ($this->_getProperties() as $propertyName => $sourcePropertyValue) {
             if (in_array($propertyName, ['uid', 'pid'])) {
@@ -111,7 +103,7 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
             $targetPropertyValue = $entity->_getProperty($propertyName);
             if (empty($sourcePropertyValue) || empty($targetPropertyValue)) {
                 $this->_setProperty($propertyName, $targetPropertyValue);
-            } elseif ($sourcePropertyValue instanceof AbstractEventEntity && $targetPropertyValue instanceof AbstractEventEntity) {
+            } elseif ($sourcePropertyValue instanceof AbstractProjectableEntity && $targetPropertyValue instanceof AbstractProjectableEntity) {
                 $sourcePropertyValue->_mergeProperties($targetPropertyValue);
             } elseif (
                 (is_array($sourcePropertyValue) || $sourcePropertyValue instanceof \Traversable && $sourcePropertyValue instanceof \ArrayAccess)
@@ -130,12 +122,13 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
      * @param array|\Traversable|\ArrayAccess $source
      * @param array|\Traversable|\ArrayAccess $target
      * @return array|\Traversable|\ArrayAccess
+     * @deprecated
      */
     protected function mergeTraversable(\Traversable $source, \Traversable $target)
     {
         $collection = [];
         foreach ($target as $targetItem) {
-            if (!($targetItem instanceof AbstractEventEntity)) {
+            if (!($targetItem instanceof AbstractProjectableEntity)) {
                 continue;
             }
             $sourceItem = $this->findInTraversable(
@@ -172,13 +165,14 @@ abstract class AbstractEventEntity extends \TYPO3\CMS\Extbase\DomainObject\Abstr
 
     /**
      * @param \Traversable $traversable
-     * @param AbstractEventEntity $needle
-     * @return null|AbstractEventEntity
+     * @param AbstractProjectableEntity $needle
+     * @return null|AbstractProjectableEntity
+     * @deprecated
      */
-    protected function findInTraversable(\Traversable $traversable, AbstractEventEntity $needle)
+    protected function findInTraversable(\Traversable $traversable, AbstractProjectableEntity $needle)
     {
         foreach ($traversable as $item) {
-            if (!($item instanceof AbstractEventEntity)) {
+            if (!($item instanceof AbstractProjectableEntity)) {
                 continue;
             }
             if ($item->getUuid() === $needle->getUuid()) {

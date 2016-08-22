@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,6 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface Internal
+interface DomainEvent
 {
 }

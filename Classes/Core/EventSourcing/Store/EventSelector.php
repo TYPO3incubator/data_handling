@@ -170,6 +170,28 @@ class EventSelector implements Instantiable
     }
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        if ($this->all) {
+            return '*';
+        }
+
+        $string = '';
+        if (!empty($this->streamName)) {
+            $string .= ($this->relative ? '~' : '$') . $this->streamName;
+        }
+        if (!empty($this->categories)) {
+            $string .= '.' . implode('.', $this->categories);
+        }
+        if (!empty($this->events)) {
+            $string .= '[' . implode(',', $this->events) . ']';
+        }
+        return $string;
+    }
+
+    /**
      * @param bool $all
      * @return EventSelector
      */

@@ -313,4 +313,51 @@ class EventSelectorTest extends UnitTestCase
             ],
         ];
     }
+
+    /**
+     * @param EventSelector $selector
+     * @param string $expected
+     * @test
+     * @dataProvider isRepresentedAsStringDataProvider
+     */
+    public function isRepresentedAsString(EventSelector $selector, string $expected)
+    {
+        $this->assertEquals($expected, $selector . '');
+    }
+
+    /**
+     * @return array
+     */
+    public function isRepresentedAsStringDataProvider()
+    {
+        return [
+            'all' => [
+                EventSelector::instance()->setAll(true),
+                '*',
+            ],
+            'absolute stream' => [
+                EventSelector::instance()->setStreamName('stream'),
+                '$stream',
+            ],
+            'relative stream' => [
+                EventSelector::instance()->setStreamName('stream')->setRelative(true),
+                '~stream',
+            ],
+            'categories' => [
+                EventSelector::instance()->setCategories(['firstCategory', 'secondCategory']),
+                '.firstCategory.secondCategory',
+            ],
+            'events' => [
+                EventSelector::instance()->setEvents(['firstEvent', 'secondEvent']),
+                '[firstEvent,secondEvent]',
+            ],
+            'combined' => [
+                EventSelector::instance()
+                    ->setStreamName('stream')
+                    ->setCategories(['firstCategory', 'secondCategory'])
+                    ->setEvents(['firstEvent', 'secondEvent']),
+                '$stream.firstCategory.secondCategory[firstEvent,secondEvent]',
+            ],
+        ];
+    }
 }

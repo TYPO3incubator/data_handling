@@ -18,7 +18,7 @@ use EventStore\StreamFeed\StreamFeedIterator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-class GetEventStoreIterator implements \Iterator
+class GetEventStoreIterator implements \Iterator, EventTraversable
 {
     /**
      * @param StreamFeedIterator $feedIterator

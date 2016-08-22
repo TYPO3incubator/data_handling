@@ -18,8 +18,9 @@ use EventStore\ValueObjects\Identity\UUID as GetEventStoreUUID;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 
-class GetEventStoreDriver implements DriverInterface
+class GetEventStoreDriver implements PersistableDriver
 {
     const FORMAT_DATETIME = 'Y-m-d H:i:s.u';
 
@@ -109,7 +110,7 @@ class GetEventStoreDriver implements DriverInterface
     /**
      * @param string $streamName
      * @param array $categories
-     * @return SqlDriverIterator
+     * @return EventStream
      * @todo The GetEventStoreAPI does not support categories, yet
      */
     public function stream(string $streamName, array $categories = [])
@@ -134,6 +135,6 @@ class GetEventStoreDriver implements DriverInterface
             $this->eventStore->forwardStreamFeedIterator($comparableStreamName)
         );
 
-        return $iterator;
+        return EventStream::create($streamName, $iterator);
     }
 }

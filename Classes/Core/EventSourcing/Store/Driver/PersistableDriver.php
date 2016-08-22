@@ -14,39 +14,22 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 
-class NullDriver implements PersistableDriver
+interface PersistableDriver
 {
-    /**
-     * @return NullDriver
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(NullDriver::class);
-    }
-
     /**
      * @param string $streamName
      * @param AbstractEvent $event
      * @param string[] $categories
      * @return bool
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool
-    {
-        return true;
-    }
+    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool;
 
     /**
      * @param string $streamName
      * @param string[] $categories
-     * @return EventStream
+     * @return \Iterator
      */
-    public function stream(string $streamName, array $categories = [])
-    {
-        return EventStream::create($streamName, NullDriverIterator::instance());
-    }
+    public function stream(string $streamName, array $categories = []);
 }

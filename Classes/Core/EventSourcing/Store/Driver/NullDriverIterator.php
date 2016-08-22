@@ -14,22 +14,17 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-interface DriverInterface
+class NullDriverIterator extends \ArrayObject implements EventTraversable
 {
     /**
-     * @param string $streamName
-     * @param AbstractEvent $event
-     * @param string[] $categories
-     * @return bool
+     * @return NullDriverIterator
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool;
-
-    /**
-     * @param string $streamName
-     * @param string[] $categories
-     * @return \Iterator
-     */
-    public function stream(string $streamName, array $categories = []);
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(NullDriverIterator::class);
+    }
 }

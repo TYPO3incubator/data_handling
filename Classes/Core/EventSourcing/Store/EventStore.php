@@ -17,35 +17,36 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\StorableEvent;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\DriverInterface;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\PersistableDriver;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 
 class EventStore implements AttachableStore
 {
     /**
-     * @var DriverInterface
+     * @var PersistableDriver
      */
     protected $driver;
 
     /**
-     * @param DriverInterface $driver
+     * @param PersistableDriver $driver
      * @return EventStore
      */
-    public static function create(DriverInterface $driver)
+    public static function create(PersistableDriver $driver)
     {
         return GeneralUtility::makeInstance(EventStore::class, $driver);
     }
 
     /**
-     * @param DriverInterface $driver
+     * @param PersistableDriver $driver
      * @return EventStore
      */
-    public function setDriver(DriverInterface $driver)
+    public function setDriver(PersistableDriver $driver)
     {
         $this->driver = $driver;
         return $this;
     }
 
-    public function __construct(DriverInterface $driver)
+    public function __construct(PersistableDriver $driver)
     {
         $this->setDriver($driver);
     }
@@ -68,7 +69,7 @@ class EventStore implements AttachableStore
     /**
      * @param string $streamName
      * @param string[] $categories
-     * @return \Iterator
+     * @return EventStream
      */
     public function stream(string $streamName, array $categories = [])
     {

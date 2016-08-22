@@ -20,8 +20,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 
-class SqlDriver implements DriverInterface
+class SqlDriver implements PersistableDriver
 {
     const FORMAT_DATETIME = 'Y-m-d H:i:s.u';
 
@@ -69,7 +70,7 @@ class SqlDriver implements DriverInterface
     /**
      * @param string $streamName
      * @param array $categories
-     * @return SqlDriverIterator
+     * @return EventStream
      */
     public function stream(string $streamName, array $categories = [])
     {
@@ -95,7 +96,7 @@ class SqlDriver implements DriverInterface
             ->where(...$predicates)
             ->execute();
 
-        return SqlDriverIterator::create($statement);
+        return EventStream::create($streamName, SqlDriverIterator::create($statement));
     }
 
     /**

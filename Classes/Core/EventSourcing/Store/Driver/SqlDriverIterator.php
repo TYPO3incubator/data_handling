@@ -18,7 +18,7 @@ use Doctrine\DBAL\Driver\Statement;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-class SqlDriverIterator implements \Iterator
+class SqlDriverIterator implements \Iterator, EventTraversable
 {
     /**
      * @param Statement $statement

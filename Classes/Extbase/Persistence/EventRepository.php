@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\RevisionReference;
-use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractEventEntity;
+use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 use TYPO3\CMS\Extbase\Persistence\Repository;
@@ -28,7 +28,7 @@ class EventRepository extends Repository
 {
     /**
      * @param int $uid
-     * @return AbstractEventEntity
+     * @return AbstractProjectableEntity
      */
     public function findByUid($uid)
     {
@@ -37,7 +37,7 @@ class EventRepository extends Repository
 
     /**
      * @param string $uuid
-     * @return AbstractEventEntity
+     * @return AbstractProjectableEntity
      */
     public function fetchByUuid(string $uuid)
     {

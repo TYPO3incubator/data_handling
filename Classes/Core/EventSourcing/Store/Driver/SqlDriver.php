@@ -39,7 +39,7 @@ class SqlDriver implements DriverInterface
      * @param string[] $categories
      * @return bool
      */
-    public function append(string $streamName, AbstractEvent $event, array $categories = []): bool
+    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool
     {
         $rawEvent = [
             'event_stream' => $streamName,
@@ -71,7 +71,7 @@ class SqlDriver implements DriverInterface
      * @param array $categories
      * @return SqlDriverIterator
      */
-    public function open(string $streamName, array $categories = [])
+    public function stream(string $streamName, array $categories = [])
     {
         if (empty($streamName) && empty($categories)) {
             throw new \RuntimeException('No selection criteria given', 1471441756);

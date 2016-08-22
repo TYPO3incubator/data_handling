@@ -34,7 +34,7 @@ class NullDriver implements DriverInterface
      * @param string[] $categories
      * @return bool
      */
-    public function append(string $streamName, AbstractEvent $event, array $categories = []): bool
+    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool
     {
         return true;
     }
@@ -44,7 +44,7 @@ class NullDriver implements DriverInterface
      * @param string[] $categories
      * @return \ArrayIterator
      */
-    public function open(string $streamName, array $categories = [])
+    public function stream(string $streamName, array $categories = [])
     {
         return new \ArrayIterator([]);
     }

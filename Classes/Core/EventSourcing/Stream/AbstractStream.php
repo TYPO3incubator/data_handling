@@ -91,8 +91,8 @@ abstract class AbstractStream implements Publishable, Committable
             ->setCategories($categories);
 
         EventStorePool::provide()
-            ->getFor($eventSelector)
-            ->append($streamName, $event, $categories);
+            ->getBestFor($eventSelector)
+            ->attach($streamName, $event, $categories);
 
         return $this;
     }
@@ -107,8 +107,8 @@ abstract class AbstractStream implements Publishable, Committable
         $absoluteSelector = $selector->toAbsolute($this->prefix);
 
         $iterator = EventStorePool::provide()
-            ->getFor($absoluteSelector)
-            ->open(
+            ->getBestFor($absoluteSelector)
+            ->stream(
                 $absoluteSelector->getStreamName(),
                 $absoluteSelector->getCategories()
             );

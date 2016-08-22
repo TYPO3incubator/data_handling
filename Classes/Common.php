@@ -119,19 +119,19 @@ class Common
     public static function registerEventSources()
     {
         // initialize default EventStore using SqlDriver
-//        EventStorePool::provide()
-//            ->enrolStore('geteventstore.com')
-//            ->concerning('*')
-//            ->setStore(
-//                EventStore::create(
-//                    GetEventStoreDriver::create('http://127.0.0.1:2113', 'admin', 'changeit')
-//                )
-//            );
         EventStorePool::provide()
             ->enrolStore('sql')
             ->concerning('*')
             ->setStore(
                 EventStore::create(SqlDriver::instance())
+            );
+        EventStorePool::provide()
+            ->enrolStore('geteventstore.com')
+            ->concerning('*')
+            ->setStore(
+                EventStore::create(
+                    GetEventStoreDriver::create('http://127.0.0.1:2113', 'admin', 'changeit', true)
+                )
             );
 
         // bind stream, managing generic events

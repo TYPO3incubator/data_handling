@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
+namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,20 +16,13 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-interface DriverInterface
+interface AttachableStore
 {
     /**
      * @param string $streamName
      * @param AbstractEvent $event
      * @param string[] $categories
-     * @return bool
+     * @param null $expectedVersion
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool;
-
-    /**
-     * @param string $streamName
-     * @param string[] $categories
-     * @return \Iterator
-     */
-    public function stream(string $streamName, array $categories = []);
+    public function attach(string $streamName, AbstractEvent $event, array $categories = [], $expectedVersion = null);
 }

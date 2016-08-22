@@ -17,37 +17,15 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Storable;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\DriverInterface;
 
-class EventStore implements AttachableStore
+class EventStoreBundle extends \ArrayObject implements AttachableStore
 {
     /**
-     * @var DriverInterface
+     * @return EventStoreBundle
      */
-    protected $driver;
-
-    /**
-     * @param DriverInterface $driver
-     * @return EventStore
-     */
-    public static function create(DriverInterface $driver)
+    public static function instance()
     {
-        return GeneralUtility::makeInstance(EventStore::class, $driver);
-    }
-
-    /**
-     * @param DriverInterface $driver
-     * @return EventStore
-     */
-    public function setDriver(DriverInterface $driver)
-    {
-        $this->driver = $driver;
-        return $this;
-    }
-
-    public function __construct(DriverInterface $driver)
-    {
-        $this->setDriver($driver);
+        return GeneralUtility::makeInstance(EventStoreBundle::class);
     }
 
     /**
@@ -62,16 +40,9 @@ class EventStore implements AttachableStore
             throw new \RuntimeException('Event "' . get_class($event) . '" cannot be stored', 1470871139);
         }
 
-        $this->driver->attach($streamName, $event, $categories);
-    }
-
-    /**
-     * @param string $streamName
-     * @param string[] $categories
-     * @return \Iterator
-     */
-    public function stream(string $streamName, array $categories = [])
-    {
-        return $this->driver->stream($streamName, $categories);
+        /** @var EventStore $eventStore */
+        foreach ($this as $eventStore) {
+            $eventStore->attach($streamName, $event, $categories, $expectedVersion);
+        }
     }
 }

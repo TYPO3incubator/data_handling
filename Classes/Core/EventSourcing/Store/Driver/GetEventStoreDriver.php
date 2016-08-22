@@ -27,11 +27,12 @@ class GetEventStoreDriver implements DriverInterface
      * @param string $url
      * @param string $username
      * @param string $password
+     * @param bool $mute
      * @return GetEventStoreDriver
      */
-    public static function create(string $url, string $username = null, string $password = null)
+    public static function create(string $url, string $username = null, string $password = null, bool $mute = false)
     {
-        return GeneralUtility::makeInstance(GetEventStoreDriver::class, $url, $username, $password);
+        return GeneralUtility::makeInstance(GetEventStoreDriver::class, $url, $username, $password, $mute);
     }
 
     /**
@@ -40,11 +41,17 @@ class GetEventStoreDriver implements DriverInterface
     protected $eventStore;
 
     /**
+     * @var bool
+     */
+    protected $offline;
+
+    /**
      * @param string $url
      * @param string $username
      * @param string $password
+     * @param bool $mute
      */
-    public function __construct(string $url, string $username = null, string $password = null)
+    public function __construct(string $url, string $username = null, string $password = null, bool $mute = false)
     {
         $eventStoreClient = null;
 
@@ -56,7 +63,14 @@ class GetEventStoreDriver implements DriverInterface
             $eventStoreClient = new \EventStore\Http\GuzzleHttpClient($guzzleClient);
         }
 
-        $this->eventStore = new \EventStore\EventStore($url, $eventStoreClient);
+        try {
+            $this->eventStore = new \EventStore\EventStore($url, $eventStoreClient);
+        } catch (\Exception $exception) {
+            if (!$mute) {
+                throw $exception;
+            }
+            $this->offline = true;
+        }
     }
 
     /**
@@ -66,8 +80,12 @@ class GetEventStoreDriver implements DriverInterface
      * @return bool
      * @todo The GetEventStoreAPI does not support categories, yet
      */
-    public function append(string $streamName, AbstractEvent $event, array $categories = []): bool
+    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool
     {
+        if ($this->offline) {
+            return false;
+        }
+
         $UUID = GetEventStoreUUID::fromNative(
             $event->getEventId()
         );
@@ -94,10 +112,14 @@ class GetEventStoreDriver implements DriverInterface
      * @return SqlDriverIterator
      * @todo The GetEventStoreAPI does not support categories, yet
      */
-    public function open(string $streamName, array $categories = [])
+    public function stream(string $streamName, array $categories = [])
     {
         if (empty($streamName) /* && empty($categories) */) {
             throw new \RuntimeException('No selection criteria given', 1471441756);
+        }
+
+        if ($this->offline) {
+            return new \ArrayObject();
         }
 
         $comparableStreamName = EventSelector::getComparablePart($streamName);
@@ -108,13 +130,9 @@ class GetEventStoreDriver implements DriverInterface
             $comparableStreamName = rawurlencode('$all');
         }
 
-        try {
-            $iterator = GetEventStoreIterator::create(
-                $this->eventStore->forwardStreamFeedIterator($comparableStreamName)
-            );
-        } catch (\Exception $exception) {
-            $iterator = new \ArrayObject();
-        }
+        $iterator = GetEventStoreIterator::create(
+            $this->eventStore->forwardStreamFeedIterator($comparableStreamName)
+        );
 
         return $iterator;
     }

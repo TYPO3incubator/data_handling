@@ -63,10 +63,10 @@ class EventStorePool implements Providable
      * @param string|EventSelector $concerning
      * @return EventStore
      */
-    public function getFor($concerning)
+    public function getBestFor($concerning)
     {
         if (!($concerning instanceof EventSelector)) {
-            $selector = EventSelector::create($concerning);
+            $concerning = EventSelector::create($concerning);
         }
 
         // @todo Improve to find best (better) matching store
@@ -77,6 +77,31 @@ class EventStorePool implements Providable
         }
 
         return $this->getDefault();
+    }
+
+    /**
+     * @param string|EventSelector $concerning
+     * @return EventStoreBundle
+     */
+    public function getAllFor($concerning)
+    {
+        if (!($concerning instanceof EventSelector)) {
+            $concerning = EventSelector::create($concerning);
+        }
+
+        $bundle = EventStoreBundle::instance();
+
+        foreach ($this->enrolments as $enrolment) {
+            if ($enrolment->getConcerning()->fulfills($concerning)) {
+                $bundle->append($enrolment->getStore());
+            }
+        }
+
+        if ($bundle->count() === 0) {
+            throw new \RuntimeException('No stores found for "' . $concerning . '"', 1471857566);
+        }
+
+        return $bundle;
     }
 
     /**

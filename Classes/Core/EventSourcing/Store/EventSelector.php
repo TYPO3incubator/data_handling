@@ -296,7 +296,7 @@ class EventSelector implements Instantiable
         }
 
         if (
-            !empty($this->streamName) && !empty($selector->getStreamName())
+            !empty($selector->getStreamName())
             && !$this->compareWildcards($this->streamName, $selector->getStreamName())
         ) {
             // stream names are not matching (including wildcard comparison)
@@ -304,15 +304,15 @@ class EventSelector implements Instantiable
         }
 
         if (
-            !empty($this->categories) && !empty($selector->getCategories())
-            && count(array_intersect($this->categories, $selector->getCategories())) === 0
+            !empty($selector->getCategories())
+            && count(array_intersect($selector->getCategories(), $this->categories)) === 0
         ) {
             // if not a single category was matching
             return false;
         }
 
         if (
-            !empty($this->events) && !empty($selector->getEvents())
+            !empty($selector->getEvents())
             && !$this->compareClassInheritances($this->events, $selector->getEvents())
         ) {
             // if none of the given events equals or inherits one of our events
@@ -368,11 +368,12 @@ class EventSelector implements Instantiable
 
     protected function compareWildcards(string $requirement, string $needle)
     {
+        $comparableNeedle = static::getComparablePart($needle);
+        $comparableRequirement = static::getComparablePart($requirement);
+
         return (
-            strpos(
-                static::getComparablePart($needle),
-                static::getComparablePart($requirement)
-            ) === 0
+            !empty($comparableRequirement)
+            && strpos($comparableNeedle, $comparableRequirement) === 0
         );
     }
 

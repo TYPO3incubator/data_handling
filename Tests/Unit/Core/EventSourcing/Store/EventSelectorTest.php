@@ -245,6 +245,21 @@ class EventSelectorTest extends UnitTestCase
                 '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
                 false
             ],
+            'empty left-side stream' => [
+                '[null]',
+                '$stream',
+                false,
+            ],
+            'empty left-side category' => [
+                '[null]',
+                '.category',
+                false,
+            ],
+            'empty left-side event' => [
+                '.null',
+                '[event]',
+                false,
+            ],
         ];
     }
 

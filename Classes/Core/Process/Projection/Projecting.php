@@ -27,6 +27,8 @@ interface Projecting
 
     public function setEventHandler(EventApplicable $eventHandler);
 
+    public function setStreamListeners(array $listeners);
+
     public function setEventListeners(array $listeners);
 
     /**

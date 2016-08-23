@@ -39,6 +39,11 @@ trait ProjectingTrait
     /**
      * @var \Closure[]|callable[]
      */
+    protected $streamListeners;
+
+    /**
+     * @var \Closure[]|callable[]
+     */
     protected $eventListeners;
 
     /**
@@ -72,6 +77,16 @@ trait ProjectingTrait
     }
 
     /**
+     * @param array $streamListeners
+     * @return $this
+     */
+    public function setStreamListeners(array $streamListeners)
+    {
+        $this->streamListeners = $streamListeners;
+        return $this;
+    }
+
+    /**
      * @param array $eventListeners
      * @return $this
      */
@@ -82,19 +97,42 @@ trait ProjectingTrait
     }
 
     /**
+     * @param \Closure[]|callable[] $listeners
+     * @param AbstractEvent $event
+     */
+    protected function handleListeners(array $listeners, AbstractEvent $event)
+    {
+        foreach ($this->findListeners($listeners, $event) as $eventListener) {
+            if ($event->isCancelled()) {
+                break;
+            }
+            call_user_func(
+                $eventListener,
+                $event,
+                $this
+            );
+        }
+    }
+
+    /**
+     * @param \Closure[]|callable[] $listeners
      * @param AbstractEvent $event
      * @return \Closure[]|callable[]
      */
-    protected function findEventListeners(AbstractEvent $event)
+    protected function findListeners(array $listeners, AbstractEvent $event)
     {
-        $validEventListeners = [];
-
-        foreach ($this->eventListeners as $eventName => $eventListener) {
-            if (is_a($event, $eventName)) {
-                $validEventListeners[] = $eventListener;
-            }
-        }
-
-        return $validEventListeners;
+        return array_filter(
+            $listeners,
+            /**
+             * @param string $eventName
+             * @param AbstractEvent $event
+             * @return bool
+             */
+            function(string $eventName) use ($event)
+            {
+                return is_a($event, $eventName);
+            },
+            ARRAY_FILTER_USE_KEY
+        );
     }
 }

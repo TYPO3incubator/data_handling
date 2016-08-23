@@ -23,6 +23,7 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\Projecting;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\ProjectingTrait;
 use TYPO3\CMS\DataHandling\Core\Service\ProjectionService;
+use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
 class EntityProjection implements Projecting
 {
@@ -46,8 +47,10 @@ class EntityProjection implements Projecting
      */
     public function projectStream(EventStream $stream)
     {
+        // @todo Integrate override for CreateEvents in streaming mode
         foreach ($stream->forAll() as $event) {
-            $this->handleEvent($event);
+            $this->handleListeners($this->streamListeners, $event);
+            $this->projectEvent($event);
         }
     }
 
@@ -56,19 +59,19 @@ class EntityProjection implements Projecting
      */
     public function projectEvent(AbstractEvent $event)
     {
+        $this->handleListeners($this->eventListeners, $event);
+
         if (
-            empty($this->subjectName)
+            $event->isCancelled()
+            || empty($this->subjectName)
             || empty($this->repository)
             || empty($this->eventHandler)
         ) {
             return;
         }
 
-        if ($event instanceof EntityEvent) {
-            $subject = GeneralUtility::makeInstance($this->subjectName);
-        } elseif ($event instanceof AggregateEvent) {
-            $subject = $this->repository->findByUuid($event->getAggregateId());
-        } else {
+        $subject = $this->provideSubject($event);
+        if ($subject === null) {
             return;
         }
 
@@ -96,24 +99,16 @@ class EntityProjection implements Projecting
 
     /**
      * @param AbstractEvent $event
+     * @return null|AbstractProjectableEntity
      */
-    protected function handleEvent(AbstractEvent $event)
+    protected function provideSubject(AbstractEvent $event)
     {
-        foreach ($this->findEventListeners($event) as $eventListener) {
-            if ($event->isCancelled()) {
-                break;
-            }
-            call_user_func(
-                $eventListener,
-                $this,
-                $event
-            );
+        if ($event instanceof EntityEvent) {
+            return GeneralUtility::makeInstance($this->subjectName);
+        } elseif ($event instanceof AggregateEvent) {
+            return $this->repository->findByUuid($event->getAggregateId());
+        } else {
+            return null;
         }
-
-        if ($event->isCancelled()) {
-            return;
-        }
-
-        $this->projectEvent($event);
     }
 }

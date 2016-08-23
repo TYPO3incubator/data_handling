@@ -17,7 +17,6 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\ProjectableEntity;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelectorBundle;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
 
@@ -60,6 +59,11 @@ class ProjectionEnrolment
      * @var array
      */
     protected $projectionOptions = [];
+
+    /**
+     * @var \Closure[]|callable
+     */
+    protected $streamListeners = [];
 
     /**
      * @var \Closure[]|callable
@@ -175,11 +179,38 @@ class ProjectionEnrolment
     }
 
     /**
+     * @return callable|\Closure[]
+     */
+    public function getStreamListeners()
+    {
+        return $this->streamListeners;
+    }
+
+    /**
      * @param string $eventName
      * @param \Closure|callable $listener
      * @return ProjectionEnrolment
      */
-    public function on($eventName, $listener)
+    public function onStream($eventName, $listener)
+    {
+        $this->streamListeners[$eventName] = $listener;
+        return $this;
+    }
+
+    /**
+     * @return callable|\Closure[]
+     */
+    public function getEventListeners()
+    {
+        return $this->eventListeners;
+    }
+
+    /**
+     * @param string $eventName
+     * @param \Closure|callable $listener
+     * @return ProjectionEnrolment
+     */
+    public function onEvent($eventName, $listener)
     {
         $this->eventListeners[$eventName] = $listener;
         return $this;
@@ -211,6 +242,7 @@ class ProjectionEnrolment
             $projection->setEventHandler($eventHandler);
         }
 
+        $projection->setStreamListeners($this->streamListeners);
         $projection->setEventListeners($this->eventListeners);
 
         return $projection;

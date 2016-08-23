@@ -18,6 +18,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Object\Providable;
 
+/**
+ * @deprecated
+ */
 class StreamProvider implements Instantiable, Providable
 {
     /**

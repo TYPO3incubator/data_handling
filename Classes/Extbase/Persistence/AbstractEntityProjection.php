@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\AggregateEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\EntityEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\ProjectingTrait;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
@@ -44,11 +45,18 @@ abstract class AbstractEntityProjection
      */
     protected function canProcess()
     {
-        return (
-            !empty($this->subjectName)
-            && !empty($this->repository)
-            && !empty($this->eventHandler)
-        );
+        if (empty($this->subjectName) || empty($this->repository)) {
+            return false;
+        }
+
+        if (
+            empty($this->eventHandler)
+            && !in_array(EventApplicable::class, class_implements($this->subjectName))
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

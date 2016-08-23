@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\EventProjecting;
 
 class EntityEventProjection extends AbstractEntityProjection implements EventProjecting
@@ -38,8 +39,12 @@ class EntityEventProjection extends AbstractEntityProjection implements EventPro
             return;
         }
 
-        $this->eventHandler->setSubject($subject);
-        $this->eventHandler->apply($event);
+        if ($subject instanceof EventApplicable) {
+            $subject->apply($event);
+        } else {
+            $this->eventHandler->apply($event);
+            $this->eventHandler->setSubject($subject);
+        }
 
         if ($subject->_isNew()) {
             $this->repository->add($subject);

@@ -15,12 +15,14 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\StreamProjecting;
 use TYPO3\CMS\DataHandling\Core\Service\ProjectionService;
+use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
-class EntityStreamProjection extends AbstractEntityProjection  implements StreamProjecting
+class EntityStreamProjection extends AbstractEntityProjection implements StreamProjecting
 {
     /**
      * @param string $streamName
@@ -50,11 +52,14 @@ class EntityStreamProjection extends AbstractEntityProjection  implements Stream
         $this->persistenceManager->clearState();
         // continue processing entity and applying events
         $subject = $this->createSubject();
-        $this->eventHandler->setSubject($subject);
+
+        if (!($subject instanceof EventApplicable)) {
+            $this->eventHandler->setSubject($subject);
+        }
 
         foreach ($stream->forAll() as $event) {
             $this->handleListeners($event);
-            $this->applyEvent($event);
+            $this->applyEvent($subject, $event);
         }
 
         // no UUID has been assigned, might happen if the stream
@@ -85,14 +90,19 @@ class EntityStreamProjection extends AbstractEntityProjection  implements Stream
     }
 
     /**
+     * @param AbstractProjectableEntity $subject
      * @param AbstractEvent $event
      */
-    protected function applyEvent(AbstractEvent $event)
+    protected function applyEvent(AbstractProjectableEntity $subject, AbstractEvent $event)
     {
         if ($event->isCancelled()) {
             return;
         }
 
-        $this->eventHandler->apply($event);
+        if ($subject instanceof EventApplicable) {
+            $subject->apply($event);
+        } else {
+            $this->eventHandler->apply($event);
+        }
     }
 }

@@ -53,7 +53,12 @@ class ProjectionEnrolment
     /**
      * @var string
      */
-    protected $projectionName;
+    protected $streamProjectionName;
+
+    /**
+     * @var string
+     */
+    protected $eventProjectionName;
 
     /**
      * @var array
@@ -145,18 +150,36 @@ class ProjectionEnrolment
     /**
      * @return string
      */
-    public function getProjectionName()
+    public function getStreamProjectionName()
     {
-        return $this->projectionName;
+        return $this->streamProjectionName;
     }
 
     /**
-     * @param string $projectionName
+     * @param string $streamProjectionName
      * @return ProjectionEnrolment
      */
-    public function setProjectionName(string $projectionName)
+    public function setStreamProjectionName(string $streamProjectionName)
     {
-        $this->projectionName = $projectionName;
+        $this->streamProjectionName = $streamProjectionName;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEventProjectionName()
+    {
+        return $this->eventProjectionName;
+    }
+
+    /**
+     * @param string $eventProjectionName
+     * @return ProjectionEnrolment
+     */
+    public function setEventProjectionName(string $eventProjectionName)
+    {
+        $this->eventProjectionName = $eventProjectionName;
         return $this;
     }
 
@@ -217,14 +240,14 @@ class ProjectionEnrolment
     }
 
     /**
-     * @return Projecting
+     * @return StreamProjecting
      */
-    public function provideProjection()
+    public function provideStreamProjection()
     {
         $objectManager = Common::getObjectManager();
 
-        /** @var Projecting $projection */
-        $projection = $objectManager->get($this->projectionName);
+        /** @var StreamProjecting $projection */
+        $projection = $objectManager->get($this->streamProjectionName);
 
         if (!empty($this->subjectName)) {
             $projection->setSubjectName($this->subjectName);
@@ -242,8 +265,38 @@ class ProjectionEnrolment
             $projection->setEventHandler($eventHandler);
         }
 
-        $projection->setStreamListeners($this->streamListeners);
-        $projection->setEventListeners($this->eventListeners);
+        $projection->setListeners($this->streamListeners);
+
+        return $projection;
+    }
+
+    /**
+     * @return EventProjecting
+     */
+    public function provideEventProjection()
+    {
+        $objectManager = Common::getObjectManager();
+
+        /** @var EventProjecting $projection */
+        $projection = $objectManager->get($this->eventProjectionName);
+
+        if (!empty($this->subjectName)) {
+            $projection->setSubjectName($this->subjectName);
+        }
+
+        if (!empty($this->repositoryName)) {
+            /** @var RepositoryInterface $repository */
+            $repository = $objectManager->get($this->repositoryName);
+            $projection->setRepository($repository);
+        }
+
+        if (!empty($this->eventHandlerName)) {
+            /** @var EventApplicable $eventHandler */
+            $eventHandler = $objectManager->get($this->eventHandlerName);
+            $projection->setEventHandler($eventHandler);
+        }
+
+        $projection->setListeners($this->eventListeners);
 
         return $projection;
     }

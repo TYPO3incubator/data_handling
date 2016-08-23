@@ -69,7 +69,7 @@ class ProjectionPool implements Providable
 
     /**
      * @param string|EventSelector $concerning
-     * @return Projecting
+     * @return ProjectionEnrolment
      */
     public function getFor($concerning)
     {
@@ -79,7 +79,7 @@ class ProjectionPool implements Providable
 
         foreach ($this->enrolments as $enrolment) {
             if ($enrolment->getConcerning()->fulfills($concerning)) {
-                return $enrolment->provideProjection();
+                return $enrolment;
             }
         }
 

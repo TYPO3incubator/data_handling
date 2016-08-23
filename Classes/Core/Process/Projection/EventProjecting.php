@@ -15,17 +15,11 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
-use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
 
-interface Projecting
+interface EventProjecting extends Projecting
 {
-    public function setSubjectName(string $subject);
-
-    public function setRepository(RepositoryInterface $repository);
-
-    public function setEventHandler(EventApplicable $eventHandler);
-
-    public function setListeners(array $listeners);
+    /**
+     * @param AbstractEvent $event
+     */
+    public function project(AbstractEvent $event);
 }

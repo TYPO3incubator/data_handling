@@ -16,7 +16,6 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\ProjectableEntity;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
 
 trait ProjectingTrait
@@ -39,12 +38,7 @@ trait ProjectingTrait
     /**
      * @var \Closure[]|callable[]
      */
-    protected $streamListeners;
-
-    /**
-     * @var \Closure[]|callable[]
-     */
-    protected $eventListeners;
+    protected $listeners;
 
     /**
      * @param string $subjectName
@@ -80,29 +74,18 @@ trait ProjectingTrait
      * @param array $streamListeners
      * @return $this
      */
-    public function setStreamListeners(array $streamListeners)
+    public function setListeners(array $streamListeners)
     {
-        $this->streamListeners = $streamListeners;
+        $this->listeners = $streamListeners;
         return $this;
     }
 
     /**
-     * @param array $eventListeners
-     * @return $this
-     */
-    public function setEventListeners(array $eventListeners)
-    {
-        $this->eventListeners = $eventListeners;
-        return $this;
-    }
-
-    /**
-     * @param \Closure[]|callable[] $listeners
      * @param AbstractEvent $event
      */
-    protected function handleListeners(array $listeners, AbstractEvent $event)
+    protected function handleListeners(AbstractEvent $event)
     {
-        foreach ($this->findListeners($listeners, $event) as $eventListener) {
+        foreach ($this->findListeners($event) as $eventListener) {
             if ($event->isCancelled()) {
                 break;
             }
@@ -115,14 +98,13 @@ trait ProjectingTrait
     }
 
     /**
-     * @param \Closure[]|callable[] $listeners
      * @param AbstractEvent $event
      * @return \Closure[]|callable[]
      */
-    protected function findListeners(array $listeners, AbstractEvent $event)
+    protected function findListeners(AbstractEvent $event)
     {
         return array_filter(
-            $listeners,
+            $this->listeners,
             /**
              * @param string $eventName
              * @param AbstractEvent $event

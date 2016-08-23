@@ -14,18 +14,29 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
+use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerInterface;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
 
 interface Projecting
 {
+    /**
+     * @param string $subject
+     */
     public function setSubjectName(string $subject);
 
+    /**
+     * @param RepositoryInterface $repository
+     */
     public function setRepository(RepositoryInterface $repository);
 
-    public function setEventHandler(EventApplicable $eventHandler);
+    /**
+     * @param EventHandlerInterface $eventHandler
+     * @internal
+     */
+    public function setEventHandler(EventHandlerInterface $eventHandler);
 
+    /**
+     * @param array $listeners
+     */
     public function setListeners(array $listeners);
 }

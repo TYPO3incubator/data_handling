@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
+use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerInterface;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
 
 trait ProjectingTrait
@@ -31,7 +31,8 @@ trait ProjectingTrait
     protected $repository;
 
     /**
-     * @var EventApplicable
+     * @var EventHandlerInterface
+     * @internal
      */
     protected $eventHandler;
 
@@ -61,10 +62,11 @@ trait ProjectingTrait
     }
 
     /**
-     * @param EventApplicable $eventHandler
+     * @param EventHandlerInterface $eventHandler
      * @return $this
+     * @internal
      */
-    public function setEventHandler(EventApplicable $eventHandler)
+    public function setEventHandler(EventHandlerInterface $eventHandler)
     {
         $this->eventHandler = $eventHandler;
         return $this;

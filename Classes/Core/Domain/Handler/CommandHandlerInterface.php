@@ -14,18 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-
-interface EventApplicable
+interface CommandHandlerInterface
 {
-    /**
-     * @param $subject
-     * @return $this
-     */
     public function setSubject($subject);
-
-    /**
-     * @param AbstractEvent $event
-     */
-    public function apply(AbstractEvent $event);
 }

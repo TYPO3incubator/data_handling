@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
+use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerInterface;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelectorBundle;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
 
@@ -47,6 +47,7 @@ class ProjectionEnrolment
 
     /**
      * @var string
+     * @internal
      */
     protected $eventHandlerName;
 
@@ -131,6 +132,7 @@ class ProjectionEnrolment
 
     /**
      * @return string
+     * @internal
      */
     public function getEventHandlerName()
     {
@@ -140,6 +142,7 @@ class ProjectionEnrolment
     /**
      * @param string $eventHandlerName
      * @return ProjectionEnrolment
+     * @internal
      */
     public function setEventHandlerName(string $eventHandlerName)
     {

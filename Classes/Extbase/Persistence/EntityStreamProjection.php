@@ -46,6 +46,8 @@ class EntityStreamProjection extends AbstractEntityProjection  implements Stream
             return;
         }
 
+        // clear session state (possibly modified subject)
+        $this->persistenceManager->clearState();
         // continue processing entity and applying events
         $subject = $this->createSubject();
         $this->eventHandler->setSubject($subject);
@@ -66,20 +68,19 @@ class EntityStreamProjection extends AbstractEntityProjection  implements Stream
             $subject->getUuidInterface()
         );
 
+        // directly add new entities
+        if ($existingSubject === null) {
+            $this->repository->add($subject);
+
         // in case there is already a projection, try to re-use the UID
         // of that aggregate by removing it from repository and adding it
         // again with the previously used UID
-        if ($existingSubject !== null) {
+        } else {
             $subject->_setProperty('uid', $existingSubject->getUid());
             $subject->setPid($existingSubject->getPid());
-
-            $this->repository->remove($existingSubject);
-            $this->persistenceManager->persistAll();
-            $this->persistenceManager->clearState();
+            $this->repository->update($subject);
         }
 
-        // always add, there's no update when streaming
-        $this->repository->add($subject);
         $this->persistenceManager->persistAll();
     }
 

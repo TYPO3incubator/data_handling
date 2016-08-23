@@ -30,6 +30,9 @@ class EntityEventProjection extends AbstractEntityProjection implements EventPro
             return;
         }
 
+        // clear session state (possibly modified subject)
+        $this->persistenceManager->clearState();
+        // fetch a fresh subject instance from storage
         $subject = $this->provideSubject($event);
         if ($subject === null) {
             return;
@@ -44,6 +47,7 @@ class EntityEventProjection extends AbstractEntityProjection implements EventPro
             $this->repository->update($subject);
         }
 
+        // ensure to persist everything after this event
         $this->persistenceManager->persistAll();
     }
 }

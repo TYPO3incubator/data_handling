@@ -23,6 +23,7 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
+use TYPO3\CMS\Extbase\Object\Container\Container;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
@@ -78,6 +79,11 @@ class Common
         // provides ProjectionContext, once workspace information is available
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class]['className']
             = \TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication::class;
+
+        static::getObjectContainer()->registerImplementation(
+            \TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface::class,
+            \TYPO3\CMS\DataHandling\Extbase\Persistence\Generic\PersistenceManager::class
+        );
     }
 
     public static function registerUpdates()
@@ -140,6 +146,14 @@ class Common
         StreamProvider::provide()->registerStream('generic', $genericStream);
         // bind stream, managing generic events
         EventManager::provide()->bindCommitter($genericStream);
+    }
+
+    /**
+     * @return Container
+     */
+    public static function getObjectContainer()
+    {
+        return GeneralUtility::makeInstance(Container::class);
     }
 
     /**

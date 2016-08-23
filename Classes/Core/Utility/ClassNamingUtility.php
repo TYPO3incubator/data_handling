@@ -32,4 +32,35 @@ class ClassNamingUtility extends \TYPO3\CMS\Core\Utility\ClassNamingUtility
         $classNameParts = explode('\\', $className);
         return $classNameParts[count($classNameParts)-1];
     }
+
+    /**
+     * @param string $className
+     * @return bool
+     */
+    public static function isModelClassName(string $className)
+    {
+        return (strpos($className, '\\Domain\\Model\\') !== false);
+    }
+
+    /**
+     * @param string $className
+     * @return null|string
+     */
+    public static function buildValidationModelClassName($className)
+    {
+        $validationModelClassName = preg_replace(
+            '/\\\\Domain\\\\Model\\\\/',
+            '\\Domain\\ValidationModel\\',
+            $className
+        );
+
+        if (
+            $className !== $validationModelClassName
+            && class_exists($validationModelClassName)
+        ) {
+            return $validationModelClassName;
+        }
+
+        return null;
+    }
 }

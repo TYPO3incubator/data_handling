@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,27 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-interface ProjectableEntity
+interface EventApplicable
 {
     /**
-     * @param string $uuid
+     * @param AbstractEvent $event
      */
-    public function _setUuid(string $uuid);
-
-    /**
-     * @return string
-     */
-    public function getUuid();
-
-    /**
-     * @return UuidInterface
-     */
-    public function getUuidInterface();
-
-    /**
-     * @return int
-     */
-    public function getRevision();
+    public function apply(AbstractEvent $event);
 }

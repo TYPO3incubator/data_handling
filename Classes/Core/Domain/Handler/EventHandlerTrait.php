@@ -25,14 +25,39 @@ trait EventHandlerTrait
     protected $revision;
 
     /**
+     * @var string[]
+     */
+    protected $appliedEventIds = [];
+
+    /**
+     * @return int
+     */
+    public function getRevision()
+    {
+        return $this->revision;
+    }
+
+    /**
      * @param AbstractEvent $event
      */
     public function apply(AbstractEvent $event)
     {
+        // this just checks for applied events in the current processing, the
+        // ids of previously applied events might not be available in this scope
+        if (in_array($event->getEventId(), $this->appliedEventIds)) {
+            throw new \RuntimeException('Event "' . $event->getEventId() . '" was already applied', 1472041262);
+        }
+        // validate and assign event version to subject
+        if (($this->revision !== null || $event->getEventVersion() !== 0)
+            && $this->revision + 1 !== $event->getEventVersion()
+        ) {
+            throw new \RuntimeException('Unexpected event in sequence', 1472044588);
+        }
+        $this->revision = $event->getEventVersion();
+        // determine method name, that is used to apply the event
         $methodName = $this->getEventHandlerMethodName($event);
         if (method_exists($this, $methodName)) {
             $this->{$methodName}($event);
-            $this->revision = ($this->revision ?? 0) + 1;
         }
     }
 

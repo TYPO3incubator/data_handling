@@ -16,21 +16,19 @@ namespace TYPO3\CMS\DataHandling\Extbase\DomainObject;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\ProjectableEntity;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 abstract class AbstractProjectableEntity extends AbstractEntity implements ProjectableEntity
 {
+    use EventHandlerTrait;
+
     /**
      * @var string
      * @todo Use real Uuid here, first rewrite Extbase's magic reflection
      */
     protected $uuid;
-
-    /**
-     * @var int
-     */
-    protected $revision;
 
     /**
      * @param string $uuid
@@ -55,13 +53,5 @@ abstract class AbstractProjectableEntity extends AbstractEntity implements Proje
     public function getUuidInterface()
     {
         return Uuid::fromString($this->uuid);
-    }
-
-    /**
-     * @return int
-     */
-    public function getRevision()
-    {
-        return $this->revision;
     }
 }

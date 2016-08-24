@@ -111,6 +111,7 @@ class SqlDriverIterator implements \Iterator, EventTraversable
             $eventClassName . '::reconstitute',
             $rawEvent['event_name'],
             $rawEvent['event_id'],
+            $rawEvent['event_version'],
             $eventDate,
             $data,
             $metadata

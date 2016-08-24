@@ -25,12 +25,13 @@ abstract class AbstractEvent implements DomainEvent
     /**
      * @param string $eventType
      * @param string $eventId
+     * @param int $eventVersion
      * @param \DateTime $date
      * @param null|array $data
      * @param null|array $metadata
      * @return AbstractEvent
      */
-    static function reconstitute(string $eventType, string $eventId, \DateTime $date, $data, $metadata)
+    static function reconstitute(string $eventType, string $eventId, int $eventVersion, \DateTime $date, $data, $metadata)
     {
         if (!in_array(Instantiable::class, class_implements($eventType))) {
             throw new \RuntimeException('Cannot instantiate "' . $eventType . '"', 1470935798);
@@ -39,6 +40,7 @@ abstract class AbstractEvent implements DomainEvent
         /** @var AbstractEvent $event */
         $event = call_user_func($eventType . '::instance');
         $event->eventId = $eventId;
+        $event->eventVersion = $eventVersion;
         $event->date = $date;
         $event->metadata = $metadata;
         $event->importData($data);
@@ -54,6 +56,11 @@ abstract class AbstractEvent implements DomainEvent
      * @var string
      */
     protected $eventId;
+
+    /**
+     * @var int
+     */
+    protected $eventVersion;
 
     /**
      * @var \DateTime
@@ -99,6 +106,27 @@ abstract class AbstractEvent implements DomainEvent
     public function getEventId(): string
     {
         return $this->eventId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getEventVersion()
+    {
+        return $this->eventVersion;
+    }
+
+    /**
+     * @param int $eventVersion
+     * @return $this;
+     */
+    public function setEventVersion(int $eventVersion)
+    {
+        if ($this->eventVersion !== null && $this->eventVersion !== $eventVersion) {
+            throw new \RuntimeException('Modifying existing version is denied', 1472045059);
+        }
+        $this->eventVersion = $eventVersion;
+        return $this;
     }
 
     /**

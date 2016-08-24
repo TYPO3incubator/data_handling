@@ -78,10 +78,10 @@ class GetEventStoreDriver implements PersistableDriver
      * @param string $streamName
      * @param AbstractEvent $event
      * @param string[] $categories
-     * @return bool
+     * @return null|int
      * @todo The GetEventStoreAPI does not support categories, yet
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool
+    public function attach(string $streamName, AbstractEvent $event, array $categories = [])
     {
         if ($this->offline) {
             return false;
@@ -99,12 +99,10 @@ class GetEventStoreDriver implements PersistableDriver
         );
 
         try {
-            $this->eventStore->writeToStream(rawurlencode($streamName), $writableEvent);
+            return $this->eventStore->writeToStream(rawurlencode($streamName), $writableEvent);
         } catch (\EventStore\Exception\WrongExpectedVersionException $exception) {
-            return false;
+            return null;
         }
-
-        return true;
     }
 
     /**

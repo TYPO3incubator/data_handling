@@ -37,10 +37,12 @@ class SqlDriver implements PersistableDriver
     /**
      * @param string $streamName
      * @param AbstractEvent $event
-     * @param string[] $categories
-     * @return bool
+     * @param array $categories
+     * @return bool|int|string
+     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws \Exception
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool
+    public function attach(string $streamName, AbstractEvent $event, array $categories = [])
     {
         $rawEvent = [
             'event_stream' => $streamName,
@@ -60,11 +62,35 @@ class SqlDriver implements PersistableDriver
             }
         }
 
-        $result = ConnectionPool::instance()
-            ->getOriginConnection()
-            ->insert('sys_event_store', $rawEvent);
+        $connection = ConnectionPool::instance()->getOriginConnection();
+        $connection->beginTransaction();
 
-        return ($result > 0);
+        try {
+            $queryBuilder = $connection->createQueryBuilder();
+            $queryBuilder->getRestrictions()->removeAll();
+            $statement = $queryBuilder
+                ->select('event_version')
+                ->from('sys_event_store')
+                ->where(
+                    $queryBuilder->expr()->eq(
+                        'event_stream',
+                        $queryBuilder->createNamedParameter($streamName)
+                    )
+                )
+                ->orderBy('event_version', 'DESC')
+                ->setMaxResults(1)
+                ->execute();
+            // first version starts with zero
+            $eventVersion = ($statement->rowCount() ? $statement->fetchColumn(0) + 1 : 0);
+            $rawEvent['event_version'] = $eventVersion;
+            $connection->insert('sys_event_store', $rawEvent);
+            $connection->commit();
+        } catch (\Exception $exception) {
+            $connection->rollBack();
+            throw $exception;
+        }
+
+        return $eventVersion;
     }
 
     /**

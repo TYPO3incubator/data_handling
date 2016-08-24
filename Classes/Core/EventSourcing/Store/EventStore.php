@@ -63,7 +63,11 @@ class EventStore implements AttachableStore
             throw new \RuntimeException('Event "' . get_class($event) . '" cannot be stored', 1470871139);
         }
 
-        $this->driver->attach($streamName, $event, $categories);
+        $eventVersion = $this->driver->attach($streamName, $event, $categories);
+
+        if ($eventVersion !== null) {
+            $event->setEventVersion($eventVersion);
+        }
     }
 
     /**

@@ -22,9 +22,9 @@ interface PersistableDriver
      * @param string $streamName
      * @param AbstractEvent $event
      * @param string[] $categories
-     * @return bool
+     * @return null|int
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool;
+    public function attach(string $streamName, AbstractEvent $event, array $categories = []);
 
     /**
      * @param string $streamName

@@ -104,6 +104,7 @@ class GetEventStoreIterator implements \Iterator, EventTraversable
             $eventClassName . '::reconstitute',
             $item->getEvent()->getType(),
             $item->getEvent()->getEventId()->toNative(),
+            $item->getEvent()->getVersion(),
             $eventDate,
             $item->getEvent()->getData(),
             $item->getEvent()->getMetadata()

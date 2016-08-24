@@ -78,7 +78,6 @@ class EventSelectorBundle extends \ArrayObject implements Instantiable
      */
     public function attachAll(array $concerning)
     {
-        var_dump($concerning);
         foreach ($concerning as $index => $item) {
             $this->offsetSet($index, $item);
         }

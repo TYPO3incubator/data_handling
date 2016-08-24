@@ -132,14 +132,14 @@ class Common
             ->setStore(
                 EventStore::create(SqlDriver::instance())
             );
-        EventStorePool::provide()
-            ->enrolStore('geteventstore.com')
-            ->concerning('*')
-            ->setStore(
-                EventStore::create(
-                    GetEventStoreDriver::create('http://127.0.0.1:2113', 'admin', 'changeit', true)
-                )
-            );
+//        EventStorePool::provide()
+//            ->enrolStore('geteventstore.com')
+//            ->concerning('*')
+//            ->setStore(
+//                EventStore::create(
+//                    GetEventStoreDriver::create('http://127.0.0.1:2113', 'admin', 'changeit', true)
+//                )
+//            );
 
         // bind stream, managing generic events
         $genericStream = GenericStream::instance()->setPrefix('generic');

@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceableTrait;

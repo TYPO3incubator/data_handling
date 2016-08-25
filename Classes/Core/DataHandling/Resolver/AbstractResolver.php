@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 
 abstract class AbstractResolver
 {

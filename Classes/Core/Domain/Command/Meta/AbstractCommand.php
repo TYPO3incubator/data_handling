@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 
 abstract class AbstractCommand implements DomainCommand

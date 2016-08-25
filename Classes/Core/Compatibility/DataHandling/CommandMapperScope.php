@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 
 class CommandMapperScope
 {

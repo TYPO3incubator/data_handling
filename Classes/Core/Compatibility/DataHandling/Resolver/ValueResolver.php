@@ -18,8 +18,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapperScope;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\ValueConverter;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 
 class ValueResolver extends AbstractResolver

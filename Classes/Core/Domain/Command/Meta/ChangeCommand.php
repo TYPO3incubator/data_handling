@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,27 +15,42 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class DeleteCommand extends AbstractCommand implements Instantiable
+class ChangeCommand extends AbstractCommand implements Instantiable
 {
     /**
-     * @return DeleteCommand
+     * @return ChangeCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(DeleteCommand::class);
+        return GeneralUtility::makeInstance(ChangeCommand::class);
     }
 
     /**
      * @param EntityReference $subject
-     * @return DeleteCommand
+     * @param array $data
+     * @return ChangeCommand
      */
-    public static function create(EntityReference $subject)
+    public static function create(EntityReference $subject, array $data)
     {
         $command = static::instance();
         $command->setSubject($subject);
+        $command->data = $data;
         return $command;
+    }
+
+    /**
+     * @var array|null
+     */
+    protected $data;
+
+    /**
+     * @return array|null
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }

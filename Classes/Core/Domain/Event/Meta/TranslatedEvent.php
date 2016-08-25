@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,34 +15,34 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationalTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class RemovedRelationEvent extends AbstractEvent implements Instantiable, Relational
+class TranslatedEvent extends AbstractEvent implements Instantiable, Identifiable, Derivable
 {
-    use RelationalTrait;
+    use IdentifiableTrait;
 
     /**
-     * @return RemovedRelationEvent
+     * @return TranslatedEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(RemovedRelationEvent::class);
+        return GeneralUtility::makeInstance(TranslatedEvent::class);
     }
 
     /**
      * @param EntityReference $subject
-     * @param PropertyReference $relation
-     * @return RemovedRelationEvent
+     * @param EntityReference $identity
+     * @return CreatedEvent
      */
-    public static function create(EntityReference $subject, PropertyReference $relation)
+    public static function create(EntityReference $subject, EntityReference $identity, string $locale)
     {
         $event = static::instance();
         $event->setSubject($subject);
-        $event->setRelation($relation);
+        $event->setIdentity($identity);
         return $event;
     }
 }

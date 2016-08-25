@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,34 +15,27 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationalTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class RemoveRelationCommand extends AbstractCommand implements Instantiable, Relational
+class DeleteCommand extends AbstractCommand implements Instantiable
 {
-    use RelationalTrait;
-
     /**
-     * @return RemoveRelationCommand
+     * @return DeleteCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(RemoveRelationCommand::class);
+        return GeneralUtility::makeInstance(DeleteCommand::class);
     }
 
     /**
      * @param EntityReference $subject
-     * @param PropertyReference $relation
-     * @return RemoveRelationCommand
+     * @return DeleteCommand
      */
-    public static function create(EntityReference $subject, PropertyReference $relation)
+    public static function create(EntityReference $subject)
     {
         $command = static::instance();
         $command->setSubject($subject);
-        $command->setRelation($relation);
         return $command;
     }
 }

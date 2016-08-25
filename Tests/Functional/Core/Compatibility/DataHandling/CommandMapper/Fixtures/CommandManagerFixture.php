@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
 
 class CommandManagerFixture extends CommandManager implements SingletonInterface
 {

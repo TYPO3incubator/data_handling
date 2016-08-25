@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\LegacyDataHandler;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 
 abstract class AbstractConverter
 {

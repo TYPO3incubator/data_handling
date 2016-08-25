@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,11 +15,11 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic as GenericEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta as GenericCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta as GenericEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 
 /**

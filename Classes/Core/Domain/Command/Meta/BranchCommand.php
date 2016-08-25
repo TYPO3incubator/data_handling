@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,34 +15,34 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceableTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class OrderRelationsCommand extends AbstractCommand implements Instantiable, Sequenceable
+class BranchCommand extends AbstractCommand implements Instantiable, Identifiable, Derivable
 {
-    use SequenceableTrait;
+    use IdentifiableTrait;
 
     /**
-     * @return OrderRelationsCommand
+     * @return BranchCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(OrderRelationsCommand::class);
+        return GeneralUtility::makeInstance(BranchCommand::class);
     }
 
     /**
      * @param EntityReference $subject
-     * @param AbstractSequence $sequence
-     * @return OrderRelationsCommand
+     * @param mixed $context
+     * @return BranchCommand
      */
-    public static function create(EntityReference $subject, AbstractSequence $sequence)
+    public static function create(EntityReference $subject, $context = null)
     {
         $command = static::instance();
         $command->setSubject($subject);
-        $command->setSequence($sequence);
+        $command->setIdentity(EntityReference::create($subject->getName()));
         return $command;
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.

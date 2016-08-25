@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Install\Updates;
 
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\AbstractDataHandlerActionTestCase;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\NullDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
@@ -122,7 +122,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
         $metadataUpgradeKey = 'metadata.' . EventInitializationService::KEY_UPGRADE . '.uid';
 
         $this->expectedEvents = [
-            Generic\CreatedEvent::class => [
+            Meta\CreatedEvent::class => [
                 array_merge($baseCreatedExpectation, [
                     'identity.name' => 'pages',
                     $metadataUpgradeKey => 1,
@@ -152,21 +152,21 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
                     $metadataUpgradeKey => 299,
                 ]),
             ],
-            Generic\TranslatedEvent::class => [
+            Meta\TranslatedEvent::class => [
                 array_merge($baseDerivedExpectation, [
                     'subject.name' => 'tt_content',
                     'identity.name' => 'tt_content',
                     $metadataUpgradeKey => 300,
                 ]),
             ],
-            Generic\BranchedEvent::class => [
+            Meta\BranchedEvent::class => [
                 array_merge($baseDerivedExpectation, [
                     'subject.name' => 'tt_content',
                     'identity.name' => 'tt_content',
                     $metadataUpgradeKey => 301,
                 ]),
             ],
-            Generic\ChangedEvent::class => [
+            Meta\ChangedEvent::class => [
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'pages',
                     'data.title' => 'FunctionalTest',
@@ -208,7 +208,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
                     $metadataUpgradeKey => 300,
                 ]),
             ],
-            Generic\DeletedEvent::class => [
+            Meta\DeletedEvent::class => [
                 array_merge($baseChangedExpectation, [
                     'subject.name' => 'tt_content',
                     $metadataUpgradeKey => 301,

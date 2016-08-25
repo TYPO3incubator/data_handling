@@ -15,11 +15,11 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta as GenericCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 

@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,29 +15,34 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationalTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class ChangedEvent extends AbstractEvent implements Instantiable
+class RemovedRelationEvent extends AbstractEvent implements Instantiable, Relational
 {
+    use RelationalTrait;
+
     /**
-     * @return ChangedEvent
+     * @return RemovedRelationEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ChangedEvent::class);
+        return GeneralUtility::makeInstance(RemovedRelationEvent::class);
     }
 
     /**
      * @param EntityReference $subject
-     * @param array $data
-     * @return ChangedEvent
+     * @param PropertyReference $relation
+     * @return RemovedRelationEvent
      */
-    public static function create(EntityReference $subject, array $data)
+    public static function create(EntityReference $subject, PropertyReference $relation)
     {
         $event = static::instance();
         $event->setSubject($subject);
-        $event->setData($data);
+        $event->setRelation($relation);
         return $event;
     }
 }

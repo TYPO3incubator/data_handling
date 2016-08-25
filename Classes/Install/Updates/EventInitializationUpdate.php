@@ -20,7 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
@@ -125,9 +125,9 @@ class EventInitializationUpdate extends AbstractUpdate
     }
 
     /**
-     * @param Generic\AbstractEvent $event
+     * @param Meta\AbstractEvent $event
      */
-    public function handleIdentifiableEvent(Generic\AbstractEvent $event) {
+    public function handleIdentifiableEvent(Meta\AbstractEvent $event) {
         if (!($event instanceof Identifiable)) {
             return;
         }

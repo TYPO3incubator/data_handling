@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Unit\Core\Service;
  */
 
 use TYPO3\CMS\Core\Tests\UnitTestCase;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 
 class SortingComparisonServiceTest extends UnitTestCase

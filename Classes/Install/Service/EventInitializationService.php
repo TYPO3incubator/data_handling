@@ -24,12 +24,12 @@ use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as Compatibi
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Database\Query\Restriction\LanguageRestriction;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Generic\WriteState;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\WriteState;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 
@@ -169,7 +169,7 @@ class EventInitializationService
         if (!$isWorkspaceAspect && !$isTranslationAspect) {
             $this->handleCommand(
                 $writeState,
-                Generic\CreateCommand::create($writeState->getSubject())->setMetadata($metadata)
+                Meta\CreateCommand::create($writeState->getSubject())->setMetadata($metadata)
             );
         // at least workspace -> either CreateCommand or BranchCommand
         } elseif ($isWorkspaceAspect) {
@@ -178,14 +178,14 @@ class EventInitializationService
             if ($versionState->equals(VersionState::NEW_PLACEHOLDER_VERSION)) {
                 $this->handleCommand(
                     $writeState,
-                    Generic\CreateCommand::create($writeState->getSubject())->setMetadata($metadata)
+                    Meta\CreateCommand::create($writeState->getSubject())->setMetadata($metadata)
                 );
             } else {
                 $liveData = $this->fetchRecordByUid($tableName, $data['t3ver_oid']);
                 $liveReference = EntityReference::fromRecord($tableName, $liveData);
                 $this->handleCommand(
                     $writeState,
-                    Generic\BranchCommand::create($liveReference)->setMetadata($metadata)
+                    Meta\BranchCommand::create($liveReference)->setMetadata($metadata)
                 );
             }
 
@@ -210,7 +210,7 @@ class EventInitializationService
 
             $this->handleCommand(
                 $writeState,
-                Generic\TranslateCommand::create($pointsToReference)->setMetadata($metadata)
+                Meta\TranslateCommand::create($pointsToReference)->setMetadata($metadata)
             );
         }
     }
@@ -240,7 +240,7 @@ class EventInitializationService
         );
         $this->handleCommand(
             $writeState,
-            Generic\ChangeCommand::create($writeState->getSubject(), $temporaryState->getValues())->setMetadata($metadata)
+            Meta\ChangeCommand::create($writeState->getSubject(), $temporaryState->getValues())->setMetadata($metadata)
         );
     }
 
@@ -264,7 +264,7 @@ class EventInitializationService
             if ($metaModelProperty->hasActiveRelationTo($relation->getEntityReference()->getName())) {
                 $this->handleCommand(
                     $writeState,
-                    Generic\AttachRelationCommand::create($writeState->getSubject(), $relation)->setMetadata($metadata)
+                    Meta\AttachRelationCommand::create($writeState->getSubject(), $relation)->setMetadata($metadata)
                 );
             }
         }
@@ -287,7 +287,7 @@ class EventInitializationService
             if ($versionState->equals(VersionState::DELETE_PLACEHOLDER)) {
                 $this->handleCommand(
                     $writeState,
-                    Generic\DeleteCommand::create($writeState->getSubject())->setMetadata($metadata)
+                    Meta\DeleteCommand::create($writeState->getSubject())->setMetadata($metadata)
                 );
             } elseif ($versionState->equals(VersionState::MOVE_POINTER)) {
                 // MoveBeforeCommand or MoveAfterCommand (or OrderRelationsComman for parent node)

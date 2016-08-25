@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
 
 class CommandManager
 {

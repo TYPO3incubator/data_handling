@@ -15,8 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Aggregate;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Aggregate;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
 use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
 

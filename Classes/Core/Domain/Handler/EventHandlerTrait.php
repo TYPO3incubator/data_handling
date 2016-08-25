@@ -48,8 +48,9 @@ trait EventHandlerTrait
             throw new \RuntimeException('Event "' . $event->getEventId() . '" was already applied', 1472041262);
         }
         // validate and assign event version to subject
-        if (($this->revision !== null || $event->getEventVersion() !== 0)
+        if ($event->getEventVersion() !== null
             && $this->revision + 1 !== $event->getEventVersion()
+            && ($this->revision !== null || $event->getEventVersion() !== 0)
         ) {
             throw new \RuntimeException('Unexpected event in sequence', 1472044588);
         }

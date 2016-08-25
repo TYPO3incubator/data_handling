@@ -42,7 +42,7 @@ class EntityStreamProjection extends AbstractEntityProjection implements StreamP
         // if real entity cannot be processed, just process
         // registered listeners and directly return after that
         if (!$this->canProcess()) {
-            foreach ($stream->forAll() as $event) {
+            foreach ($stream as $event) {
                 $this->handleListeners($event);
             }
             return;
@@ -57,7 +57,7 @@ class EntityStreamProjection extends AbstractEntityProjection implements StreamP
             $this->eventHandler->setSubject($subject);
         }
 
-        foreach ($stream->forAll() as $event) {
+        foreach ($stream as $event) {
             $this->handleListeners($event);
             $this->applyEvent($subject, $event);
         }

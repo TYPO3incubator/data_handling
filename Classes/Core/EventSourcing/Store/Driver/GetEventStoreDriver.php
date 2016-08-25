@@ -48,9 +48,10 @@ class GetEventStoreDriver implements PersistableDriver
 
     /**
      * @param string $url
-     * @param string $username
-     * @param string $password
+     * @param string|null $username
+     * @param string|null $password
      * @param bool $mute
+     * @throws \Exception
      */
     public function __construct(string $url, string $username = null, string $password = null, bool $mute = false)
     {
@@ -133,6 +134,6 @@ class GetEventStoreDriver implements PersistableDriver
             $this->eventStore->forwardStreamFeedIterator($comparableStreamName)
         );
 
-        return EventStream::create($streamName, $iterator);
+        return EventStream::create($iterator, $streamName);
     }
 }

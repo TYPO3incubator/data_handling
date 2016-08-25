@@ -47,6 +47,6 @@ class NullDriver implements PersistableDriver
      */
     public function stream(string $streamName, array $categories = [])
     {
-        return EventStream::create($streamName, NullDriverIterator::instance());
+        return EventStream::create(NullDriverIterator::instance(), $streamName);
     }
 }

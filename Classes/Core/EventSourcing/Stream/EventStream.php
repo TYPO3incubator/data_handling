@@ -18,16 +18,16 @@ use H4ck3r31\BankAccountExample\Domain\Event\AbstractEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\EventTraversable;
 
-class EventStream
+class EventStream extends \IteratorIterator
 {
     /**
-     * @param string $streamName
      * @param EventTraversable $traversable
+     * @param string $streamName
      * @return EventStream
      */
-    static public function create(string $streamName, EventTraversable $traversable)
+    static public function create(EventTraversable $traversable, string $streamName)
     {
-        return GeneralUtility::makeInstance(EventStream::class, $streamName, $traversable);
+        return GeneralUtility::makeInstance(EventStream::class, $traversable, $streamName);
     }
 
     /**
@@ -40,10 +40,12 @@ class EventStream
      */
     protected $streamName;
 
-    public function __construct(string $streamName, EventTraversable $traversable)
+    public function __construct(EventTraversable $traversable, string $streamName)
     {
-        $this->streamName = $streamName;
         $this->traversable = $traversable;
+        $this->streamName = $streamName;
+
+        parent::__construct($traversable);
     }
 
     /**
@@ -52,13 +54,5 @@ class EventStream
     public function getStreamName()
     {
         return $this->streamName;
-    }
-
-    /**
-     * @return \IteratorIterator|AbstractEvent[]
-     */
-    public function forAll()
-    {
-        return new \IteratorIterator($this->traversable);
     }
 }

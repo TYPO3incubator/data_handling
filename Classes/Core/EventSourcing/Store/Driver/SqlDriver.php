@@ -122,7 +122,7 @@ class SqlDriver implements PersistableDriver
             ->where(...$predicates)
             ->execute();
 
-        return EventStream::create($streamName, SqlDriverIterator::create($statement));
+        return EventStream::create(SqlDriverIterator::create($statement), $streamName);
     }
 
     /**

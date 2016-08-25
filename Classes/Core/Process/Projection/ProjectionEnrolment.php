@@ -16,7 +16,6 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerInterface;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelectorBundle;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
 

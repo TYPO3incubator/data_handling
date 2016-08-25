@@ -16,6 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
+/**
+ * @deprecated
+ */
 interface EventHandlerInterface
 {
     /**

@@ -24,6 +24,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\SourceManager;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
 use TYPO3\CMS\Install\Updates\AbstractUpdate;
@@ -64,6 +65,9 @@ class EventInitializationUpdate extends AbstractUpdate
         $description = 'Initializes events for existing records';
 
         foreach (array_keys($GLOBALS['TCA']) as $tableName) {
+            if (SourceManager::provide()->hasSourcedTableName($tableName)) {
+                continue;
+            }
             if ($this->countEmptyRevisionColumns($tableName) > 0) {
                 return true;
             }
@@ -86,7 +90,9 @@ class EventInitializationUpdate extends AbstractUpdate
             array($this, 'handleIdentifiableEvent')
         );
 
-        $tableNames = array_keys($GLOBALS['TCA']);
+        $allTableNames = array_keys($GLOBALS['TCA']);
+        // filter out tables that are registered as source tables already
+        $tableNames = array_diff($allTableNames, SourceManager::provide()->getSourcedTableNames());
         $recordTableNames = array_diff($tableNames, ['pages']);
 
         foreach ($this->getWorkspaces() as $workspace) {

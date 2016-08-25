@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
 trait EventHandlerTrait
@@ -38,9 +38,9 @@ trait EventHandlerTrait
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      */
-    public function apply(AbstractEvent $event)
+    public function apply(BaseEvent $event)
     {
         // this just checks for applied events in the current processing, the
         // ids of previously applied events might not be available in this scope
@@ -63,10 +63,10 @@ trait EventHandlerTrait
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @return string
      */
-    protected function getEventHandlerMethodName(AbstractEvent $event)
+    protected function getEventHandlerMethodName(BaseEvent $event)
     {
         $eventName = ClassNamingUtility::getLastPart($event);
         return 'on' . $eventName;

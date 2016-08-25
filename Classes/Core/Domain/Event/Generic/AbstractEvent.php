@@ -17,15 +17,16 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\StorableEvent;
 
-abstract class AbstractEvent extends Event\AbstractEvent implements Event\Definition\StorableEvent
+abstract class AbstractEvent extends BaseEvent implements StorableEvent
 {
     /**
      * @param AbstractCommand $command

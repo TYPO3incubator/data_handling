@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 
 class NullDriver implements PersistableDriver
@@ -31,11 +31,11 @@ class NullDriver implements PersistableDriver
 
     /**
      * @param string $streamName
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @param string[] $categories
      * @return bool
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = []): bool
+    public function attach(string $streamName, BaseEvent $event, array $categories = []): bool
     {
         return true;
     }

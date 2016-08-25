@@ -24,7 +24,7 @@ use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as Compatibi
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Database\Query\Restriction\LanguageRestriction;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Generic\WriteState;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;

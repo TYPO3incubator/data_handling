@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;

@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic as GenericEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
@@ -31,10 +31,10 @@ class ReadState extends State implements Applicable
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @return ReadState
      */
-    public function apply(AbstractEvent $event)
+    public function apply(BaseEvent $event)
     {
         $eventNameParts = GeneralUtility::trimExplode('\\', get_class($event), true);
         $eventName = $eventNameParts[count($eventNameParts) - 1];

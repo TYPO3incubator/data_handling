@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
 
 use EventStore\ValueObjects\Identity\UUID as GetEventStoreUUID;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 
@@ -77,12 +77,12 @@ class GetEventStoreDriver implements PersistableDriver
 
     /**
      * @param string $streamName
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @param string[] $categories
      * @return null|int
      * @todo The GetEventStoreAPI does not support categories, yet
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = [])
+    public function attach(string $streamName, BaseEvent $event, array $categories = [])
     {
         if ($this->offline) {
             return false;

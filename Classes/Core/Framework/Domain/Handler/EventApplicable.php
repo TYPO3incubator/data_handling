@@ -14,12 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
 interface EventApplicable
 {
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      */
-    public function apply(AbstractEvent $event);
+    public function apply(BaseEvent $event);
 }

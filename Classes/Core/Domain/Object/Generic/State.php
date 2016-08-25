@@ -15,8 +15,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 
 class State
 {

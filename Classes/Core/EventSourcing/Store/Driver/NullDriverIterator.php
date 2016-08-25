@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
 class NullDriverIterator extends \ArrayObject implements EventTraversable
 {

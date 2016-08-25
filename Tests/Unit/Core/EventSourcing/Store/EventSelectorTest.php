@@ -226,23 +226,23 @@ class EventSelectorTest extends UnitTestCase
                 '[dunno,second]', '[first,other-one]', false
             ],
             'matching inherited events' => [
-                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
+                '[' . \TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent::class . ']',
                 '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class . ']',
                 true
             ],
             'different inherited events' => [
                 '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class . ']',
-                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
+                '[' . \TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent::class . ']',
                 false
             ],
             'matching chain' => [
-                '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
+                '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent::class . ']',
                 '$stream/record/abcd.first.other-one[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class . ']',
                 true
             ],
             'different chain' => [
                 '$stream/record/abcd.first.other-one[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Generic\AbstractEvent::class . ']',
-                '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent::class . ']',
+                '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent::class . ']',
                 false
             ],
             'empty left-side stream' => [

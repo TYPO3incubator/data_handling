@@ -37,7 +37,20 @@ class ChangeCommand extends AbstractCommand implements Instantiable
     {
         $command = static::instance();
         $command->setSubject($subject);
-        $command->setData($data);
+        $command->data = $data;
         return $command;
+    }
+
+    /**
+     * @var array|null
+     */
+    protected $data;
+
+    /**
+     * @return array|null
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }

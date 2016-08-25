@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Database\Query\Expression\CompositeExpression;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
 
@@ -36,13 +36,13 @@ class SqlDriver implements PersistableDriver
 
     /**
      * @param string $streamName
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @param array $categories
      * @return bool|int|string
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \Exception
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = [])
+    public function attach(string $streamName, BaseEvent $event, array $categories = [])
     {
         $rawEvent = [
             'event_stream' => $streamName,

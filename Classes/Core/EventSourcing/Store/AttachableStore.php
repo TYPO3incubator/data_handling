@@ -14,15 +14,15 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
 interface AttachableStore
 {
     /**
      * @param string $streamName
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @param string[] $categories
      * @param null $expectedVersion
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = [], $expectedVersion = null);
+    public function attach(string $streamName, BaseEvent $event, array $categories = [], $expectedVersion = null);
 }

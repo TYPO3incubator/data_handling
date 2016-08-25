@@ -24,7 +24,7 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Generic\ReadState;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;

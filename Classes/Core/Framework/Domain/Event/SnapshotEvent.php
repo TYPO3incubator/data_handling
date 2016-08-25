@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
-
 interface SnapshotEvent extends AggregateEvent
 {
 }

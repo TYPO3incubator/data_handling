@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\StorableEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\PersistableDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
@@ -53,11 +53,11 @@ class EventStore implements AttachableStore
 
     /**
      * @param string $streamName
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @param string[] $categories
      * @param null $expectedVersion
      */
-    public function attach(string $streamName, AbstractEvent $event, array $categories = [], $expectedVersion = null)
+    public function attach(string $streamName, BaseEvent $event, array $categories = [], $expectedVersion = null)
     {
         if (!$event instanceof StorableEvent) {
             throw new \RuntimeException('Event "' . get_class($event) . '" cannot be stored', 1470871139);

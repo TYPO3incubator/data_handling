@@ -15,8 +15,9 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 
-abstract class AbstractCommand extends \TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand
+abstract class AbstractCommand implements DomainCommand
 {
     /**
      * Subject the command is applied to.
@@ -24,6 +25,11 @@ abstract class AbstractCommand extends \TYPO3\CMS\DataHandling\Core\Domain\Comma
      * @var EntityReference
      */
     protected $subject;
+
+    /**
+     * @var array|null
+     */
+    protected $metadata;
 
     /**
      * @return null|EntityReference
@@ -41,5 +47,23 @@ abstract class AbstractCommand extends \TYPO3\CMS\DataHandling\Core\Domain\Comma
     {
         $this->subject = $subject;
         return $this;
+    }
+
+    /**
+     * @param array|null $metadata
+     * @return AbstractCommand
+     */
+    public function setMetadata(array $metadata = null)
+    {
+        $this->metadata = $metadata;
+        return $this;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getMetadata()
+    {
+        return $this->metadata;
     }
 }

@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventHandlerInterface;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\ProjectionRepository;
@@ -99,9 +99,9 @@ trait ProjectingTrait
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      */
-    protected function handleListeners(AbstractEvent $event)
+    protected function handleListeners(BaseEvent $event)
     {
         foreach ($this->findListeners($event) as $eventListener) {
             if ($event->isCancelled()) {
@@ -116,16 +116,16 @@ trait ProjectingTrait
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @return \Closure[]|callable[]
      */
-    protected function findListeners(AbstractEvent $event)
+    protected function findListeners(BaseEvent $event)
     {
         return array_filter(
             $this->listeners,
             /**
              * @param string $eventName
-             * @param AbstractEvent $event
+             * @param BaseEvent $event
              * @return bool
              */
             function(string $eventName) use ($event)

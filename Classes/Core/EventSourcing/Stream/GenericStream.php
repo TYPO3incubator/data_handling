@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
@@ -36,10 +36,10 @@ class GenericStream extends AbstractStream implements Instantiable
     }
 
     /**
-     * @param AbstractEvent|Generic\AbstractEvent $event
+     * @param BaseEvent|Generic\AbstractEvent $event
      * @return string
      */
-    protected function determineStreamNameByEvent(AbstractEvent $event): string
+    protected function determineStreamNameByEvent(BaseEvent $event): string
     {
         $name = '';
 

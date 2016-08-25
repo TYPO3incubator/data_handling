@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Committable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Publishable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
@@ -52,10 +52,10 @@ abstract class AbstractStream implements Publishable, Committable
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @return GenericStream
      */
-    public function publish(AbstractEvent $event)
+    public function publish(BaseEvent $event)
     {
         // @todo Add check agains event type via EventSelector
         foreach ($this->consumers as $consumer) {
@@ -77,11 +77,11 @@ abstract class AbstractStream implements Publishable, Committable
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @param array $categories
      * @return GenericStream
      */
-    public function commit(AbstractEvent $event, array $categories = [])
+    public function commit(BaseEvent $event, array $categories = [])
     {
         $streamName = $this->determineStreamNameByEvent($event);
 
@@ -122,8 +122,8 @@ abstract class AbstractStream implements Publishable, Committable
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @return string
      */
-    abstract protected function determineStreamNameByEvent(AbstractEvent $event): string;
+    abstract protected function determineStreamNameByEvent(BaseEvent $event): string;
 }

@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
 
 use EventStore\StreamFeed\StreamFeedIterator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
 class GetEventStoreIterator implements \Iterator, EventTraversable
 {
@@ -35,7 +35,7 @@ class GetEventStoreIterator implements \Iterator, EventTraversable
     protected $feedIterator;
 
     /**
-     * @var AbstractEvent
+     * @var BaseEvent
      */
     protected $event;
 
@@ -93,7 +93,7 @@ class GetEventStoreIterator implements \Iterator, EventTraversable
         $this->feedIterator->next();
 
         $eventClassName = $item->getEvent()->getType();
-        if (!is_a($eventClassName, AbstractEvent::class, true)) {
+        if (!is_a($eventClassName, BaseEvent::class, true)) {
             return $this->invalidate();
         }
 

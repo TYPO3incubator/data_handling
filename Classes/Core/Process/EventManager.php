@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Process;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\ProjectionPool;
@@ -31,9 +31,9 @@ class EventManager implements Instantiable
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      */
-    public function manage(AbstractEvent $event)
+    public function manage(BaseEvent $event)
     {
         $concerning = EventSelector::instance()
             ->setEvents([get_class($event)]);

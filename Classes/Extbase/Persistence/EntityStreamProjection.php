@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  */
 
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
@@ -83,9 +83,9 @@ class EntityStreamProjection extends AbstractEntityProjection implements StreamP
 
     /**
      * @param AbstractProjectableEntity $subject
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      */
-    protected function applyEvent(AbstractProjectableEntity $subject, AbstractEvent $event)
+    protected function applyEvent(AbstractProjectableEntity $subject, BaseEvent $event)
     {
         if ($event->isCancelled()) {
             return;

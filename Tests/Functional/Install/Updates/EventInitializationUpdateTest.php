@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Install\Updates;
  */
 
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\AbstractDataHandlerActionTestCase;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\NullDriver;
@@ -225,7 +225,7 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
         );
     }
 
-    public function recordTablesAreUpdatedEventHandler(AbstractEvent $event)
+    public function recordTablesAreUpdatedEventHandler(BaseEvent $event)
     {
         $eventClassName = get_class($event);
 

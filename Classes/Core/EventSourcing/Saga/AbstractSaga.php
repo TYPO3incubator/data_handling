@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\AbstractStream;
@@ -45,7 +45,7 @@ abstract class AbstractSaga
      */
     public function tell(Applicable $state, EventSelector $desire)
     {
-        $applicableState = function(AbstractEvent $event) use ($state) {
+        $applicableState = function(BaseEvent $event) use ($state) {
             $state->apply($event);
         };
 

@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Generic;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Generic as GenericCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic as GenericEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;

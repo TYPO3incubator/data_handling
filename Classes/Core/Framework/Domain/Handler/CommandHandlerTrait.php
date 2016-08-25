@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Process\EventPublisher;
@@ -34,9 +34,9 @@ trait CommandHandlerTrait
 
     /**
      * @param EventRepository $repository
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      */
-    protected static function emitEvent(EventRepository $repository, AbstractEvent $event)
+    protected static function emitEvent(EventRepository $repository, BaseEvent $event)
     {
         $repository->addEvent($event);
         EventPublisher::instance()->publish($event);

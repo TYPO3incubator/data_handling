@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository;
  */
 
 use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
 
 /**
@@ -30,7 +30,7 @@ interface EventRepository
     public function findByUuid(UuidInterface $uuid);
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      */
-    public function addEvent(AbstractEvent $event);
+    public function addEvent(BaseEvent $event);
 }

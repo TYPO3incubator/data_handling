@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
 class EventManager implements Providable, Manageable, Listenable
@@ -125,10 +125,10 @@ class EventManager implements Providable, Manageable, Listenable
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @return EventManager
      */
-    public function manage(AbstractEvent $event)
+    public function manage(BaseEvent $event)
     {
         foreach ($this->listeners[static::LISTEN_BEFORE] as $listener) {
             call_user_func($listener, $event);

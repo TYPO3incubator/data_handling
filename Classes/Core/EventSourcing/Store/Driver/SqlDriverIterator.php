@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
 
 use Doctrine\DBAL\Driver\Statement;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
 class SqlDriverIterator implements \Iterator, EventTraversable
 {
@@ -35,7 +35,7 @@ class SqlDriverIterator implements \Iterator, EventTraversable
     protected $statement;
 
     /**
-     * @var AbstractEvent
+     * @var BaseEvent
      */
     protected $event;
 
@@ -90,7 +90,7 @@ class SqlDriverIterator implements \Iterator, EventTraversable
         }
 
         $eventClassName = $rawEvent['event_name'];
-        if (!is_a($eventClassName, AbstractEvent::class, true)) {
+        if (!is_a($eventClassName, BaseEvent::class, true)) {
             return $this->invalidate();
         }
 

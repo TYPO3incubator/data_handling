@@ -14,9 +14,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
 interface Manageable
 {
-    public function manage(AbstractEvent $event);
+    public function manage(BaseEvent $event);
 }

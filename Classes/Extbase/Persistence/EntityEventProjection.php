@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  */
 
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\AggregateEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
@@ -33,9 +33,9 @@ class EntityEventProjection extends AbstractEntityProjection implements EventPro
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      */
-    public function project(AbstractEvent $event)
+    public function project(BaseEvent $event)
     {
         $this->handleListeners($event);
 
@@ -62,10 +62,10 @@ class EntityEventProjection extends AbstractEntityProjection implements EventPro
     }
 
     /**
-     * @param AbstractEvent $event
+     * @param BaseEvent $event
      * @return null|AbstractProjectableEntity
      */
-    protected function provideSubject(AbstractEvent $event)
+    protected function provideSubject(BaseEvent $event)
     {
         if ($event instanceof EntityEvent) {
             return $this->createSubject();

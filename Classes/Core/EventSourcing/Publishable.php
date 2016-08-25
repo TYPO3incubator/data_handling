@@ -14,9 +14,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
 interface Publishable
 {
-    public function publish(AbstractEvent $event);
+    public function publish(BaseEvent $event);
 }

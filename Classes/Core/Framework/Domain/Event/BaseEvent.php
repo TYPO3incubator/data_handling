@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,12 +15,10 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
  */
 
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\DomainEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Type\MicroDateTime;
 
-abstract class AbstractEvent implements DomainEvent
+abstract class BaseEvent implements DomainEvent
 {
     /**
      * @param string $eventType
@@ -29,7 +27,7 @@ abstract class AbstractEvent implements DomainEvent
      * @param \DateTime $date
      * @param null|array $data
      * @param null|array $metadata
-     * @return AbstractEvent
+     * @return BaseEvent
      */
     static function reconstitute(string $eventType, string $eventId, int $eventVersion, \DateTime $date, $data, $metadata)
     {
@@ -37,7 +35,7 @@ abstract class AbstractEvent implements DomainEvent
             throw new \RuntimeException('Cannot instantiate "' . $eventType . '"', 1470935798);
         }
 
-        /** @var AbstractEvent $event */
+        /** @var BaseEvent $event */
         $event = call_user_func($eventType . '::instance');
         $event->eventId = $eventId;
         $event->eventVersion = $eventVersion;
@@ -139,7 +137,7 @@ abstract class AbstractEvent implements DomainEvent
 
     /**
      * @param array|null $data
-     * @return AbstractEvent
+     * @return BaseEvent
      */
     public function setData(array $data = null)
     {
@@ -162,13 +160,13 @@ abstract class AbstractEvent implements DomainEvent
 
     /**
      * @param null|array $data
-     * @return AbstractEvent
+     * @return BaseEvent
      */
     abstract public function importData($data);
 
     /**
      * @param array|null $metadata
-     * @return AbstractEvent
+     * @return BaseEvent
      */
     public function setMetadata(array $metadata = null)
     {

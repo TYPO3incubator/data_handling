@@ -14,7 +14,9 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
-abstract class AbstractCommand
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
+
+abstract class AbstractCommand implements DomainCommand
 {
     /**
      * @var array|null

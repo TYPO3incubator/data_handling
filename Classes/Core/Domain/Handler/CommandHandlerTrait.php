@@ -16,9 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\EventRepository;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Process\EventPublisher;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
@@ -33,9 +33,19 @@ trait CommandHandlerTrait
     }
 
     /**
-     * @param AbstractCommand $command
+     * @param EventRepository $repository
+     * @param AbstractEvent $event
      */
-    public function execute(AbstractCommand $command)
+    protected static function emitEvent(EventRepository $repository, AbstractEvent $event)
+    {
+        $repository->addEvent($event);
+        EventPublisher::instance()->publish($event);
+    }
+
+    /**
+     * @param DomainCommand $command
+     */
+    public function execute(DomainCommand $command)
     {
         // determine method name, that is used to execute the command
         $methodName = $this->getCommandHandlerMethodName($command);
@@ -45,22 +55,12 @@ trait CommandHandlerTrait
     }
 
     /**
-     * @param AbstractCommand $command
+     * @param DomainCommand $command
      * @return string
      */
-    protected function getCommandHandlerMethodName(AbstractCommand $command)
+    protected function getCommandHandlerMethodName(DomainCommand $command)
     {
         $commandName = ClassNamingUtility::getLastPart($command);
         return 'on' . $commandName;
-    }
-
-    /**
-     * @param EventRepository $repository
-     * @param AbstractEvent $event
-     */
-    protected function provideEvent(EventRepository $repository, AbstractEvent $event)
-    {
-        $repository->addEvent($event);
-        EventPublisher::instance()->publish($event);
     }
 }

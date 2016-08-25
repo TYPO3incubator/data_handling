@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Command;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,12 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
-
-interface CommandApplicable
+interface DomainCommand
 {
-    /**
-     * @param DomainCommand $command
-     */
-    public function execute(DomainCommand $command);
 }

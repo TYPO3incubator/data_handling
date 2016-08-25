@@ -261,7 +261,7 @@ class CommandMapper
             ->resolve();
         foreach ($changes as $change) {
             $commands = CommandResolver::instance()->setChange($change)->resolve();
-            $this->commands = $this->commands + $commands;
+            $this->commands = array_merge($this->commands, $commands);
         }
     }
 

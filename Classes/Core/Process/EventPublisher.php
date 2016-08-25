@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Process;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class EventPublisher implements Instantiable
 {

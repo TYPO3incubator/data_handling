@@ -16,8 +16,8 @@ namespace TYPO3\CMS\DataHandling\Extbase\DomainObject;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\ProjectableEntity;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventHandlerTrait;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Model\ProjectableEntity;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 abstract class AbstractProjectableEntity extends AbstractEntity implements ProjectableEntity

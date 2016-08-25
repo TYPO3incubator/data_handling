@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,25 +16,21 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
 
 use Ramsey\Uuid\UuidInterface;
 
-interface ProjectableEntity
+/**
+ * AggregateEventTrait
+ */
+trait AggregateEventTrait
 {
     /**
-     * @param string $uuid
+     * @var UuidInterface
      */
-    public function _setUuid(string $uuid);
-
-    /**
-     * @return string
-     */
-    public function getUuid();
+    protected $aggregateId;
 
     /**
      * @return UuidInterface
      */
-    public function getUuidInterface();
-
-    /**
-     * @return int
-     */
-    public function getRevision();
+    public function getAggregateId(): UuidInterface
+    {
+        return $this->aggregateId;
+    }
 }

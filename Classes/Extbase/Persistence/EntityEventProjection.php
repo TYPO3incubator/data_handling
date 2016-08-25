@@ -16,9 +16,9 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
 
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\AggregateEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\EntityEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\AggregateEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\EventProjecting;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 

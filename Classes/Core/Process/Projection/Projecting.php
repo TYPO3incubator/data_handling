@@ -14,8 +14,8 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerInterface;
-use TYPO3\CMS\DataHandling\Core\Domain\Repository\EventRepository;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventHandlerInterface;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\ProjectionRepository;
 
 interface Projecting

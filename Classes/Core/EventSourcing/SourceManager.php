@@ -16,8 +16,8 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
-use TYPO3\CMS\DataHandling\Core\Object\Providable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
 class SourceManager implements Providable, Instantiable
 {

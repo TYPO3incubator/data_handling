@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-
 interface Listenable
 {
     public function on(string $type, callable $listener);

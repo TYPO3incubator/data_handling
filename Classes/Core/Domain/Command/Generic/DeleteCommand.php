@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Generic;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class DeleteCommand extends AbstractCommand implements Instantiable
 {

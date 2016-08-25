@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,10 +16,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
 
 use Ramsey\Uuid\UuidInterface;
 
-interface AggregateEvent extends StorableEvent
+interface SnapshotEvent extends AggregateEvent
 {
-    /**
-     * @return UuidInterface
-     */
-    public function getAggregateId(): UuidInterface;
 }

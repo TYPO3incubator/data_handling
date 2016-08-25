@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,6 +14,23 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface InternalEvent extends DomainEvent
+use Ramsey\Uuid\UuidInterface;
+
+/**
+ * RelationalEventTrait
+ */
+trait RelationalEventTrait
 {
+    /**
+     * @var UuidInterface
+     */
+    protected $relationId;
+
+    /**
+     * @return UuidInterface
+     */
+    public function getRelationId(): UuidInterface
+    {
+        return $this->relationId;
+    }
 }

@@ -16,8 +16,8 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
 
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
-use TYPO3\CMS\DataHandling\Core\Domain\Repository\EventRepository;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\ProjectingTrait;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 

@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Object;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,23 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
-
-/**
- * RelationalEventTrait
- */
-trait RelationalEventTrait
+interface Instantiable
 {
-    /**
-     * @var UuidInterface
-     */
-    protected $relationId;
-
-    /**
-     * @return UuidInterface
-     */
-    public function getRelationId(): UuidInterface
-    {
-        return $this->relationId;
-    }
+    static public function instance();
 }

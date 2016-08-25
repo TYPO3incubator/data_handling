@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  */
 
 use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\Extbase\Persistence\RepositoryInterface as SuperRepositoryInterface;
 
 /**

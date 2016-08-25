@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Repository;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,23 +14,21 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
 
 /**
- * The event repository for Accounts
+ * @deprecated
  */
-interface EventRepository
+interface EventHandlerInterface
 {
     /**
-     * @param UuidInterface $uuid
-     * @return EventApplicable
+     * @param $subject
+     * @return $this
      */
-    public function findByUuid(UuidInterface $uuid);
+    public function setSubject($subject);
 
     /**
      * @param AbstractEvent $event
      */
-    public function addEvent(AbstractEvent $event);
+    public function apply(AbstractEvent $event);
 }

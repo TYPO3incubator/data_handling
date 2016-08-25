@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,21 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-
-/**
- * @deprecated
- */
-interface EventHandlerInterface
+interface EntityEvent extends DomainEvent
 {
-    /**
-     * @param $subject
-     * @return $this
-     */
-    public function setSubject($subject);
-
-    /**
-     * @param AbstractEvent $event
-     */
-    public function apply(AbstractEvent $event);
 }

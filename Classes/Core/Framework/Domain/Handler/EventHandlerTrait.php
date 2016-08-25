@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 /*
  * This file is part of the TYPO3 CMS project.

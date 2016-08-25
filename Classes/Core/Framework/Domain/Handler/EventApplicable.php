@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,12 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 
-interface CommandApplicable
+interface EventApplicable
 {
     /**
-     * @param DomainCommand $command
+     * @param AbstractEvent $event
      */
-    public function execute(DomainCommand $command);
+    public function apply(AbstractEvent $event);
 }

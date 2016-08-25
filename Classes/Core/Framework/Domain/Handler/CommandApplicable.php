@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Object;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,7 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface RepresentableAsString
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
+
+interface CommandApplicable
 {
-    public function __toString();
+    /**
+     * @param DomainCommand $command
+     */
+    public function execute(DomainCommand $command);
 }

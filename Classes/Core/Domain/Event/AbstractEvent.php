@@ -16,8 +16,8 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\DomainEvent;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\DomainEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Type\MicroDateTime;
 
 abstract class AbstractEvent implements DomainEvent

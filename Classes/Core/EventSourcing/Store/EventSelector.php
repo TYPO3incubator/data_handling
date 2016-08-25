@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class EventSelector implements Instantiable
 {

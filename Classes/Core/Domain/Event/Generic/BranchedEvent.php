@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class BranchedEvent extends AbstractEvent implements Instantiable, Identifiable, Derivable
 {

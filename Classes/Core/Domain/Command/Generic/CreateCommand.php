@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class CreateCommand extends AbstractCommand implements Instantiable, Identifiable
 {

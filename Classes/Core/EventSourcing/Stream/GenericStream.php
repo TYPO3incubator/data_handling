@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Generic;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class GenericStream extends AbstractStream implements Instantiable
 {

@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Object\RepresentableAsString;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsString;
 
 class RevisionReference implements RepresentableAsString
 {

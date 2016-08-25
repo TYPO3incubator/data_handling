@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Object;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,9 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface DomainEvent
+interface Providable
 {
-    public function isCancelled(): bool;
-
-    public function cancel();
+    static public function provide(bool $force = false);
 }

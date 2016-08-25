@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Repository\EventRepository;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Process\EventPublisher;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;

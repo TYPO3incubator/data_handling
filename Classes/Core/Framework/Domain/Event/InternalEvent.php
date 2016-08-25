@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Definition;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
-
-interface SnapshotEvent extends AggregateEvent
+interface InternalEvent extends DomainEvent
 {
 }

@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Generic;
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Object\RepresentableAsString;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsString;
 
 class EntityReference implements RepresentableAsString
 {

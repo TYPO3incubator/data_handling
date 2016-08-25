@@ -18,7 +18,7 @@ use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
 class ExtensionUtility implements Instantiable

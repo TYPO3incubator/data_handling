@@ -43,7 +43,7 @@ class ProjectionService
 
         ProjectionPool::provide()
             ->getFor($concerning)
-            ->provideStreamProjection()
+            ->provide()->forStream()
             ->project($stream);
     }
 }

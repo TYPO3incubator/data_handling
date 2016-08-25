@@ -14,12 +14,24 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\AggregateEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\EventProjecting;
+use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
 class EntityEventProjection extends AbstractEntityProjection implements EventProjecting
 {
+    /**
+     * @return EntityEventProjection
+     */
+    public static function instance()
+    {
+        return Common::getObjectManager()->get(EntityEventProjection::class);
+    }
+
     /**
      * @param AbstractEvent $event
      */
@@ -46,13 +58,21 @@ class EntityEventProjection extends AbstractEntityProjection implements EventPro
             $this->eventHandler->setSubject($subject);
         }
 
-        if ($subject->_isNew()) {
-            $this->repository->add($subject);
-        } else {
-            $this->repository->update($subject);
+        $this->persist($subject);
+    }
+
+    /**
+     * @param AbstractEvent $event
+     * @return null|AbstractProjectableEntity
+     */
+    protected function provideSubject(AbstractEvent $event)
+    {
+        if ($event instanceof EntityEvent) {
+            return $this->createSubject();
+        } elseif ($event instanceof AggregateEvent) {
+            return $this->fetchEventSubject($event->getAggregateId());
         }
 
-        // ensure to persist everything after this event
-        $this->persistenceManager->persistAll();
+        return null;
     }
 }

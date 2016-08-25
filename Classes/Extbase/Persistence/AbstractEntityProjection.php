@@ -16,10 +16,8 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
 
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\AggregateEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Definition\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
+use TYPO3\CMS\DataHandling\Core\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\ProjectingTrait;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
@@ -41,11 +39,45 @@ abstract class AbstractEntityProjection
     }
 
     /**
+     * @var EventRepository
+     */
+    protected $eventRepository;
+
+    /**
+     * @var ProjectionRepository
+     */
+    protected $projectionRepository;
+
+    /**
+     * @param EventRepository $eventRepository
+     * @return $this
+     */
+    public function setEventRepository(EventRepository $eventRepository)
+    {
+        $this->eventRepository = $eventRepository;
+        return $this;
+    }
+
+    /**
+     * @param ProjectionRepository $projectionRepository
+     * @return $this
+     */
+    public function setProjectionRepository(ProjectionRepository $projectionRepository)
+    {
+        $this->projectionRepository = $projectionRepository;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     protected function canProcess()
     {
-        if (empty($this->subjectName) || empty($this->repository)) {
+        if (
+            empty($this->subjectName)
+            || empty($this->eventRepository)
+            || empty($this->projectionRepository)
+        ) {
             return false;
         }
 
@@ -57,21 +89,6 @@ abstract class AbstractEntityProjection
         }
 
         return true;
-    }
-
-    /**
-     * @param AbstractEvent $event
-     * @return null|AbstractProjectableEntity
-     */
-    protected function provideSubject(AbstractEvent $event)
-    {
-        if ($event instanceof EntityEvent) {
-            return $this->createSubject();
-        } elseif ($event instanceof AggregateEvent) {
-            return $this->fetchSubject($event->getAggregateId());
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -89,11 +106,48 @@ abstract class AbstractEntityProjection
      * @param UuidInterface $uuid
      * @return null|AbstractProjectableEntity
      */
-    protected function fetchSubject(UuidInterface $uuid)
+    protected function fetchEventSubject(UuidInterface $uuid)
     {
-        if (empty($this->repository)) {
-            throw new \RuntimeException('Cannot fetch subject', 1471946615);
+        if (empty($this->eventRepository)) {
+            throw new \RuntimeException('Cannot fetch event subject', 1471946615);
         }
-        return $this->repository->findByUuid($uuid);
+        return $this->eventRepository->findByUuid($uuid);
+    }
+
+    /**
+     * @param UuidInterface $uuid
+     * @return null|AbstractProjectableEntity
+     */
+    protected function fetchProjectionSubject(UuidInterface $uuid)
+    {
+        if (empty($this->projectionRepository)) {
+            throw new \RuntimeException('Cannot fetch projection subject', 1471946616);
+        }
+        return $this->projectionRepository->findByUuid($uuid);
+    }
+
+    /**
+     * @param AbstractProjectableEntity $subject
+     */
+    protected function persist(AbstractProjectableEntity $subject)
+    {
+        $existingSubject = $this->fetchProjectionSubject(
+            $subject->getUuidInterface()
+        );
+
+        // directly add new entities
+        if ($existingSubject === null) {
+            $this->projectionRepository->add($subject);
+
+        // in case there is already a projection, try to re-use the UID
+        // of that aggregate by removing it from repository and adding it
+        // again with the previously used UID
+        } else {
+            $subject->_setProperty('uid', $existingSubject->getUid());
+            $subject->setPid($existingSubject->getPid());
+            $this->projectionRepository->update($subject);
+        }
+
+        $this->persistenceManager->persistAll();
     }
 }

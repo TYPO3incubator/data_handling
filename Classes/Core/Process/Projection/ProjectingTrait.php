@@ -16,7 +16,8 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
 
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerInterface;
-use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
+use TYPO3\CMS\DataHandling\Core\Domain\Repository\EventRepository;
+use TYPO3\CMS\DataHandling\Extbase\Persistence\ProjectionRepository;
 
 trait ProjectingTrait
 {
@@ -26,9 +27,14 @@ trait ProjectingTrait
     protected $subjectName;
 
     /**
-     * @var RepositoryInterface
+     * @var ProjectionRepository
      */
-    protected $repository;
+    protected $projectionRepository;
+
+    /**
+     * @var EventRepository
+     */
+    protected $eventRepository;
 
     /**
      * @var EventHandlerInterface
@@ -52,12 +58,22 @@ trait ProjectingTrait
     }
 
     /**
-     * @param RepositoryInterface $repository
+     * @param ProjectionRepository $projectionRepository
      * @return $this
      */
-    public function setRepository(RepositoryInterface $repository)
+    public function setProjectionRepository(ProjectionRepository $projectionRepository)
     {
-        $this->repository = $repository;
+        $this->projectionRepository = $projectionRepository;
+        return $this;
+    }
+
+    /**
+     * @param EventRepository $eventRepository
+     * @return $this
+     */
+    public function setEventRepository(EventRepository $eventRepository)
+    {
+        $this->eventRepository = $eventRepository;
         return $this;
     }
 

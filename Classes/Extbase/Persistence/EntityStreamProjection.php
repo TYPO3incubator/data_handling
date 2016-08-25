@@ -14,6 +14,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
@@ -24,6 +25,14 @@ use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
 class EntityStreamProjection extends AbstractEntityProjection implements StreamProjecting
 {
+    /**
+     * @return EntityStreamProjection
+     */
+    public static function instance()
+    {
+        return Common::getObjectManager()->get(EntityStreamProjection::class);
+    }
+
     /**
      * @param string $streamName
      */
@@ -69,24 +78,7 @@ class EntityStreamProjection extends AbstractEntityProjection implements StreamP
             return;
         }
 
-        $existingSubject = $this->fetchSubject(
-            $subject->getUuidInterface()
-        );
-
-        // directly add new entities
-        if ($existingSubject === null) {
-            $this->repository->add($subject);
-
-        // in case there is already a projection, try to re-use the UID
-        // of that aggregate by removing it from repository and adding it
-        // again with the previously used UID
-        } else {
-            $subject->_setProperty('uid', $existingSubject->getUid());
-            $subject->setPid($existingSubject->getPid());
-            $this->repository->update($subject);
-        }
-
-        $this->persistenceManager->persistAll();
+        $this->persist($subject);
     }
 
     /**

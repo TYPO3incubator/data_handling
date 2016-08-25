@@ -15,7 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Handler\EventHandlerInterface;
-use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
+use TYPO3\CMS\DataHandling\Core\Domain\Repository\EventRepository;
+use TYPO3\CMS\DataHandling\Extbase\Persistence\ProjectionRepository;
 
 interface Projecting
 {
@@ -25,9 +26,14 @@ interface Projecting
     public function setSubjectName(string $subject);
 
     /**
-     * @param RepositoryInterface $repository
+     * @param EventRepository $repository
      */
-    public function setRepository(RepositoryInterface $repository);
+    public function setEventRepository(EventRepository $repository);
+
+    /**
+     * @param ProjectionRepository $repository
+     */
+    public function setProjectionRepository(ProjectionRepository $repository);
 
     /**
      * @param EventHandlerInterface $eventHandler

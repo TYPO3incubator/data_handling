@@ -21,7 +21,7 @@ use TYPO3\CMS\Extbase\Persistence\RepositoryInterface as SuperRepositoryInterfac
 /**
  * The repository for Accounts
  */
-interface RepositoryInterface extends Instantiable, SuperRepositoryInterface
+interface ProjectionRepository extends Instantiable, SuperRepositoryInterface
 {
     /**
      * @param UuidInterface $uuid

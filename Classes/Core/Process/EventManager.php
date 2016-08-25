@@ -45,7 +45,7 @@ class EventManager implements Instantiable
         }
 
         $enrolment
-            ->provideEventProjection()
+            ->provide()->forEvent()
             ->project($event);
     }
 }

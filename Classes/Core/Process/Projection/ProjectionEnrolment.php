@@ -15,9 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelectorBundle;
-use TYPO3\CMS\DataHandling\Extbase\Persistence\RepositoryInterface;
 
 class ProjectionEnrolment
 {
@@ -37,33 +35,12 @@ class ProjectionEnrolment
     /**
      * @var string
      */
-    protected $subjectName;
-
-    /**
-     * @var string
-     */
-    protected $repositoryName;
-
-    /**
-     * @var string
-     * @internal
-     */
-    protected $eventHandlerName;
-
-    /**
-     * @var string
-     */
-    protected $streamProjectionName;
-
-    /**
-     * @var string
-     */
-    protected $eventProjectionName;
+    protected $providerName;
 
     /**
      * @var array
      */
-    protected $projectionOptions = [];
+    protected $providerOptions = [];
 
     /**
      * @var \Closure[]|callable
@@ -96,110 +73,36 @@ class ProjectionEnrolment
     /**
      * @return string
      */
-    public function getSubjectName()
+    public function getProviderName()
     {
-        return $this->subjectName;
+        return $this->providerName;
     }
 
     /**
-     * @param string $subjectName
-     * @return ProjectionEnrolment
+     * @param string $providerName
+     * @return $this
      */
-    public function setSubjectName(string $subjectName)
+    public function setProviderName(string $providerName)
     {
-        $this->subjectName = $subjectName;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRepositoryName()
-    {
-        return $this->repositoryName;
-    }
-
-    /**
-     * @param string $repositoryName
-     * @return ProjectionEnrolment
-     */
-    public function setRepositoryName(string $repositoryName)
-    {
-        $this->repositoryName = $repositoryName;
-        return $this;
-    }
-
-    /**
-     * @return string
-     * @internal
-     */
-    public function getEventHandlerName()
-    {
-        return $this->eventHandlerName;
-    }
-
-    /**
-     * @param string $eventHandlerName
-     * @return ProjectionEnrolment
-     * @internal
-     */
-    public function setEventHandlerName(string $eventHandlerName)
-    {
-        $this->eventHandlerName = $eventHandlerName;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStreamProjectionName()
-    {
-        return $this->streamProjectionName;
-    }
-
-    /**
-     * @param string $streamProjectionName
-     * @return ProjectionEnrolment
-     */
-    public function setStreamProjectionName(string $streamProjectionName)
-    {
-        $this->streamProjectionName = $streamProjectionName;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEventProjectionName()
-    {
-        return $this->eventProjectionName;
-    }
-
-    /**
-     * @param string $eventProjectionName
-     * @return ProjectionEnrolment
-     */
-    public function setEventProjectionName(string $eventProjectionName)
-    {
-        $this->eventProjectionName = $eventProjectionName;
+        $this->providerName = $providerName;
         return $this;
     }
 
     /**
      * @return array
      */
-    public function getProjectionOptions()
+    public function getProviderOptions()
     {
-        return $this->projectionOptions;
+        return $this->providerOptions;
     }
 
     /**
-     * @param array $projectionOptions
+     * @param array $providerOptions
      * @return ProjectionEnrolment
      */
-    public function setProjectionOptions(array $projectionOptions)
+    public function setProviderOptions(array $providerOptions)
     {
-        $this->projectionOptions = $projectionOptions;
+        $this->providerOptions = $providerOptions;
         return $this;
     }
 
@@ -242,64 +145,15 @@ class ProjectionEnrolment
     }
 
     /**
-     * @return StreamProjecting
+     * @return ProjectionProvidable
      */
-    public function provideStreamProjection()
+    public function provide()
     {
-        $objectManager = Common::getObjectManager();
-
-        /** @var StreamProjecting $projection */
-        $projection = $objectManager->get($this->streamProjectionName);
-
-        if (!empty($this->subjectName)) {
-            $projection->setSubjectName($this->subjectName);
-        }
-
-        if (!empty($this->repositoryName)) {
-            /** @var RepositoryInterface $repository */
-            $repository = $objectManager->get($this->repositoryName);
-            $projection->setRepository($repository);
-        }
-
-        if (!empty($this->eventHandlerName)) {
-            /** @var EventApplicable $eventHandler */
-            $eventHandler = $objectManager->get($this->eventHandlerName);
-            $projection->setEventHandler($eventHandler);
-        }
-
-        $projection->setListeners($this->streamListeners);
-
-        return $projection;
-    }
-
-    /**
-     * @return EventProjecting
-     */
-    public function provideEventProjection()
-    {
-        $objectManager = Common::getObjectManager();
-
-        /** @var EventProjecting $projection */
-        $projection = $objectManager->get($this->eventProjectionName);
-
-        if (!empty($this->subjectName)) {
-            $projection->setSubjectName($this->subjectName);
-        }
-
-        if (!empty($this->repositoryName)) {
-            /** @var RepositoryInterface $repository */
-            $repository = $objectManager->get($this->repositoryName);
-            $projection->setRepository($repository);
-        }
-
-        if (!empty($this->eventHandlerName)) {
-            /** @var EventApplicable $eventHandler */
-            $eventHandler = $objectManager->get($this->eventHandlerName);
-            $projection->setEventHandler($eventHandler);
-        }
-
-        $projection->setListeners($this->eventListeners);
-
-        return $projection;
+        return GeneralUtility::makeInstance(
+            $this->providerName,
+            $this->providerOptions,
+            $this->streamListeners,
+            $this->eventListeners
+        );
     }
 }

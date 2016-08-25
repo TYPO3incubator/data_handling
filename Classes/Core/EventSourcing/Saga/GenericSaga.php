@@ -17,6 +17,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 
+/**
+ * @deprecated
+ */
 class GenericSaga extends AbstractSaga
 {
     /**

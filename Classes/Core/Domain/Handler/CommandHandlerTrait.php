@@ -16,9 +16,11 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Core\Process\EventPublisher;
+use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
 trait CommandHandlerTrait
 {
@@ -28,6 +30,28 @@ trait CommandHandlerTrait
     protected static function createUuid()
     {
         return Uuid::uuid4();
+    }
+
+    /**
+     * @param AbstractCommand $command
+     */
+    public function execute(AbstractCommand $command)
+    {
+        // determine method name, that is used to execute the command
+        $methodName = $this->getCommandHandlerMethodName($command);
+        if (method_exists($this, $methodName)) {
+            $this->{$methodName}($command);
+        }
+    }
+
+    /**
+     * @param AbstractCommand $command
+     * @return string
+     */
+    protected function getCommandHandlerMethodName(AbstractCommand $command)
+    {
+        $commandName = ClassNamingUtility::getLastPart($command);
+        return 'on' . $commandName;
     }
 
     /**

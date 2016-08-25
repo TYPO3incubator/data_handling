@@ -14,7 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface CommandHandlerInterface
+use TYPO3\CMS\DataHandling\Core\Domain\Command\AbstractCommand;
+
+interface CommandApplicable
 {
-    public function setSubject($subject);
+    /**
+     * @param AbstractCommand $command
+     */
+    public function execute(AbstractCommand $command);
 }

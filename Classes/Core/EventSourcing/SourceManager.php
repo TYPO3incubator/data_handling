@@ -75,5 +75,13 @@ class SourceManager implements Providable, Instantiable
         return (in_array($sourcedTableName, $this->sourcedTableNames, true));
     }
 
+    /**
+     * @return array
+     */
+    public function getSourcedTableNames(): array
+    {
+        return $this->sourcedTableNames;
+    }
+
     // @todo Map DataHandler CRUD command to domain events
 }

@@ -49,17 +49,17 @@ class ReadState extends State implements Applicable
 
     public function applyCreatedEvent(GenericEvent\CreatedEvent $event)
     {
-        $this->reference = $event->getIdentity();
+        $this->subject = $event->getIdentity();
     }
 
     public function applyBranchedEvent(GenericEvent\BranchedEvent $event)
     {
-        $this->reference = $event->getIdentity();
+        $this->subject = $event->getIdentity();
     }
 
     public function applyTranslatedEvent(GenericEvent\TranslatedEvent $event)
     {
-        $this->reference = $event->getIdentity();
+        $this->subject = $event->getIdentity();
     }
 
     public function applyChangedEvent(GenericEvent\ChangedEvent $event)

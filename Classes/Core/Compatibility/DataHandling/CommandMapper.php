@@ -147,10 +147,10 @@ class CommandMapper
             $targetState = $change->getTargetState();
 
             $targetState->setValues(
-                CompatibilityResolver\ValueResolver::instance()->resolve($targetState->getReference(), $targetState->getValues())
+                CompatibilityResolver\ValueResolver::instance()->resolve($targetState->getSubject(), $targetState->getValues())
             );
             $targetState->setRelations(
-                CompatibilityResolver\RelationResolver::instance()->resolve($targetState->getReference(), $targetState->getValues())
+                CompatibilityResolver\RelationResolver::instance()->resolve($targetState->getSubject(), $targetState->getValues())
             );
 
             unset($targetState);
@@ -185,7 +185,7 @@ class CommandMapper
 
             foreach ($uidValues as $uid => $values) {
                 $targetState = State::instance()
-                    ->setReference(EntityReference::instance()->setName($tableName)->setUid($uid))
+                    ->setSubject(EntityReference::instance()->setName($tableName)->setUid($uid))
                     ->setValues($values);
                 $changes[] = Change::instance()->setTargetState($targetState);
             }
@@ -196,7 +196,7 @@ class CommandMapper
 
     protected function extendChangeIdentity(Change $change)
     {
-        $targetStateReference = $change->getTargetState()->getReference();
+        $targetStateReference = $change->getTargetState()->getSubject();
 
         if ($this->isValidUid($targetStateReference->getUid())) {
             $change->setNew(false);
@@ -204,7 +204,7 @@ class CommandMapper
                 $this->fetchState($targetStateReference)
             );
             $targetStateReference->setUuid(
-                $change->getSourceState()->getReference()->getUuid()
+                $change->getSourceState()->getSubject()->getUuid()
             );
         } else {
             $change->setNew(true);
@@ -216,8 +216,8 @@ class CommandMapper
             $pageIdValue = $change->getTargetState()->getValue('pid');
             // relating to a new page
             if (!empty($this->scope->newChangesMap[$pageIdValue])) {
-                $nodeReference = $this->scope->newChangesMap[$pageIdValue]->getTargetState()->getReference();
-                $change->getTargetState()->getNodeReference()->import($nodeReference);
+                $nodeReference = $this->scope->newChangesMap[$pageIdValue]->getTargetState()->getSubject();
+                $change->getTargetState()->getNode()->import($nodeReference);
             // negative page-id, fetch record and retrieve pid value
             } elseif ($pageIdValue < 0) {
                 // @todo Add "MoveAfterRecordCommand"
@@ -226,14 +226,14 @@ class CommandMapper
                     ->setName('pages')
                     ->setUid($this->fetchPageId($recordReference));
                 $nodeReference->setUuid($this->fetchUuid($nodeReference));
-                $change->getTargetState()->getNodeReference()->import($nodeReference);
+                $change->getTargetState()->getNode()->import($nodeReference);
             // relating to an existing page
             } elseif ((string)$pageIdValue !== '0') {
                 $nodeReference = EntityReference::instance()
                     ->setName('pages')
                     ->setUid($pageIdValue);
                 $nodeReference->setUuid($this->fetchUuid($nodeReference));
-                $change->getTargetState()->getNodeReference()->import($nodeReference);
+                $change->getTargetState()->getNode()->import($nodeReference);
             }
         }
     }
@@ -336,13 +336,13 @@ class CommandMapper
         }
 
         $state = State::instance();
-        $state->getReference()->import($reference)->setUuid($data[Common::FIELD_UUID]);
+        $state->getSubject()->import($reference)->setUuid($data[Common::FIELD_UUID]);
 
         $state->setValues(
-            CoreResolver\ValueResolver::instance()->resolve($state->getReference(), $data)
+            CoreResolver\ValueResolver::instance()->resolve($state->getSubject(), $data)
         );
         $state->setRelations(
-            CoreResolver\RelationResolver::instance()->resolve($state->getReference(), $data)
+            CoreResolver\RelationResolver::instance()->resolve($state->getSubject(), $data)
         );
 
         return $state;

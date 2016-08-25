@@ -22,6 +22,9 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Generic\State;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 
+/**
+ * @deprecated
+ */
 class WriteState extends State
 {
     /**
@@ -46,7 +49,7 @@ class WriteState extends State
     public function __construct(EntityReference $reference)
     {
         parent::__construct();
-        $this->reference = $reference;
+        $this->subject = $reference;
     }
 
     /**
@@ -72,7 +75,7 @@ class WriteState extends State
      */
     public function handleCreateCommand(GenericCommand\CreateCommand $command)
     {
-        $this->reference = $command->getIdentity();
+        $this->subject = $command->getIdentity();
         EventManager::provide()->manage(
             GenericEvent\CreatedEvent::fromCommand($command)
         );
@@ -85,7 +88,7 @@ class WriteState extends State
      */
     public function handleBranchCommand(GenericCommand\BranchCommand $command)
     {
-        $this->reference = $command->getIdentity();
+        $this->subject = $command->getIdentity();
         EventManager::provide()->manage(
             GenericEvent\BranchedEvent::fromCommand($command)
         );
@@ -98,7 +101,7 @@ class WriteState extends State
      */
     public function handleTranslateCommand(GenericCommand\TranslateCommand $command)
     {
-        $this->reference = $command->getIdentity();
+        $this->subject = $command->getIdentity();
         EventManager::provide()->manage(
             GenericEvent\TranslatedEvent::fromCommand($command)
         );

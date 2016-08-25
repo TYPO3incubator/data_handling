@@ -86,7 +86,7 @@ class AggregateResolver
         /** @var Aggregate[] $activeAggregates */
         $activeAggregates = [];
 
-        $metaModelProperties = Map::instance()->getSchema($aggregate->getState()->getReference()->getName());
+        $metaModelProperties = Map::instance()->getSchema($aggregate->getState()->getSubject()->getName());
 
         foreach ($metaModelProperties->getProperties() as $metaModelProperty) {
             $passiveRelations = $metaModelProperty->getPassiveRelations();
@@ -193,14 +193,14 @@ class AggregateResolver
         foreach ($this->aggregates as $aggregate) {
             $state = $aggregate->getState();
             // skip aggregates that are do not issue the requested passive relation
-            if ($state->getReference()->getName() !== $activeProperty->getSchema()->getName()) {
+            if ($state->getSubject()->getName() !== $activeProperty->getSchema()->getName()) {
                 continue;
             }
 
             $aggregateRelations = $state->getPropertyRelations($activeProperty->getName());
             foreach ($aggregateRelations as $aggregateRelation) {
                 // skip aggregate relations that do not issue the requested passive relation
-                if (!$aggregateRelation->getEntityReference()->equals($needle->getState()->getReference())) {
+                if (!$aggregateRelation->getEntityReference()->equals($needle->getState()->getSubject())) {
                     continue;
                 }
                 $activeAggregates[] = $aggregate;

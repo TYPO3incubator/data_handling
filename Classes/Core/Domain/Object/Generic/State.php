@@ -29,12 +29,12 @@ class State
     /**
      * @var EntityReference
      */
-    protected $nodeReference;
+    protected $node;
 
     /**
      * @var EntityReference
      */
-    protected $reference;
+    protected $subject;
 
     /**
      * @var array
@@ -48,29 +48,29 @@ class State
 
     public function __construct()
     {
-        $this->nodeReference = EntityReference::instance();
-        $this->reference = EntityReference::instance();
+        $this->node = EntityReference::instance();
+        $this->subject = EntityReference::instance();
     }
 
-    public function getNodeReference(): EntityReference
+    public function getNode(): EntityReference
     {
-        return $this->nodeReference;
+        return $this->node;
     }
 
-    public function setNodeReference(EntityReference $nodeReference): State
+    public function setNode(EntityReference $node): State
     {
-        $this->nodeReference = $nodeReference;
+        $this->node = $node;
         return $this;
     }
 
-    public function getReference(): EntityReference
+    public function getSubject(): EntityReference
     {
-        return $this->reference;
+        return $this->subject;
     }
 
-    public function setReference(EntityReference $reference): State
+    public function setSubject(EntityReference $subject): State
     {
-        $this->reference = $reference;
+        $this->subject = $subject;
         return $this;
     }
 

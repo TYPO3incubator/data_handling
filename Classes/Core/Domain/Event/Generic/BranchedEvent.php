@@ -38,7 +38,7 @@ class BranchedEvent extends AbstractEvent implements Instantiable, Identifiable,
      * @param EntityReference $identity
      * @return BranchedEvent
      */
-    public static function create(EntityReference $subject, EntityReference $identity)
+    public static function create(EntityReference $subject, EntityReference $identity, int $workspace)
     {
         $event = static::instance();
         $event->setSubject($subject);

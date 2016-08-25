@@ -76,7 +76,7 @@ class CommandResolver
 
     protected function processContext()
     {
-        $reference = $this->change->getTargetState()->getReference();
+        $reference = $this->change->getTargetState()->getSubject();
 
         if ($this->change->isNew()) {
             $this->addCommand(
@@ -91,7 +91,7 @@ class CommandResolver
 
     protected function processValues()
     {
-        $reference = $this->change->getTargetState()->getReference();
+        $reference = $this->change->getTargetState()->getSubject();
 
         if ($this->change->isNew()) {
             $values = $this->change->getTargetState()->getValues();
@@ -159,7 +159,7 @@ class CommandResolver
      */
     protected function comparePropertyRelations(array $sourceRelations, array $targetRelations)
     {
-        $reference = $this->change->getTargetState()->getReference();
+        $reference = $this->change->getTargetState()->getSubject();
 
         $comparisonActions = SortingComparisonService::instance()->compare(
             $sourceRelations,
@@ -196,7 +196,7 @@ class CommandResolver
     {
         if ($command instanceof Identifiable) {
             // @todo Still think about, whether this is good - alternatively shift it to projection
-            $this->change->getTargetState()->getReference()->setUuid(
+            $this->change->getTargetState()->getSubject()->setUuid(
                 $command->getIdentity()->getUuid()
             );
         }

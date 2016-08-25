@@ -126,10 +126,10 @@ class EventInitializationService
             if (empty($data[Common::FIELD_UUID])) {
                 throw new \RuntimeException('Value for uuid must be available', 1470840257);
             }
-            $writeState->getReference()->setUuid($data[Common::FIELD_UUID])->setUid($data['uid']);
+            $writeState->getSubject()->setUuid($data[Common::FIELD_UUID])->setUid($data['uid']);
         }
 
-        $reference = $writeState->getReference();
+        $reference = $writeState->getSubject();
 
         if ($this->instruction & static::INSTRUCTION_VALUES) {
             if ($reference->getUuid() === null) {
@@ -158,7 +158,7 @@ class EventInitializationService
      */
     protected function createEntityCommands(WriteState $writeState, array $data)
     {
-        $tableName = $writeState->getReference()->getName();
+        $tableName = $writeState->getSubject()->getName();
         $metadata = $this->getUpgradeMetadata($data);
 
         $isWorkspaceAspect = $this->isWorkspaceAspect($tableName);
@@ -169,7 +169,7 @@ class EventInitializationService
         if (!$isWorkspaceAspect && !$isTranslationAspect) {
             $this->handleCommand(
                 $writeState,
-                Generic\CreateCommand::create($writeState->getReference())->setMetadata($metadata)
+                Generic\CreateCommand::create($writeState->getSubject())->setMetadata($metadata)
             );
         // at least workspace -> either CreateCommand or BranchCommand
         } elseif ($isWorkspaceAspect) {
@@ -178,7 +178,7 @@ class EventInitializationService
             if ($versionState->equals(VersionState::NEW_PLACEHOLDER_VERSION)) {
                 $this->handleCommand(
                     $writeState,
-                    Generic\CreateCommand::create($writeState->getReference())->setMetadata($metadata)
+                    Generic\CreateCommand::create($writeState->getSubject())->setMetadata($metadata)
                 );
             } else {
                 $liveData = $this->fetchRecordByUid($tableName, $data['t3ver_oid']);
@@ -204,7 +204,7 @@ class EventInitializationService
                 && VersionState::cast($data['t3ver_state'])->equals(VersionState::NEW_PLACEHOLDER_VERSION)
                 && VersionState::cast($pointsToData['t3ver_state'])->equals(VersionState::NEW_PLACEHOLDER)
             ) {
-                $pointsToReference = $writeState->getReference();
+                $pointsToReference = $writeState->getSubject();
             }
 
 
@@ -223,7 +223,7 @@ class EventInitializationService
      */
     protected function createValueCommands(WriteState $writeState, array $data)
     {
-        $tableName = $writeState->getReference()->getName();
+        $tableName = $writeState->getSubject()->getName();
         $metadata = $this->getUpgradeMetadata($data);
 
         // skip, if in valid workspace context, but record is
@@ -236,11 +236,11 @@ class EventInitializationService
         }
 
         $temporaryState = State::instance()->setValues(
-            CoreResolver\ValueResolver::instance()->resolve($writeState->getReference(), $data)
+            CoreResolver\ValueResolver::instance()->resolve($writeState->getSubject(), $data)
         );
         $this->handleCommand(
             $writeState,
-            Generic\ChangeCommand::create($writeState->getReference(), $temporaryState->getValues())->setMetadata($metadata)
+            Generic\ChangeCommand::create($writeState->getSubject(), $temporaryState->getValues())->setMetadata($metadata)
         );
     }
 
@@ -255,16 +255,16 @@ class EventInitializationService
         $metadata = $this->getUpgradeMetadata($data);
 
         $temporaryState = State::instance()->setRelations(
-            CoreResolver\RelationResolver::instance()->resolve($writeState->getReference(), $data)
+            CoreResolver\RelationResolver::instance()->resolve($writeState->getSubject(), $data)
         );
 
-        $metaModelSchema = Map::instance()->getSchema($writeState->getReference()->getName());
+        $metaModelSchema = Map::instance()->getSchema($writeState->getSubject()->getName());
         foreach ($temporaryState->getRelations() as $relation) {
             $metaModelProperty = $metaModelSchema->getProperty($relation->getName());
             if ($metaModelProperty->hasActiveRelationTo($relation->getEntityReference()->getName())) {
                 $this->handleCommand(
                     $writeState,
-                    Generic\AttachRelationCommand::create($writeState->getReference(), $relation)->setMetadata($metadata)
+                    Generic\AttachRelationCommand::create($writeState->getSubject(), $relation)->setMetadata($metadata)
                 );
             }
         }
@@ -278,7 +278,7 @@ class EventInitializationService
      */
     protected function createActionCommands(WriteState $writeState, array $data)
     {
-        $tableName = $writeState->getReference()->getName();
+        $tableName = $writeState->getSubject()->getName();
         $metadata = $this->getUpgradeMetadata($data);
 
         if ($this->isWorkspaceAspect($tableName)) {
@@ -287,7 +287,7 @@ class EventInitializationService
             if ($versionState->equals(VersionState::DELETE_PLACEHOLDER)) {
                 $this->handleCommand(
                     $writeState,
-                    Generic\DeleteCommand::create($writeState->getReference())->setMetadata($metadata)
+                    Generic\DeleteCommand::create($writeState->getSubject())->setMetadata($metadata)
                 );
             } elseif ($versionState->equals(VersionState::MOVE_POINTER)) {
                 // MoveBeforeCommand or MoveAfterCommand (or OrderRelationsComman for parent node)

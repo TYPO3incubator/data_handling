@@ -38,7 +38,7 @@ class TranslatedEvent extends AbstractEvent implements Instantiable, Identifiabl
      * @param EntityReference $identity
      * @return CreatedEvent
      */
-    public static function create(EntityReference $subject, EntityReference $identity)
+    public static function create(EntityReference $subject, EntityReference $identity, string $locale)
     {
         $event = static::instance();
         $event->setSubject($subject);

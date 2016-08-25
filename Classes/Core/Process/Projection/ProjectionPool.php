@@ -30,7 +30,7 @@ class ProjectionPool implements Providable
      * @param bool $force
      * @return ProjectionPool
      */
-    static public function provide(bool $force = false) {
+    public static function provide(bool $force = false) {
         if ($force || !isset(static::$projectionPool)) {
             static::$projectionPool = static::instance();
         }
@@ -40,7 +40,7 @@ class ProjectionPool implements Providable
     /**
      * @return ProjectionPool
      */
-    public static function instance()
+    protected static function instance()
     {
         return GeneralUtility::makeInstance(ProjectionPool::class);
     }

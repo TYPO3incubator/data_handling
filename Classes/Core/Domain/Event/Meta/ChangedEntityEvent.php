@@ -18,24 +18,39 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class PurgedEvent extends AbstractEvent implements Instantiable
+class ChangedEntityEvent extends AbstractEvent implements Instantiable
 {
     /**
-     * @return PurgedEvent
+     * @return ChangedEntityEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(PurgedEvent::class);
+        return GeneralUtility::makeInstance(ChangedEntityEvent::class);
     }
 
     /**
-     * @param EntityReference $subject
-     * @return PurgedEvent
+     * @param EntityReference $aggregateReference
+     * @param array $values
+     * @return ChangedEntityEvent
      */
-    public static function create(EntityReference $subject)
+    public static function create(EntityReference $aggregateReference, array $values)
     {
         $event = static::instance();
-        $event->setSubject($subject);
+        $event->aggregateReference = $aggregateReference;
+        $event->values = $values;
         return $event;
+    }
+
+    /**
+     * @var array
+     */
+    protected $values;
+
+    /**
+     * @return array
+     */
+    public function getValues()
+    {
+        return $this->values;
     }
 }

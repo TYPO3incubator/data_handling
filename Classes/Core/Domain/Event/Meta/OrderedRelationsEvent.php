@@ -17,13 +17,13 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceableTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class OrderedRelationsEvent extends AbstractEvent implements Instantiable, Sequenceable
+class OrderedRelationsEvent extends AbstractEvent implements Instantiable, Sequence
 {
-    use SequenceableTrait;
+    use SequenceTrait;
 
     /**
      * @return OrderedRelationsEvent
@@ -34,15 +34,15 @@ class OrderedRelationsEvent extends AbstractEvent implements Instantiable, Seque
     }
 
     /**
-     * @param EntityReference $subject
+     * @param EntityReference $aggregateReference
      * @param AbstractSequence $sequence
      * @return OrderedRelationsEvent
      */
-    public static function create(EntityReference $subject, AbstractSequence $sequence)
+    public static function create(EntityReference $aggregateReference, AbstractSequence $sequence)
     {
         $event = static::instance();
-        $event->setSubject($subject);
-        $event->setSequence($sequence);
+        $event->aggregateReference = $aggregateReference;
+        $event->sequence = $sequence;
         return $event;
     }
 }

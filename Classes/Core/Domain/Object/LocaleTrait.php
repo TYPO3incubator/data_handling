@@ -14,6 +14,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface Derivable extends AggregateReference
+trait LocaleTrait
 {
+    /**
+     * @var string
+     */
+    protected $locale;
+
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
 }

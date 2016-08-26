@@ -14,6 +14,8 @@ namespace TYPO3\CMS\DataHandling\Install\Updates;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Doctrine\DBAL\Driver\Statement;
+use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -22,8 +24,6 @@ use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\SourceManager;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
 use TYPO3\CMS\Install\Updates\AbstractUpdate;
@@ -67,7 +67,10 @@ class EventInitializationUpdate extends AbstractUpdate
             if (SourceManager::provide()->hasSourcedTableName($tableName)) {
                 continue;
             }
-            if ($this->countEmptyRevisionColumns($tableName) > 0) {
+            if (
+                $this->countEmptyUuidColumns($tableName) > 0
+                || $this->countEmptyRevisionColumns($tableName) > 0
+            ) {
                 return true;
             }
         }
@@ -84,15 +87,14 @@ class EventInitializationUpdate extends AbstractUpdate
      */
     public function performUpdate(array &$databaseQueries, &$customMessages)
     {
-        EventManager::provide()->on(
-            EventManager::LISTEN_BEFORE,
-            array($this, 'handleIdentifiableEvent')
-        );
-
         $allTableNames = array_keys($GLOBALS['TCA']);
         // filter out tables that are registered as source tables already
         $tableNames = array_diff($allTableNames, SourceManager::provide()->getSourcedTableNames());
         $recordTableNames = array_diff($tableNames, ['pages']);
+
+        foreach ($allTableNames as $tableName) {
+            $this->assignUuid($tableName);
+        }
 
         foreach ($this->getWorkspaces() as $workspace) {
             foreach ($this->getLanguages() as $language) {
@@ -124,32 +126,6 @@ class EventInitializationUpdate extends AbstractUpdate
         return true;
     }
 
-    /**
-     * @param Meta\AbstractEvent $event
-     */
-    public function handleIdentifiableEvent(Meta\AbstractEvent $event) {
-        if (!($event instanceof Identifiable)) {
-            return;
-        }
-
-        $metadata = $event->getMetadata();
-        if (empty($metadata[EventInitializationService::KEY_UPGRADE]['uid'])) {
-            throw new \RuntimeException('The uid value is required to process the event', 1470857564);
-        }
-
-        ConnectionPool::instance()->getOriginConnection()
-            ->update(
-                $event->getIdentity()->getName(),
-                [
-                    Common::FIELD_UUID => $event->getIdentity()->getUuid(),
-                    Common::FIELD_REVISION => 0,
-                ],
-                [
-                    'uid' => $metadata[EventInitializationService::KEY_UPGRADE]['uid'],
-                ]
-            );
-    }
-
     protected function getLanguages(): array
     {
         $languages = [0];
@@ -176,12 +152,55 @@ class EventInitializationUpdate extends AbstractUpdate
         return $workspaces;
     }
 
-    protected function countEmptyRevisionColumns($tableName): int
+    /**
+     * @param string $tableName
+     */
+    protected function assignUuid(string $tableName)
+    {
+        if ($this->countEmptyUuidColumns($tableName) === 0) {
+            return;
+        }
+
+        while ($uid = $this->getEmptyUuidColumnsStatement($tableName)->fetchColumn(0)) {
+            $data[Common::FIELD_UUID] = Uuid::uuid4()->toString();
+            ConnectionPool::instance()->getOriginConnection()
+                ->update($tableName, $data, ['uid' => $uid]);
+        }
+    }
+
+    /**
+     * @param string $tableName
+     * @return Statement
+     */
+    protected function getEmptyUuidColumnsStatement(string $tableName)
+    {
+        $queryBuilder = $this->getQueryBuilder();
+        $statement = $queryBuilder
+            ->select('uid')
+            ->from($tableName)
+            ->where($queryBuilder->expr()->isNull(Common::FIELD_UUID))
+            ->execute();
+        return $statement;
+    }
+
+    protected function countEmptyUuidColumns(string $tableName): int
+    {
+        $queryBuilder = $this->getQueryBuilder();
+        $statement = $queryBuilder
+            ->count('uid')
+            ->from($tableName)
+            ->where($queryBuilder->expr()->isNull(Common::FIELD_UUID))
+            ->execute();
+        $count = $statement->fetchColumn();
+        return $count;
+    }
+
+    protected function countEmptyRevisionColumns(string $tableName): int
     {
         $queryBuilder = $this->getQueryBuilder();
         $statement = $queryBuilder
             ->from($tableName)
-            ->count(Common::FIELD_UUID)
+            ->count('uid')
             ->where($queryBuilder->expr()->isNull(Common::FIELD_REVISION))
             ->execute();
         $count = $statement->fetchColumn();

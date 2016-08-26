@@ -137,7 +137,7 @@ abstract class BaseEvent implements DomainEvent
 
     /**
      * @param array|null $data
-     * @return BaseEvent
+     * @return $this
      */
     public function setData(array $data = null)
     {
@@ -159,14 +159,13 @@ abstract class BaseEvent implements DomainEvent
     abstract public function exportData();
 
     /**
-     * @param null|array $data
-     * @return BaseEvent
+     * @param array $data
      */
     abstract public function importData($data);
 
     /**
      * @param array|null $metadata
-     * @return BaseEvent
+     * @return $this
      */
     public function setMetadata(array $metadata = null)
     {

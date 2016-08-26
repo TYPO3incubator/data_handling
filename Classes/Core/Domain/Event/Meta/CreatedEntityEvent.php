@@ -16,28 +16,32 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class ChangedEvent extends AbstractEvent implements Instantiable
+class CreatedEntityEvent extends AbstractEvent implements Instantiable, Workspace
 {
+    use WorkspaceTrait;
+
     /**
-     * @return ChangedEvent
+     * @return CreatedEntityEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ChangedEvent::class);
+        return GeneralUtility::makeInstance(CreatedEntityEvent::class);
     }
 
     /**
-     * @param EntityReference $subject
-     * @param array $data
-     * @return ChangedEvent
+     * @param EntityReference $aggregateReference
+     * @param int $workspaceId
+     * @return CreatedEntityEvent
      */
-    public static function create(EntityReference $subject, array $data)
+    public static function create(EntityReference $aggregateReference, int $workspaceId)
     {
         $event = static::instance();
-        $event->setSubject($subject);
-        $event->setData($data);
+        $event->aggregateReference = $aggregateReference;
+        $event->workspaceId = $workspaceId;
         return $event;
     }
 }

@@ -14,17 +14,10 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-
-interface Relational
+interface Locale
 {
     /**
-     * @return null|PropertyReference
+     * @return string
      */
-    public function getRelation();
-
-    /**
-     * @param PropertyReference $relation
-     */
-    public function setRelation(PropertyReference $relation);
+    public function getLocale();
 }

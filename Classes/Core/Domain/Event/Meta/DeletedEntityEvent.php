@@ -15,34 +15,27 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class TranslatedEvent extends AbstractEvent implements Instantiable, Identifiable, Derivable
+class DeletedEntityEvent extends AbstractEvent implements Instantiable
 {
-    use IdentifiableTrait;
-
     /**
-     * @return TranslatedEvent
+     * @return DeletedEntityEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(TranslatedEvent::class);
+        return GeneralUtility::makeInstance(DeletedEntityEvent::class);
     }
 
     /**
-     * @param EntityReference $subject
-     * @param EntityReference $identity
-     * @return CreatedEvent
+     * @param EntityReference $aggregateReference
+     * @return DeletedEntityEvent
      */
-    public static function create(EntityReference $subject, EntityReference $identity, string $locale)
+    public static function create(EntityReference $aggregateReference)
     {
         $event = static::instance();
-        $event->setSubject($subject);
-        $event->setIdentity($identity);
+        $event->aggregateReference = $aggregateReference;
         return $event;
     }
 }

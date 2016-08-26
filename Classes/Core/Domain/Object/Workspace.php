@@ -14,6 +14,10 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface Derivable extends AggregateReference
+interface Workspace
 {
+    /**
+     * @return int
+     */
+    public function getWorkspaceId();
 }

@@ -14,25 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
 
-trait RelationalTrait
+interface Sequence
 {
     /**
-     * @var PropertyReference
+     * @return null|AbstractSequence
      */
-    protected $relation;
-
-    /**
-     * @return null|PropertyReference
-     */
-    public function getRelation()
-    {
-        return $this->relation;
-    }
-
-    public function setRelation(PropertyReference $relation)
-    {
-        $this->relation = $relation;
-    }
+    public function getSequence();
 }

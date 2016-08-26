@@ -15,34 +15,39 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class RemovedRelationEvent extends AbstractEvent implements Instantiable, RelationReference
+class BranchedEntityFromEvent extends AbstractEvent implements Instantiable, FromReference, Workspace, Derivable
 {
-    use RelationReferenceTrait;
+    use FromReferenceTrait;
+    use WorkspaceTrait;
 
     /**
-     * @return RemovedRelationEvent
+     * @return BranchedEntityFromEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(RemovedRelationEvent::class);
+        return GeneralUtility::makeInstance(BranchedEntityFromEvent::class);
     }
 
     /**
      * @param EntityReference $aggregateReference
-     * @param PropertyReference $relationReference
-     * @return RemovedRelationEvent
+     * @param EntityReference $fromReference
+     * @param int $workspaceId
+     * @return BranchedEntityFromEvent
      */
-    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
+    public static function create(EntityReference $aggregateReference, EntityReference $fromReference, int $workspaceId = null)
     {
         $event = static::instance();
         $event->aggregateReference = $aggregateReference;
-        $event->relationReference = $relationReference;
+        $event->fromReference = $fromReference;
+        $event->workspaceId = $workspaceId;
         return $event;
     }
 }

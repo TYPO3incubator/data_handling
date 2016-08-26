@@ -15,103 +15,56 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
  */
 
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\TargetReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\TargetReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\StorableEvent;
 
-abstract class AbstractEvent extends BaseEvent implements StorableEvent
+abstract class AbstractEvent extends BaseEvent implements StorableEvent, AggregateReference
 {
-    /**
-     * @param AbstractCommand $command
-     * @return AbstractEvent
-     */
-    static public function fromCommand(AbstractCommand $command)
-    {
-        $event = GeneralUtility::makeInstance(static::class);
-
-        if ($command->getSubject() !== null) {
-            $event->setSubject($command->getSubject());
-        }
-
-        if ($command instanceof Identifiable && $event instanceof Identifiable) {
-            $event->setIdentity($command->getIdentity());
-        }
-        if ($command instanceof Relational && $event instanceof Relational) {
-            $event->setRelation($command->getRelation());
-        }
-        if ($command instanceof Sequenceable && $event instanceof Sequenceable) {
-            $event->setSequence($command->getSequence());
-        }
-
-        if ($command->getData() !== null) {
-            $event->setData($command->getData());
-        }
-        if ($command->getMetadata() !== null) {
-            $event->setMetadata($command->getMetadata());
-        }
-
-        return $event;
-    }
+    use AggregateReferenceTrait;
 
     /**
-     * Subject the event was applied to.
-     *
-     * @var EntityReference
-     */
-    protected $subject;
-
-    /**
-     * @return null|EntityReference
-     */
-    public function getSubject()
-    {
-        return $this->subject;
-    }
-
-    /**
-     * @param EntityReference $subject
-     * @return AbstractEvent
-     */
-    public function setSubject(EntityReference $subject)
-    {
-        $this->subject = $subject;
-        return $this;
-    }
-
-    /**
-     * @return null|array
+     * @return array
      */
     public function exportData()
     {
         $data = [];
 
-        if ($this->subject !== null) {
-            $data['subject'] = $this->subject->__toArray();
+        if ($this instanceof AggregateReference) {
+            $data['aggregateReference'] = $this->getAggregateReference()->__toArray();
         }
-
-        if ($this instanceof Identifiable) {
-            $data['identity'] = $this->getIdentity()->__toArray();
+        if ($this instanceof TargetReference) {
+            $data['targetReference'] = $this->getTargetReference()->__toArray();
         }
-        if ($this instanceof Relational) {
-            $data['relation'] = $this->getRelation()->__toArray();
+        if ($this instanceof FromReference) {
+            $data['fromReference'] = $this->getFromReference()->__toArray();
         }
-        if ($this instanceof Sequenceable) {
+        if ($this instanceof RelationReference) {
+            $data['relationReference'] = $this->getRelationReference()->__toArray();
+        }
+        if ($this instanceof Sequence) {
             $data['sequence'] = $this->getSequence()->__toArray();
         }
-
-        if ($this->data !== null) {
-            $data['data'] = $this->data;
+        if ($this instanceof Workspace) {
+            $data['workspaceId'] = $this->getWorkspaceId();
         }
-
-        if (empty($data)) {
-            $data = null;
+        if ($this instanceof Locale) {
+            $data['locale'] = $this->getLocale();
         }
 
         return $data;
@@ -119,40 +72,40 @@ abstract class AbstractEvent extends BaseEvent implements StorableEvent
 
     /**
      * @param null|array $data
-     * @return AbstractEvent
      */
     public function importData($data)
     {
         if ($data === null) {
-            return $this;
+            return;
         }
 
-        if (isset($data['data'])) {
-            $this->data = $data['data'];
+        if ($this instanceof AggregateReference) {
+            /** @var $this AggregateReferenceTrait */
+            $this->aggregateReference = EntityReference::fromArray($data['aggregateReference']);
         }
-
-        if (isset($data['subject'])) {
-            $this->setSubject(
-                EntityReference::fromArray($data['subject'])
-            );
+        if ($this instanceof TargetReference) {
+            /** @var $this TargetReferenceTrait */
+            $this->targetReference = EntityReference::fromArray($data['targetReference']);
         }
-
-        if ($this instanceof Identifiable) {
-            $this->setIdentity(
-                EntityReference::fromArray($data['identity'])
-            );
+        if ($this instanceof FromReference) {
+            /** @var $this FromReferenceTrait */
+            $this->fromReference = EntityReference::fromArray($data['fromReference']);
         }
-        if ($this instanceof Relational) {
-            $this->setRelation(
-                PropertyReference::fromArray($data['relation'])
-            );
+        if ($this instanceof RelationReference) {
+            /** @var $this RelationReferenceTrait */
+            $this->relationReference = PropertyReference::fromArray($data['relationReference']);
         }
-        if ($this instanceof Sequenceable) {
-            $this->setSequence(
-                RelationSequence::fromArray($data['sequence'])
-            );
+        if ($this instanceof Sequence) {
+            /** @var $this SequenceTrait */
+            $this->sequence = EntityReference::fromArray($data['sequence']);
         }
-
-        return $this;
+        if ($this instanceof Workspace) {
+            /** @var $this WorkspaceTrait */
+            $this->workspaceId = $data['workspaceId'];
+        }
+        if ($this instanceof Locale) {
+            /** @var $this LocaleTrait */
+            $this->locale = $data['locale'];
+        }
     }
 }

@@ -15,34 +15,38 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class RemovedRelationEvent extends AbstractEvent implements Instantiable, RelationReference
+class TranslatedEntityFromEvent extends AbstractEvent implements Instantiable, FromReference, Locale, Derivable
 {
-    use RelationReferenceTrait;
+    use FromReferenceTrait;
+    use LocaleTrait;
 
     /**
-     * @return RemovedRelationEvent
+     * @return TranslatedEntityFromEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(RemovedRelationEvent::class);
+        return GeneralUtility::makeInstance(TranslatedEntityFromEvent::class);
     }
 
     /**
      * @param EntityReference $aggregateReference
-     * @param PropertyReference $relationReference
-     * @return RemovedRelationEvent
+     * @param EntityReference $fromReference
+     * @return TranslatedEntityFromEvent
      */
-    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
+    public static function create(EntityReference $aggregateReference, EntityReference $fromReference, string $locale)
     {
         $event = static::instance();
         $event->aggregateReference = $aggregateReference;
-        $event->relationReference = $relationReference;
+        $event->fromReference = $fromReference;
+        $event->locale = $locale;
         return $event;
     }
 }

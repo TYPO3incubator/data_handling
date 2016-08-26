@@ -14,17 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 
-interface Sequenceable
+interface AggregateReference
 {
     /**
-     * @return null|AbstractSequence
+     * @return null|EntityReference
      */
-    public function getSequence();
-
-    /**
-     * @param AbstractSequence $sequence
-     */
-    public function setSequence(AbstractSequence $sequence);
+    public function getAggregateReference();
 }

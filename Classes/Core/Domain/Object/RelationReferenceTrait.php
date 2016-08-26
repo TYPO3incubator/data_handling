@@ -14,17 +14,20 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 
-interface Identifiable
+trait RelationReferenceTrait
 {
     /**
-     * @return null|EntityReference
+     * @var PropertyReference
      */
-    public function getIdentity();
+    protected $relationReference;
 
     /**
-     * @param EntityReference $reference
+     * @return null|PropertyReference
      */
-    public function setIdentity(EntityReference $reference);
+    public function getRelationReference()
+    {
+        return $this->relationReference;
+    }
 }

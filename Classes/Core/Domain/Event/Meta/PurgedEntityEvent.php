@@ -16,30 +16,26 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class CreatedEvent extends AbstractEvent implements Instantiable, Identifiable
+class PurgedEntityEvent extends AbstractEvent implements Instantiable
 {
-    use IdentifiableTrait;
-
     /**
-     * @return CreatedEvent
+     * @return PurgedEntityEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(CreatedEvent::class);
+        return GeneralUtility::makeInstance(PurgedEntityEvent::class);
     }
 
     /**
-     * @param EntityReference $identity
-     * @return CreatedEvent
+     * @param EntityReference $aggregateReference
+     * @return PurgedEntityEvent
      */
-    public static function create(EntityReference $identity)
+    public static function create(EntityReference $aggregateReference)
     {
         $event = static::instance();
-        $event->setIdentity($identity);
+        $event->aggregateReference = $aggregateReference;
         return $event;
     }
 }

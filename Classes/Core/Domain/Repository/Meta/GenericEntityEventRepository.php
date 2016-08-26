@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta;
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
@@ -61,9 +62,12 @@ class GenericEntityEventRepository implements EventRepository
         return Saga::instance()->tell(GenericEntity::instance(), $eventSelector);
     }
 
+    /**
+     * @param BaseEvent|AbstractEvent $event
+     */
     public function addEvent(BaseEvent $event)
     {
-        $uuid = $event->getAggregateId()->toString();
+        $uuid = $event->getAggregateReference()->getUuid();
         $streamName = Common::STREAM_PREFIX_META
             . '-' . $this->aggregateType . '/' . $uuid;
 

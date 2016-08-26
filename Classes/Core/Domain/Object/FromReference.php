@@ -14,6 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface Derivable extends AggregateReference
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+
+interface FromReference
 {
+    /**
+     * @return null|EntityReference
+     */
+    public function getFromReference();
 }

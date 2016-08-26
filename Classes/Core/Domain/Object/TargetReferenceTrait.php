@@ -14,25 +14,20 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 
-trait SequenceableTrait
+trait TargetReferenceTrait
 {
     /**
-     * @var AbstractSequence
+     * @var EntityReference
      */
-    protected $sequence;
+    protected $targetReference;
 
     /**
-     * @return null|AbstractSequence
+     * @return null|EntityReference
      */
-    public function getSequence()
+    public function getTargetReference()
     {
-        return $this->sequence;
-    }
-
-    public function setSequence(AbstractSequence $sequence)
-    {
-        $this->sequence = $sequence;
+        return $this->targetReference;
     }
 }

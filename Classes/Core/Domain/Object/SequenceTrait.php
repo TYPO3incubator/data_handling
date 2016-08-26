@@ -14,29 +14,20 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
 
-trait IdentifiableTrait
+trait SequenceTrait
 {
     /**
-     * Identity to be used for further processing as subject,
-     * e.g. used for adding relations to a new entity that did
-     * not have an existing subject before.
-     *
-     * @var EntityReference
+     * @var AbstractSequence
      */
-    protected $identity;
+    protected $sequence;
 
     /**
-     * @return null|EntityReference
+     * @return null|AbstractSequence
      */
-    public function getIdentity()
+    public function getSequence()
     {
-        return $this->identity;
-    }
-
-    public function setIdentity(EntityReference $identity)
-    {
-        $this->identity = $identity;
+        return $this->sequence;
     }
 }

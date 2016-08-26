@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
 abstract class AbstractResolver
 {
@@ -25,4 +26,13 @@ abstract class AbstractResolver
     protected $context;
 
     abstract public function resolve(EntityReference $reference, array $rawValues): array;
+
+    /**
+     * @param EntityReference $reference
+     * @return string
+     */
+    protected function fetchUuid(EntityReference $reference)
+    {
+        return UuidUtility::fetchUuid($reference);
+    }
 }

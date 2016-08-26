@@ -82,6 +82,9 @@ class RelationResolver extends AbstractResolver
                 $entityReference = EntityReference::instance()
                     ->setName($item['table'])
                     ->setUid($item['id']);
+                $entityReference->setUuid(
+                    $this->fetchUuid($entityReference)
+                );
                 $relations[] = PropertyReference::instance()
                     ->setEntityReference($entityReference)
                     ->setName($propertyName);

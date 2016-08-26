@@ -34,6 +34,7 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
+use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
 class CommandMapper
 {
@@ -277,13 +278,7 @@ class CommandMapper
 
     protected function fetchUuid(EntityReference $reference): string
     {
-        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
-        $statement = $queryBuilder
-            ->select(Common::FIELD_UUID)
-            ->from($reference->getName())
-            ->where($queryBuilder->expr()->eq('uid', $reference->getUid()))
-            ->execute();
-        return $statement->fetchColumn();
+        return UuidUtility::fetchUuid($reference);
     }
 
     protected function fetchPageId(EntityReference $reference): string

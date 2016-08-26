@@ -156,18 +156,21 @@ class EventInitializationService
 
         $isWorkspaceAspect = $this->isWorkspaceAspect($tableName);
         $isTranslationAspect = $this->isTranslationAspect($tableName, $data);
+
         $languageField = MetaModelService::instance()->getLanguageFieldName($tableName);
         $languagePointerField = MetaModelService::instance()->getLanguagePointerFieldName($tableName);
+        $languageId = ($isTranslationAspect ? $data[$languageField] : 0);
 
-        // no workspace, no translation -> just CreateCommand
+        // no workspace, no translation -> just CreateEntityCommand
         if (!$isWorkspaceAspect && !$isTranslationAspect) {
             $this->handleEvent(
                 MetaEvent\CreatedEntityEvent::create(
                     $state->getSubject(),
+                    0,
                     0
                 )->setMetadata($metadata)
             );
-        // at least workspace -> either CreateCommand or BranchCommand
+        // at least workspace -> either CreateEntityCommand or BranchEntityCommand
         } elseif ($isWorkspaceAspect) {
             $workspaceId = $data['t3ver_wsid'];
             $versionState = VersionState::cast($data['t3ver_state']);
@@ -176,7 +179,8 @@ class EventInitializationService
                 $this->handleEvent(
                     MetaEvent\CreatedEntityEvent::create(
                         $state->getSubject(),
-                        $workspaceId
+                        $workspaceId,
+                        $languageId
                     )->setMetadata($metadata)
                 );
             } else {
@@ -201,13 +205,12 @@ class EventInitializationService
             }
 
         }
-        // additionally translation, CreateCommand or BranchCommand have been issued before
+        // additionally translation, CreateEntityCommand or BranchEntityCommand have been issued before
         // determine whether to base TranslationCommand on live subject or branched workspace subject
         if ($isTranslationAspect) {
             $pointsToTableName = MetaModelService::instance()->getLanguagePointerTableName($tableName);
             $pointsToData = $this->fetchRecordByUid($pointsToTableName, $data[$languagePointerField]);
             $pointsToReference = EntityReference::fromRecord($pointsToTableName, $pointsToData);
-            $languageId = $data[$languageField];
 
             // Translation points to newly created workspace version, instead
             // of existing live version, so use workspace version as subject.
@@ -342,7 +345,7 @@ class EventInitializationService
     protected function isWorkspaceAspect(string $tableName)
     {
         return (
-            $this->context->getWorkspace() > 0
+            $this->context->getWorkspaceId() > 0
             && MetaModelService::instance()->isWorkspaceAware($tableName)
         );
     }
@@ -358,7 +361,7 @@ class EventInitializationService
         $languagePointerField = MetaModelService::instance()->getLanguagePointerFieldName($tableName);
 
         return (
-            $this->context->getLanguage() > 0
+            $this->context->getLanguageId() > 0
             && $languageField !== null
             && $languagePointerField !== null
             && $data[$languagePointerField] > 0
@@ -469,18 +472,18 @@ class EventInitializationService
      */
     protected function getWorkspaceRestriction()
     {
-        if ($this->context->getWorkspace() === 0) {
+        if ($this->context->getWorkspaceId() === 0) {
             // in live workspace, don't include overlays
             $workspaceRestriction = GeneralUtility::makeInstance(
                 BackendWorkspaceRestriction::class,
-                $this->context->getWorkspace(),
+                $this->context->getWorkspaceId(),
                 false
             );
         } else {
             // in a real workspace include overlays
             $workspaceRestriction = GeneralUtility::makeInstance(
                 BackendWorkspaceRestriction::class,
-                $this->context->getWorkspace(),
+                $this->context->getWorkspaceId(),
                 true
             );
         }
@@ -492,6 +495,6 @@ class EventInitializationService
      */
     protected function getLanguageRestriction()
     {
-        return LanguageRestriction::create($this->context->getLanguage());
+        return LanguageRestriction::create($this->context->getLanguageId());
     }
 }

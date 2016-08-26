@@ -29,40 +29,40 @@ class Context
     /**
      * @var int
      */
-    protected $workspace = 0;
+    protected $workspaceId = 0;
 
     /**
      * @var int
      */
-    protected $language = 0;
+    protected $languageId = 0;
 
     /**
      * @return string
      */
     public function __toString()
     {
-        return sprintf('workspace-%d-language-%d', $this->workspace, $this->language);
+        return sprintf('workspace-%d-language-%d', $this->workspaceId, $this->languageId);
     }
 
-    public function getWorkspace(): int
+    public function getWorkspaceId(): int
     {
-        return $this->workspace;
+        return $this->workspaceId;
     }
 
-    public function setWorkspace(int $workspace): Context
+    public function setWorkspaceId(int $workspaceId): Context
     {
-        $this->workspace = $workspace;
+        $this->workspaceId = $workspaceId;
         return $this;
     }
 
-    public function getLanguage(): int
+    public function getLanguageId(): int
     {
-        return $this->language;
+        return $this->languageId;
     }
 
-    public function setLanguage(int $language): Context
+    public function setLanguageId(int $languageId): Context
     {
-        $this->language = $language;
+        $this->languageId = $languageId;
         return $this;
     }
 }

@@ -98,7 +98,7 @@ class EventInitializationUpdate extends AbstractUpdate
 
         foreach ($this->getWorkspaces() as $workspace) {
             foreach ($this->getLanguages() as $language) {
-                $context = Context::instance()->setWorkspace($workspace)->setLanguage($language);
+                $context = Context::instance()->setWorkspaceId($workspace)->setLanguageId($language);
                 $service = EventInitializationService::instance()->setContext($context);
 
                 // first process all pages (nodes)

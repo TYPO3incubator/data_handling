@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Meta;
  */
 
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsString;
@@ -121,6 +122,18 @@ class EntityReference implements RepresentableAsString
     public function getUuid()
     {
         return $this->uuid;
+    }
+
+    /**
+     * @return null|UuidInterface
+     */
+    public function getUuidInterface()
+    {
+        if ($this->uuid === null) {
+            return null;
+        }
+
+        return Uuid::fromString($this->uuid);
     }
 
     public function setUuid(string $uuid): EntityReference

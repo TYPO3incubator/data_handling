@@ -18,6 +18,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
+/**
+ * @todo This is currently out-dated
+ */
 class EventManager implements Providable, Manageable, Listenable
 {
     const LISTEN_BEFORE = 'beforeManage';

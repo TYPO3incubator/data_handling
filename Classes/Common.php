@@ -31,6 +31,7 @@ class Common
 {
     const FIELD_UUID = 't3uuid';
     const FIELD_REVISION = 't3rev';
+    const STREAM_PREFIX_META = 'TYPO3/Meta3';
 
     /**
      * @var bool

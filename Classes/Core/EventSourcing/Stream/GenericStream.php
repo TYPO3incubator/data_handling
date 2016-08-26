@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class GenericStream extends AbstractStream implements Instantiable
@@ -48,9 +48,9 @@ class GenericStream extends AbstractStream implements Instantiable
         if ($event->getSubject() !== null) {
             $name = (string)$event->getSubject();
         // event is identifiable, but does not have a subject
-        // (most probably used for CreatedEvent and others providing a new identity)
-        } elseif ($event instanceof Identifiable) {
-            $name = (string)$event->getIdentity();
+        // (most probably used for CreatedEntityEvent and others providing a new identity)
+        } elseif ($event instanceof AggregateReference) {
+            $name = (string)$event->getAggregateReference();
         }
 
         return $this->prefix($name);

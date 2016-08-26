@@ -15,15 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequenceable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceableTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class OrderRelationsCommand extends AbstractCommand implements Instantiable, Sequenceable
+class OrderRelationsCommand extends AbstractCommand implements Instantiable, AggregateReference, Sequence
 {
-    use SequenceableTrait;
+    use AggregateReferenceTrait;
+    use SequenceTrait;
 
     /**
      * @return OrderRelationsCommand
@@ -34,15 +37,15 @@ class OrderRelationsCommand extends AbstractCommand implements Instantiable, Seq
     }
 
     /**
-     * @param EntityReference $subject
+     * @param EntityReference $aggregateReference
      * @param AbstractSequence $sequence
      * @return OrderRelationsCommand
      */
-    public static function create(EntityReference $subject, AbstractSequence $sequence)
+    public static function create(EntityReference $aggregateReference, AbstractSequence $sequence)
     {
         $command = static::instance();
-        $command->setSubject($subject);
-        $command->setSequence($sequence);
+        $command->aggregateReference = $aggregateReference;
+        $command->sequence = $sequence;
         return $command;
     }
 }

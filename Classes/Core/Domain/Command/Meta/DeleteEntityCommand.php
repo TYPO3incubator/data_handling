@@ -15,32 +15,31 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class CreateCommand extends AbstractCommand implements Instantiable, Identifiable
+class DeleteEntityCommand extends AbstractCommand implements Instantiable, AggregateReference
 {
-    use IdentifiableTrait;
+    use AggregateReferenceTrait;
 
     /**
-     * @return CreateCommand
+     * @return DeleteEntityCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(CreateCommand::class);
+        return GeneralUtility::makeInstance(DeleteEntityCommand::class);
     }
 
     /**
-     * @param EntityReference $identity
-     * @param mixed $context
-     * @return CreateCommand
+     * @param EntityReference $aggregateReference
+     * @return DeleteEntityCommand
      */
-    public static function create(EntityReference $identity, $context = null)
+    public static function create(EntityReference $aggregateReference)
     {
         $command = static::instance();
-        $command->setIdentity(EntityReference::create($identity->getName()));
+        $command->aggregateReference = $aggregateReference;
         return $command;
     }
 }

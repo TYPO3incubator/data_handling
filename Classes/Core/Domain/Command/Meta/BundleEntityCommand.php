@@ -15,42 +15,39 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class ChangeCommand extends AbstractCommand implements Instantiable
+class BundleEntityCommand extends AbstractCommand implements Instantiable
 {
     /**
-     * @return ChangeCommand
+     * @return BundleEntityCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ChangeCommand::class);
+        return GeneralUtility::makeInstance(BundleEntityCommand::class);
     }
 
     /**
-     * @param EntityReference $subject
-     * @param array $data
-     * @return ChangeCommand
+     * @param AbstractCommand[] ...$commands
+     * @return AttachRelationCommand
      */
-    public static function create(EntityReference $subject, array $data)
+    public static function create(AbstractCommand ...$commands)
     {
         $command = static::instance();
-        $command->setSubject($subject);
-        $command->data = $data;
+        $command->commands = $commands;
         return $command;
     }
 
     /**
-     * @var array|null
+     * @var AbstractCommand[]
      */
-    protected $data;
+    protected $commands;
 
     /**
-     * @return array|null
+     * @return AbstractCommand[]
      */
-    public function getData()
+    public function getCommands()
     {
-        return $this->data;
+        return $this->commands;
     }
 }

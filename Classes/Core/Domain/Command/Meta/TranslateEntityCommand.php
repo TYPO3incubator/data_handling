@@ -16,33 +16,36 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class BranchCommand extends AbstractCommand implements Instantiable, Identifiable, Derivable
+class TranslateEntityCommand extends AbstractCommand implements Instantiable, AggregateReference, Locale, Derivable
 {
-    use IdentifiableTrait;
+    use AggregateReferenceTrait;
+    use LocaleTrait;
 
     /**
-     * @return BranchCommand
+     * @return TranslateEntityCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(BranchCommand::class);
+        return GeneralUtility::makeInstance(TranslateEntityCommand::class);
     }
 
     /**
-     * @param EntityReference $subject
-     * @param mixed $context
-     * @return BranchCommand
+     * @param EntityReference $aggregateReference
+     * @param string $locale
+     * @return TranslateEntityCommand
      */
-    public static function create(EntityReference $subject, $context = null)
+    public static function create(EntityReference $aggregateReference, string $locale)
     {
         $command = static::instance();
-        $command->setSubject($subject);
-        $command->setIdentity(EntityReference::create($subject->getName()));
+        $command->aggregateReference = $aggregateReference;
+        $command->locale = $locale;
         return $command;
     }
 }

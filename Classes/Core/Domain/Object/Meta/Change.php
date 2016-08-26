@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 
 class Change
 {
@@ -30,6 +31,11 @@ class Change
      * @var bool
      */
     protected $new = false;
+
+    /**
+     * @var Context
+     */
+    protected $context;
 
     /**
      * @var State
@@ -49,6 +55,17 @@ class Change
     public function setNew(bool $new): Change
     {
         $this->new = $new;
+        return $this;
+    }
+
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    public function setContext(Context $context)
+    {
+        $this->context = $context;
         return $this;
     }
 

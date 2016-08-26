@@ -15,9 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta as GenericCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
@@ -39,29 +37,22 @@ class CommandResolver
     protected $change;
 
     /**
-     * @var null
-     */
-    protected $context;
-
-    /**
-     * @var AbstractCommand[]
+     * @var Meta\AbstractCommand[]
      */
     protected $commands;
 
-    public function setChange(Change $change): CommandResolver
+    /**
+     * @var bool
+     */
+    protected $bundle = false;
+
+    public function setChange(Change $change)
     {
         $this->change = $change;
         return $this;
     }
-
-    public function setContext($context = null): CommandResolver
-    {
-        $this->context = $context;
-        return $this;
-    }
-
     /**
-     * @return AbstractCommand[]
+     * @return Meta\AbstractCommand[]
      */
     public function resolve(): array
     {
@@ -70,28 +61,49 @@ class CommandResolver
             $this->processContext();
             $this->processValues();
             $this->processRelations();
+            $this->bundleCommands();
         }
         return $this->commands;
     }
 
+    protected function bundleCommands()
+    {
+        if ($this->bundle) {
+            $this->commands =[
+                Meta\BundleEntityCommand::create($this->commands)
+            ];
+        }
+    }
+
     protected function processContext()
     {
-        $reference = $this->change->getTargetState()->getSubject();
+        $aggregateReference = $this->change->getTargetState()->getSubject();
 
         if ($this->change->isNew()) {
-            $this->addCommand(
-                GenericCommand\CreateCommand::create($reference)
+            $this->bundle = true;
+            $this->collectCommand(
+                Meta\CreateEntityCommand::create(
+                    $aggregateReference->getName(),
+                    $this->change->getContext()->getWorkspaceId(),
+                    $this->change->getContext()->getLanguageId()
+                )
             );
         } elseif ($this->isDifferentContext()) {
-            $this->addCommand(
-                GenericCommand\BranchCommand::create($reference)
+            $this->bundle = true;
+            $this->collectCommand(
+                Meta\BranchEntityCommand::create(
+                    $aggregateReference,
+                    $this->change->getContext()->getWorkspaceId()
+                )
             );
         }
+
+        // @todo TranslationCommand is missing here
     }
 
     protected function processValues()
     {
-        $reference = $this->change->getTargetState()->getSubject();
+        $aggregateReference = $this->change->getTargetState()->getSubject();
 
         if ($this->change->isNew()) {
             $values = $this->change->getTargetState()->getValues();
@@ -102,8 +114,8 @@ class CommandResolver
             );
         }
         if (!empty($values)) {
-            $this->addCommand(
-                GenericCommand\ChangeCommand::create($reference, $values)
+            $this->collectCommand(
+                Meta\ChangeEntityCommand::create($aggregateReference, $values)
             );
         }
     }
@@ -159,7 +171,7 @@ class CommandResolver
      */
     protected function comparePropertyRelations(array $sourceRelations, array $targetRelations)
     {
-        $reference = $this->change->getTargetState()->getSubject();
+        $aggregateReference = $this->change->getTargetState()->getSubject();
 
         $comparisonActions = SortingComparisonService::instance()->compare(
             $sourceRelations,
@@ -170,14 +182,20 @@ class CommandResolver
             if ($comparisonAction['action'] === SortingComparisonService::ACTION_REMOVE) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
-                $this->addCommand(
-                    GenericCommand\RemoveRelationCommand::create($reference, $relationPropertyReference)
+                $this->collectCommand(
+                    Meta\RemoveRelationCommand::create(
+                        $aggregateReference,
+                        $relationPropertyReference
+                    )
                 );
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ADD) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
-                $this->addCommand(
-                    GenericCommand\AttachRelationCommand::create($reference, $relationPropertyReference)
+                $this->collectCommand(
+                    Meta\AttachRelationCommand::create(
+                        $aggregateReference,
+                        $relationPropertyReference
+                    )
                 );
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ORDER) {
                 $relationSequence = RelationSequence::instance();
@@ -185,21 +203,18 @@ class CommandResolver
                 foreach ($comparisonAction['items'] as $relationPropertyReference) {
                     $relationSequence->attach($relationPropertyReference);
                 }
-                $this->addCommand(
-                    GenericCommand\OrderRelationsCommand::create($reference, $relationSequence)
+                $this->collectCommand(
+                    Meta\OrderRelationsCommand::create(
+                        $aggregateReference,
+                        $relationSequence
+                    )
                 );
             }
         }
     }
 
-    protected function addCommand(AbstractCommand $command)
+    protected function collectCommand(Meta\AbstractCommand $command)
     {
-        if ($command instanceof Identifiable) {
-            // @todo Still think about, whether this is good - alternatively shift it to projection
-            $this->change->getTargetState()->getSubject()->setUuid(
-                $command->getIdentity()->getUuid()
-            );
-        }
         $this->commands[] = $command;
     }
 

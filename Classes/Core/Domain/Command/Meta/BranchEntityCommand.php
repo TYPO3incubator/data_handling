@@ -17,32 +17,35 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Identifiable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\IdentifiableTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class TranslateCommand extends AbstractCommand implements Instantiable, Identifiable, Derivable
+class BranchEntityCommand extends AbstractCommand implements Instantiable, Derivable, AggregateReference, Workspace
 {
-    use IdentifiableTrait;
+    use AggregateReferenceTrait;
+    use WorkspaceTrait;
 
     /**
-     * @return TranslateCommand
+     * @return BranchEntityCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(TranslateCommand::class);
+        return GeneralUtility::makeInstance(BranchEntityCommand::class);
     }
 
     /**
-     * @param EntityReference $subject
-     * @param mixed $context
-     * @return TranslateCommand
+     * @param EntityReference $aggregateReference
+     * @param int $workspaceId
+     * @return BranchEntityCommand
      */
-    public static function create(EntityReference $subject, $context = null)
+    public static function create(EntityReference $aggregateReference, int $workspaceId)
     {
         $command = static::instance();
-        $command->setSubject($subject);
-        $command->setIdentity(EntityReference::create($subject->getName()));
+        $command->aggregateReference = $aggregateReference;
+        $command->workspaceId = $workspaceId;
         return $command;
     }
 }

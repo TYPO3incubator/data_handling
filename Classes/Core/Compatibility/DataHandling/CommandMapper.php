@@ -18,22 +18,21 @@ use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Common;
+use TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResolver;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Applicable;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
+use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\DataHandling\CommandManager;
+use TYPO3\CMS\DataHandling\Core\DataHandling\CommandPublisher;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\ReadState;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga\GenericSaga;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\GenericStream;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\StreamProvider;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
+use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
 class CommandMapper
@@ -109,7 +108,7 @@ class CommandMapper
     public function emitCommands(): CommandMapper
     {
         foreach ($this->commands as $command) {
-            CommandManager::instance()->handle($command);
+            CommandPublisher::provide()->publish($command);
         }
         return $this;
     }
@@ -184,11 +183,24 @@ class CommandMapper
                 continue;
             }
 
+            $languageFieldName = MetaModelService::instance()->getLanguageFieldName($tableName);
+
             foreach ($uidValues as $uid => $values) {
+                $context = Context::instance()->setWorkspaceId($this->getWorkspaceId());
+                // @todo validate against proper languages
+                if (!empty($values[$languageFieldName])) {
+                    $context->setLanguageId($values[$languageFieldName]);
+                }
+
+                $subject = EntityReference::instance()
+                    ->setName($tableName)
+                    ->setUid($uid);
                 $targetState = State::instance()
-                    ->setSubject(EntityReference::instance()->setName($tableName)->setUid($uid))
+                    ->setSubject($subject)
                     ->setValues($values);
-                $changes[] = Change::instance()->setTargetState($targetState);
+                $changes[] = Change::instance()
+                    ->setContext($context)
+                    ->setTargetState($targetState);
             }
         }
 
@@ -261,7 +273,9 @@ class CommandMapper
             ->setSubjects($this->dataCollectionChanges)
             ->resolve();
         foreach ($changes as $change) {
-            $commands = CommandResolver::instance()->setChange($change)->resolve();
+            $commands = CommandResolver::instance()
+                ->setChange($change)
+                ->resolve();
             $this->commands = array_merge($this->commands, $commands);
         }
     }
@@ -294,9 +308,9 @@ class CommandMapper
 
     /**
      * @param EntityReference $reference
-     * @return ReadState
+     * @return GenericEntity
      */
-    protected function fetchState(EntityReference $reference): ReadState
+    protected function fetchState(EntityReference $reference)
     {
         if ($reference->getUuid() === null) {
             $reference->setUuid($this->fetchUuid($reference));
@@ -304,11 +318,8 @@ class CommandMapper
 
         // @todo lookup in context-based projection
 
-        $readState = ReadState::instance();
-        $desire = EventSelector::create('~' . $reference->__toString());
-        GenericSaga::create()->tell($readState, $desire);
-
-        return $readState;
+        return GenericEntityEventRepository::create($reference->getName())
+            ->findByUuid($reference->getUuidInterface());
     }
 
     /**
@@ -341,5 +352,21 @@ class CommandMapper
         );
 
         return $state;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getWorkspaceId()
+    {
+        return $this->getBackendUser()->workspace;
+    }
+
+    /**
+     * @return BackendUserAuthentication
+     */
+    protected function getBackendUser()
+    {
+        return $GLOBALS['BE_USER'];
     }
 }

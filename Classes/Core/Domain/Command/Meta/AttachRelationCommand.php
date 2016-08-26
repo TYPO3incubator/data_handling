@@ -15,15 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Relational;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationalTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class AttachRelationCommand extends AbstractCommand implements Instantiable, Relational
+class AttachRelationCommand extends AbstractCommand implements Instantiable, AggregateReference, RelationReference
 {
-    use RelationalTrait;
+    use AggregateReferenceTrait;
+    use RelationReferenceTrait;
 
     /**
      * @return AttachRelationCommand
@@ -34,15 +37,15 @@ class AttachRelationCommand extends AbstractCommand implements Instantiable, Rel
     }
 
     /**
-     * @param EntityReference $subject
-     * @param PropertyReference $relation
+     * @param EntityReference $aggregateReference
+     * @param PropertyReference $relationReference
      * @return AttachRelationCommand
      */
-    public static function create(EntityReference $subject, PropertyReference $relation)
+    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
     {
         $command = static::instance();
-        $command->setSubject($subject);
-        $command->setRelation($relation);
+        $command->aggregateReference = $aggregateReference;
+        $command->relationReference = $relationReference;
         return $command;
     }
 }

@@ -44,14 +44,16 @@ trait CommandHandlerTrait
 
     /**
      * @param DomainCommand $command
+     * @return null|mixed
      */
     public function execute(DomainCommand $command)
     {
         // determine method name, that is used to execute the command
         $methodName = $this->getCommandHandlerMethodName($command);
         if (method_exists($this, $methodName)) {
-            $this->{$methodName}($command);
+            return $this->{$methodName}($command);
         }
+        return null;
     }
 
     /**

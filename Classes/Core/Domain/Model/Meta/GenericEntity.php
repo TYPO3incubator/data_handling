@@ -126,6 +126,7 @@ class GenericEntity extends State implements EventApplicable
 
     /**
      * @param int $workspaceId
+     * @return GenericEntity
      */
     public function branchedEntityTo(int $workspaceId)
     {
@@ -142,10 +143,12 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        return $this;
     }
 
     /**
      * @param string $locale
+     * @return GenericEntity
      */
     public function translatedEntityTo(string $locale)
     {
@@ -162,10 +165,12 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        return $this;
     }
 
     /**
      * @param array $data
+     * @return GenericEntity
      */
     public function changedEntity(array $data)
     {
@@ -176,8 +181,12 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        return $this;
     }
 
+    /**
+     * @return GenericEntity
+     */
     public function deletedEntity()
     {
         $event = MetaEvent\DeletedEntityEvent::create(
@@ -186,10 +195,12 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        return $this;
     }
 
     /**
      * @param PropertyReference $relationReference
+     * @return GenericEntity
      */
     public function attachedRelation(PropertyReference $relationReference)
     {
@@ -200,10 +211,12 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        return $this;
     }
 
     /**
      * @param PropertyReference $relationReference
+     * @return GenericEntity
      */
     public function removedRelation(PropertyReference $relationReference)
     {
@@ -214,10 +227,12 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        return $this;
     }
 
     /**
      * @param AbstractSequence $sequence
+     * @return GenericEntity
      */
     public function orderedRelations(AbstractSequence $sequence)
     {
@@ -228,6 +243,7 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        return $this;
     }
 
 

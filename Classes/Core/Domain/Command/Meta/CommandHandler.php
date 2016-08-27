@@ -35,11 +35,36 @@ class CommandHandler implements Instantiable, CommandApplicable
     }
 
     /**
+     * @var GenericEntity
+     */
+    protected $bundleEntity;
+
+    /**
+     * Executes a command bundle by asserting that all commands are
+     * executed on the resulting entity of the first command.
+     *
+     * @param BundleEntityCommand $command
+     */
+    protected function onBundleEntityCommand(BundleEntityCommand $command)
+    {
+        $bundleCommands = $command->getCommands();
+        $firstCommand = array_shift($bundleCommands);
+        $this->bundleEntity = $this->execute($firstCommand);
+
+        foreach ($bundleCommands as $bundleCommand) {
+            $this->execute($bundleCommand);
+        }
+
+        unset($this->bundleEntity);
+    }
+
+    /**
      * @param CreateEntityCommand $command
+     * @return GenericEntity
      */
     protected function onCreateEntityCommand(CreateEntityCommand $command)
     {
-        GenericEntity::createdEntity(
+        return GenericEntity::createdEntity(
             $command->getAggregateType(),
             $command->getWorkspaceId(),
             $command->getLocale()
@@ -48,46 +73,51 @@ class CommandHandler implements Instantiable, CommandApplicable
 
     /**
      * @param BranchEntityCommand $command
+     * @return GenericEntity
      */
     protected function onBranchEntityCommand(BranchEntityCommand $command)
     {
-        $this->fetchGenericEntity($command)
+        return $this->fetchGenericEntity($command)
             ->branchedEntityTo($command->getWorkspaceId());
     }
 
     /**
      * @param TranslateEntityCommand $command
+     * @return GenericEntity
      */
     protected function onTranslateEntityCommand(TranslateEntityCommand $command)
     {
-        $this->fetchGenericEntity($command)
+        return $this->fetchGenericEntity($command)
             ->translatedEntityTo($command->getLocale());
     }
 
     /**
      * @param ChangeEntityCommand $command
+     * @return GenericEntity
      */
     protected function onChangeEntityCommand(ChangeEntityCommand $command)
     {
-        $this->fetchGenericEntity($command)
+        return $this->fetchGenericEntity($command)
             ->changedEntity($command->getData());
     }
 
     /**
      * @param DeleteEntityCommand $command
+     * @return GenericEntity
      */
     protected function onDeleteEntityCommand(DeleteEntityCommand $command)
     {
-        $this->fetchGenericEntity($command)
+        return $this->fetchGenericEntity($command)
             ->deletedEntity();
     }
 
     /**
      * @param AttachRelationCommand $command
+     * @return GenericEntity
      */
     protected function onAttachRelationCommand(AttachRelationCommand $command)
     {
-        $this->fetchGenericEntity($command)
+        return $this->fetchGenericEntity($command)
             ->attachedRelation($command->getRelationReference());
     }
 
@@ -96,7 +126,7 @@ class CommandHandler implements Instantiable, CommandApplicable
      */
     protected function onRemoveRelationCommand(RemoveRelationCommand $command)
     {
-        $this->fetchGenericEntity($command)
+        return $this->fetchGenericEntity($command)
             ->removedRelation($command->getRelationReference());
     }
 
@@ -105,7 +135,7 @@ class CommandHandler implements Instantiable, CommandApplicable
      */
     protected function onOrderRelationsCommand(OrderRelationsCommand $command)
     {
-        $this->fetchGenericEntity($command)
+        return $this->fetchGenericEntity($command)
             ->orderedRelations($command->getSequence());
     }
 
@@ -115,6 +145,10 @@ class CommandHandler implements Instantiable, CommandApplicable
      */
     protected function fetchGenericEntity(AbstractCommand $command)
     {
+        if (isset($this->bundleEntity)) {
+            return $this->bundleEntity;
+        }
+
         $aggregateId = $command->getSubject()->getUuid();
         $aggregateType = $command->getSubject()->getName();
         return GenericEntityEventRepository::create($aggregateType)

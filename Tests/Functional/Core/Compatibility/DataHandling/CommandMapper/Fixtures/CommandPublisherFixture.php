@@ -16,16 +16,16 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandPublisher;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 
 class CommandPublisherFixture extends CommandPublisher implements SingletonInterface
 {
     /**
-     * @var AbstractCommand[]
+     * @var DomainCommand[]
      */
     protected $commands = [];
 
-    public function publish(AbstractCommand $command)
+    public function publish(DomainCommand $command)
     {
         $this->commands[] = $command;
     }

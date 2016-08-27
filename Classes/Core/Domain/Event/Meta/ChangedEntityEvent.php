@@ -53,4 +53,23 @@ class ChangedEntityEvent extends AbstractEvent implements Instantiable
     {
         return $this->values;
     }
+
+    /**
+     * @return array
+     */
+    public function exportData()
+    {
+        $data = parent::exportData();
+        $data['values'] = $this->values;
+        return $data;
+    }
+
+    /**
+     * @param array|null $data
+     */
+    public function importData($data)
+    {
+        parent::importData($data);
+        $this->values = $data['values'];
+    }
 }

@@ -31,7 +31,7 @@ class BundleEntityCommand extends AbstractCommand implements Instantiable
      * @param AbstractCommand[] ...$commands
      * @return AttachRelationCommand
      */
-    public static function create(AbstractCommand ...$commands)
+    public static function create(...$commands)
     {
         $command = static::instance();
         $command->commands = $commands;

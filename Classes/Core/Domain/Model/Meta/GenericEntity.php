@@ -262,7 +262,7 @@ class GenericEntity extends State implements EventApplicable
 
     protected function onChangedEntityEvent(MetaEvent\ChangedEntityEvent $event)
     {
-        $this->values = $event->getData();
+        $this->values = $event->getValues();
     }
 
     protected function onDeletedEntityEvent(MetaEvent\DeletedEntityEvent $event)

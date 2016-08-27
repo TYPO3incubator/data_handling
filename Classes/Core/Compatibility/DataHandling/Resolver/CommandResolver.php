@@ -68,7 +68,7 @@ class CommandResolver
 
     protected function bundleCommands()
     {
-        if ($this->bundle) {
+        if ($this->bundle && !empty($this->commands)) {
             $this->commands =[
                 Meta\BundleEntityCommand::create($this->commands)
             ];

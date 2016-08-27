@@ -39,6 +39,7 @@ class TranslatedEntityToEvent extends AbstractEvent implements Instantiable, Tar
     /**
      * @param EntityReference $aggregateReference
      * @param EntityReference $targetReference
+     * @param string $locale
      * @return TranslatedEntityToEvent
      */
     public static function create(EntityReference $aggregateReference, EntityReference $targetReference, string $locale)

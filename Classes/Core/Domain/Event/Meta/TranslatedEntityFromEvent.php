@@ -39,6 +39,7 @@ class TranslatedEntityFromEvent extends AbstractEvent implements Instantiable, F
     /**
      * @param EntityReference $aggregateReference
      * @param EntityReference $fromReference
+     * @param string $locale
      * @return TranslatedEntityFromEvent
      */
     public static function create(EntityReference $aggregateReference, EntityReference $fromReference, string $locale)

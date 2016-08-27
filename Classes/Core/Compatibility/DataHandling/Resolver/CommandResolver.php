@@ -99,6 +99,7 @@ class CommandResolver
         }
 
         // @todo TranslationCommand is missing here
+        // @todo Maybe use CommandFactory or AimResolver
     }
 
     protected function processValues()

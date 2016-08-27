@@ -37,33 +37,37 @@ class CommandHandler implements Instantiable, CommandApplicable
     /**
      * @param CreateEntityCommand $command
      */
-    public function onCreateCommand(CreateEntityCommand $command)
+    protected function onCreateEntityCommand(CreateEntityCommand $command)
     {
-        GenericEntity::createdEntity($command->getSubject()->getName());
+        GenericEntity::createdEntity(
+            $command->getAggregateType(),
+            $command->getWorkspaceId(),
+            $command->getLocale()
+        );
     }
 
     /**
      * @param BranchEntityCommand $command
      */
-    public function onBranchCommand(BranchEntityCommand $command)
+    protected function onBranchEntityCommand(BranchEntityCommand $command)
     {
         $this->fetchGenericEntity($command)
-            ->branchedEntity($command->getWorkspaceId());
+            ->branchedEntityTo($command->getWorkspaceId());
     }
 
     /**
      * @param TranslateEntityCommand $command
      */
-    public function onTranslateCommand(TranslateEntityCommand $command)
+    protected function onTranslateEntityCommand(TranslateEntityCommand $command)
     {
         $this->fetchGenericEntity($command)
-            ->translatedEntity($command->getLocale());
+            ->translatedEntityTo($command->getLocale());
     }
 
     /**
      * @param ChangeEntityCommand $command
      */
-    public function onChangeCommand(ChangeEntityCommand $command)
+    protected function onChangeEntityCommand(ChangeEntityCommand $command)
     {
         $this->fetchGenericEntity($command)
             ->changedEntity($command->getData());
@@ -72,7 +76,7 @@ class CommandHandler implements Instantiable, CommandApplicable
     /**
      * @param DeleteEntityCommand $command
      */
-    public function onDeleteCommand(DeleteEntityCommand $command)
+    protected function onDeleteEntityCommand(DeleteEntityCommand $command)
     {
         $this->fetchGenericEntity($command)
             ->deletedEntity();
@@ -81,7 +85,7 @@ class CommandHandler implements Instantiable, CommandApplicable
     /**
      * @param AttachRelationCommand $command
      */
-    public function onAttachRelationCommand(AttachRelationCommand $command)
+    protected function onAttachRelationCommand(AttachRelationCommand $command)
     {
         $this->fetchGenericEntity($command)
             ->attachedRelation($command->getRelationReference());
@@ -90,7 +94,7 @@ class CommandHandler implements Instantiable, CommandApplicable
     /**
      * @param RemoveRelationCommand $command
      */
-    public function onRemoveRelationCommand(RemoveRelationCommand $command)
+    protected function onRemoveRelationCommand(RemoveRelationCommand $command)
     {
         $this->fetchGenericEntity($command)
             ->removedRelation($command->getRelationReference());
@@ -99,7 +103,7 @@ class CommandHandler implements Instantiable, CommandApplicable
     /**
      * @param OrderRelationsCommand $command
      */
-    public function onOrderRelationsCommand(OrderRelationsCommand $command)
+    protected function onOrderRelationsCommand(OrderRelationsCommand $command)
     {
         $this->fetchGenericEntity($command)
             ->orderedRelations($command->getSequence());

@@ -21,6 +21,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
+use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\OriginEventRepository;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandlerTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventHandlerTrait;
@@ -54,6 +55,10 @@ class GenericEntity extends State implements EventApplicable
             ->setName($aggregateType)
             ->setUuid(static::createUuid());
 
+        $originatedEvent = MetaEvent\OriginatedEntityEvent::create(
+            $aggregateReference
+        );
+
         $event = MetaEvent\CreatedEntityEvent::create(
             $aggregateReference,
             $workspaceId,
@@ -63,6 +68,7 @@ class GenericEntity extends State implements EventApplicable
         $genericEntity = static::instance();
         $genericEntity->apply($event);
         // applied first, to assign aggregateType
+        static::emitEvent(OriginEventRepository::instance(), $originatedEvent);
         static::emitEvent($genericEntity->getGenericEntityRepository(), $event);
 
         return $genericEntity;

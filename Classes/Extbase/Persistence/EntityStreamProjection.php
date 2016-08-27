@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Stream\EventStream;
-use TYPO3\CMS\DataHandling\Core\Process\Projection\StreamProjecting;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\StreamProjecting;
 use TYPO3\CMS\DataHandling\Core\Service\ProjectionService;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 

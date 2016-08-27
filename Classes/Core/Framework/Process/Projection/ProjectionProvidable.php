@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Process\Projection;
 
 /*
  * This file is part of the TYPO3 CMS project.

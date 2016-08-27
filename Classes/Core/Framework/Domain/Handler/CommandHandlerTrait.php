@@ -19,7 +19,7 @@ use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
-use TYPO3\CMS\DataHandling\Core\Process\EventPublisher;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\EventPublisher;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
 trait CommandHandlerTrait

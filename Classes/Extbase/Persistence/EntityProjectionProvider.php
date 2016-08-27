@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventHandlerInterface;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
-use TYPO3\CMS\DataHandling\Core\Process\Projection\ProjectionProvidable;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionProvidable;
 
 class EntityProjectionProvider implements ProjectionProvidable
 {

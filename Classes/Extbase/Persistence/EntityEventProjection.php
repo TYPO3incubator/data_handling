@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\AggregateEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
-use TYPO3\CMS\DataHandling\Core\Process\Projection\EventProjecting;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\EventProjecting;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
 class EntityEventProjection extends AbstractEntityProjection implements EventProjecting

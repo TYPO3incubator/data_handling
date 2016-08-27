@@ -18,7 +18,7 @@ use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
-use TYPO3\CMS\DataHandling\Core\Process\Projection\ProjectingTrait;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectingTrait;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
 abstract class AbstractEntityProjection

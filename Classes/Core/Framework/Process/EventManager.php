@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Process;
+namespace TYPO3\CMS\DataHandling\Core\Framework\Process;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
-use TYPO3\CMS\DataHandling\Core\Process\Projection\ProjectionPool;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionPool;
 
 class EventManager implements Instantiable
 {

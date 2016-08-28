@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Model\ProjectableEntity;
 use TYPO3\CMS\DataHandling\Extbase\Persistence\ProjectionRepository;
 
 class GenericEntityProjectionRepository implements ProjectionRepository
@@ -58,7 +58,7 @@ class GenericEntityProjectionRepository implements ProjectionRepository
         $this->connection = ($connection ?? ConnectionPool::instance()->getOriginConnection());
     }
 
-    public function makeProjectable(AbstractProjectableEntity $subject)
+    public function makeProjectable(ProjectableEntity $subject)
     {
         // TODO: Implement makeProjectable() method.
     }

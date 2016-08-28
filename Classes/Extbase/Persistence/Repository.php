@@ -14,16 +14,18 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Model\ProjectableEntity;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
 
 abstract class Repository extends \TYPO3\CMS\Extbase\Persistence\Repository implements ProjectionRepository
 {
     /**
-     * @param AbstractProjectableEntity $subject
+     * @param ProjectableEntity|AbstractProjectableEntity $subject
      * @return AbstractProjectableEntity
      */
-    public function makeProjectable(AbstractProjectableEntity $subject)
+    public function makeProjectable(ProjectableEntity $subject)
     {
+        /** @var AbstractProjectableEntity $projection */
         $projection = $this->findByUuid($subject->getUuidInterface());
         if ($projection !== null) {
             $subject->_setProperty('uid', $projection->getUid());

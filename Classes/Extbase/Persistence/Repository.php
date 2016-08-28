@@ -14,24 +14,21 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Extbase\DomainObject\AbstractProjectableEntity;
-use TYPO3\CMS\Extbase\Persistence\RepositoryInterface as SuperRepositoryInterface;
 
-/**
- * The repository for Accounts
- */
-interface ProjectionRepository extends SuperRepositoryInterface
+abstract class Repository extends \TYPO3\CMS\Extbase\Persistence\Repository implements ProjectionRepository
 {
     /**
      * @param AbstractProjectableEntity $subject
      * @return AbstractProjectableEntity
      */
-    public function makeProjectable(AbstractProjectableEntity $subject);
-
-    /**
-     * @param UuidInterface $uuid
-     * @return null|AbstractProjectableEntity
-     */
-    public function findByUuid(UuidInterface $uuid);
+    public function makeProjectable(AbstractProjectableEntity $subject)
+    {
+        $projection = $this->findByUuid($subject->getUuidInterface());
+        if ($projection !== null) {
+            $subject->_setProperty('uid', $projection->getUid());
+            $subject->setPid($projection->getPid());
+        }
+        return $subject;
+    }
 }

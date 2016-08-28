@@ -73,7 +73,7 @@ class EventStore implements AttachableStore
     /**
      * @param string $streamName
      * @param string[] $categories
-     * @return EventStream
+     * @return EventStream|BaseEvent[]
      */
     public function stream(string $streamName, array $categories = [])
     {

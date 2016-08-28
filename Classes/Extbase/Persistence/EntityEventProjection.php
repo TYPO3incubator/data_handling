@@ -70,7 +70,10 @@ class EntityEventProjection extends AbstractEntityProjection implements EventPro
         if ($event instanceof EntityEvent) {
             return $this->createSubject();
         } elseif ($event instanceof AggregateEvent) {
-            return $this->fetchEventSubject($event->getAggregateId());
+            return $this->fetchEventSubject(
+                $event->getAggregateId(),
+                $event->getEventId()
+            );
         }
 
         return null;

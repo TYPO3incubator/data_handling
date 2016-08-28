@@ -45,7 +45,7 @@ trait ProjectingTrait
     /**
      * @var \Closure[]|callable[]
      */
-    protected $listeners;
+    protected $listeners = [];
 
     /**
      * @param string $subjectName

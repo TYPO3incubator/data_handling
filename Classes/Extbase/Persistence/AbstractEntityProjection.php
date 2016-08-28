@@ -104,9 +104,10 @@ abstract class AbstractEntityProjection
 
     /**
      * @param UuidInterface $uuid
+     *
      * @return null|AbstractProjectableEntity
      */
-    protected function fetchEventSubject(UuidInterface $uuid)
+    protected function fetchEventSubject(UuidInterface $uuid, string $eventId = '')
     {
         if (empty($this->eventRepository)) {
             throw new \RuntimeException('Cannot fetch event subject', 1471946615);
@@ -131,20 +132,11 @@ abstract class AbstractEntityProjection
      */
     protected function persist(AbstractProjectableEntity $subject)
     {
-        $existingSubject = $this->fetchProjectionSubject(
-            $subject->getUuidInterface()
-        );
+        $subject = $this->projectionRepository->makeProjectable($subject);
 
-        // directly add new entities
-        if ($existingSubject === null) {
+        if ($subject->_isNew()) {
             $this->projectionRepository->add($subject);
-
-        // in case there is already a projection, try to re-use the UID
-        // of that aggregate by removing it from repository and adding it
-        // again with the previously used UID
         } else {
-            $subject->_setProperty('uid', $existingSubject->getUid());
-            $subject->setPid($existingSubject->getPid());
             $this->projectionRepository->update($subject);
         }
 

@@ -52,9 +52,11 @@ trait EventHandlerTrait
             && $this->revision + 1 !== $event->getEventVersion()
             && ($this->revision !== null || $event->getEventVersion() !== 0)
         ) {
-            throw new \RuntimeException('Unexpected event in sequence', 1472044588);
+            $reason = 'got ' . $event->getEventVersion() . ', expected ' . ($this->revision + 1);
+            throw new \RuntimeException('Unexpected event in sequence (' . $reason . ')', 1472044588);
         }
         $this->revision = $event->getEventVersion();
+        $this->appliedEventIds[] = $event->getEventId();
         // determine method name, that is used to apply the event
         $methodName = $this->getEventHandlerMethodName($event);
         if (method_exists($this, $methodName)) {

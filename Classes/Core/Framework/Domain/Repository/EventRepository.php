@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository;
  */
 
 use Ramsey\Uuid\UuidInterface;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
 
@@ -25,9 +26,11 @@ interface EventRepository
 {
     /**
      * @param UuidInterface $uuid
+     * @param string $eventId
+     * @param string $type
      * @return EventApplicable
      */
-    public function findByUuid(UuidInterface $uuid);
+    public function findByUuid(UuidInterface $uuid, string $eventId = '', string $type = Saga::EVENT_EXCLUDING);
 
     /**
      * @param BaseEvent $event

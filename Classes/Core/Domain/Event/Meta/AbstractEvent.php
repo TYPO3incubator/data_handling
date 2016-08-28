@@ -22,6 +22,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
@@ -89,7 +90,7 @@ abstract class AbstractEvent extends BaseEvent implements StorableEvent, Aggrega
         }
         if ($this instanceof FromReference) {
             /** @var $this FromReferenceTrait */
-            $this->fromReference = EntityReference::fromArray($data['fromReference']);
+            $this->fromReference = EventReference::fromArray($data['fromReference']);
         }
         if ($this instanceof RelationReference) {
             /** @var $this RelationReferenceTrait */

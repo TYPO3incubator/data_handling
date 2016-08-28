@@ -14,12 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 
 interface FromReference
 {
     /**
-     * @return null|EntityReference
+     * @return null|EventReference
      */
     public function getFromReference();
 }

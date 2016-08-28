@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta as MetaEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
@@ -45,11 +46,9 @@ class GenericEntity extends State implements EventApplicable
 
     /**
      * @param string $aggregateType
-     * @param int $workspaceId
-     * @param string $locale
      * @return GenericEntity
      */
-    public static function createdEntity(string $aggregateType, int $workspaceId, string $locale)
+    protected static function createNew(string $aggregateType)
     {
         $aggregateReference = EntityReference::instance()
             ->setName($aggregateType)
@@ -59,66 +58,30 @@ class GenericEntity extends State implements EventApplicable
             $aggregateReference
         );
 
+        $genericEntity = static::instance();
+        $genericEntity->subject = $aggregateReference;
+        static::emitEvent(OriginEventRepository::instance(), $originatedEvent);
+
+        return $genericEntity;
+    }
+
+    /**
+     * @param string $aggregateType
+     * @param int $workspaceId
+     * @param string $locale
+     * @return GenericEntity
+     */
+    public static function createdEntity(string $aggregateType, int $workspaceId, string $locale)
+    {
+        $genericEntity = static::createNew($aggregateType);
+
         $event = MetaEvent\CreatedEntityEvent::create(
-            $aggregateReference,
+            $genericEntity->getSubject(),
             $workspaceId,
             $locale
         );
 
-        $genericEntity = static::instance();
         $genericEntity->apply($event);
-        // applied first, to assign aggregateType
-        static::emitEvent(OriginEventRepository::instance(), $originatedEvent);
-        static::emitEvent($genericEntity->getGenericEntityRepository(), $event);
-
-        return $genericEntity;
-    }
-
-    /**
-     * @param EntityReference $fromReference
-     * @param int $workspaceId
-     * @return GenericEntity
-     */
-    public static function branchedEntityFrom(EntityReference $fromReference, int $workspaceId)
-    {
-        $aggregateReference = EntityReference::instance()
-            ->setName($fromReference->getName())
-            ->setUuid(static::createUuid());
-
-        $event = MetaEvent\BranchedEntityFromEvent::create(
-            $aggregateReference,
-            $fromReference,
-            $workspaceId
-        );
-
-        $genericEntity = static::instance();
-        $genericEntity->apply($event);
-        // applied first, to assign aggregateType
-        static::emitEvent($genericEntity->getGenericEntityRepository(), $event);
-
-        return $genericEntity;
-    }
-
-    /**
-     * @param EntityReference $fromReference
-     * @param string $locale
-     * @return GenericEntity
-     */
-    public static function translatedEntityFrom(EntityReference $fromReference, string $locale)
-    {
-        $aggregateReference = EntityReference::instance()
-            ->setName($fromReference->getName())
-            ->setUuid(static::createUuid());
-
-        $event = MetaEvent\TranslatedEntityFromEvent::create(
-            $aggregateReference,
-            $fromReference,
-            $locale
-        );
-
-        $genericEntity = static::instance();
-        $genericEntity->apply($event);
-        // applied first, to assign aggregateType
         static::emitEvent($genericEntity->getGenericEntityRepository(), $event);
 
         return $genericEntity;
@@ -130,10 +93,7 @@ class GenericEntity extends State implements EventApplicable
      */
     public function branchedEntityTo(int $workspaceId)
     {
-        $branchedEntity = static::branchedEntityFrom(
-            $this->subject,
-            $workspaceId
-        );
+        $branchedEntity = static::createNew($this->subject->getName());
 
         $event = MetaEvent\BranchedEntityToEvent::create(
             $this->subject,
@@ -141,8 +101,35 @@ class GenericEntity extends State implements EventApplicable
             $workspaceId
         );
 
-        static::emitEvent($this->getGenericEntityRepository(), $event);
+        $branchedEntity->branchedEntityFrom(
+            EventReference::instance()
+                ->setEntityReference($this->getSubject())
+                ->setEventId($event->getEventId()),
+            $workspaceId
+        );
+
         $this->apply($event);
+        static::emitEvent($this->getGenericEntityRepository(), $event);
+
+        return $this;
+    }
+
+    /**
+     * @param EventReference $fromReference
+     * @param int $workspaceId
+     * @return GenericEntity
+     */
+    public function branchedEntityFrom(EventReference $fromReference, int $workspaceId)
+    {
+        $event = MetaEvent\BranchedEntityFromEvent::create(
+            $this->subject,
+            $fromReference,
+            $workspaceId
+        );
+
+        $this->apply($event);
+        static::emitEvent($this->getGenericEntityRepository(), $event);
+
         return $this;
     }
 
@@ -152,10 +139,7 @@ class GenericEntity extends State implements EventApplicable
      */
     public function translatedEntityTo(string $locale)
     {
-        $translatedEntity = static::translatedEntityFrom(
-            $this->subject,
-            $locale
-        );
+        $translatedEntity = static::createNew($this->subject->getName());
 
         $event = MetaEvent\TranslatedEntityToEvent::create(
             $this->subject,
@@ -163,8 +147,35 @@ class GenericEntity extends State implements EventApplicable
             $locale
         );
 
-        static::emitEvent($this->getGenericEntityRepository(), $event);
+        $translatedEntity->translatedEntityFrom(
+            EventReference::instance()
+                ->setEntityReference($this->subject)
+                ->setEventId($event->getEventId()),
+            $locale
+        );
+
         $this->apply($event);
+        static::emitEvent($this->getGenericEntityRepository(), $event);
+
+        return $this;
+    }
+
+    /**
+     * @param EventReference $fromReference
+     * @param string $locale
+     * @return GenericEntity
+     */
+    public function translatedEntityFrom(EventReference $fromReference, string $locale)
+    {
+        $event = MetaEvent\TranslatedEntityFromEvent::create(
+            $this->subject,
+            $fromReference,
+            $locale
+        );
+
+        $this->apply($event);
+        static::emitEvent($this->getGenericEntityRepository(), $event);
+
         return $this;
     }
 
@@ -181,6 +192,7 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+
         return $this;
     }
 
@@ -193,8 +205,9 @@ class GenericEntity extends State implements EventApplicable
             $this->subject
         );
 
-        static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        static::emitEvent($this->getGenericEntityRepository(), $event);
+
         return $this;
     }
 
@@ -211,6 +224,7 @@ class GenericEntity extends State implements EventApplicable
 
         static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+
         return $this;
     }
 
@@ -225,8 +239,9 @@ class GenericEntity extends State implements EventApplicable
             $relationReference
         );
 
-        static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        static::emitEvent($this->getGenericEntityRepository(), $event);
+
         return $this;
     }
 
@@ -241,8 +256,9 @@ class GenericEntity extends State implements EventApplicable
             $sequence
         );
 
-        static::emitEvent($this->getGenericEntityRepository(), $event);
         $this->apply($event);
+        static::emitEvent($this->getGenericEntityRepository(), $event);
+
         return $this;
     }
 
@@ -258,12 +274,12 @@ class GenericEntity extends State implements EventApplicable
 
     protected function onBranchedEntityToEvent(MetaEvent\BranchedEntityToEvent $event)
     {
-        $this->subject = $event->getAggregateReference();
+        #$this->subject = $event->getAggregateReference();
     }
 
     protected function onBranchedEntityFromEvent(MetaEvent\BranchedEntityFromEvent $event)
     {
-        $this->subject = $event->getAggregateReference();
+        #$this->subject = $event->getAggregateReference();
     }
 
     protected function onTranslatedToEvent(MetaEvent\TranslatedEntityToEvent $event)

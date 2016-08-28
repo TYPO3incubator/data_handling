@@ -42,6 +42,26 @@ class State
     protected $values = [];
 
     /**
+     * @var int
+     */
+    protected $workspaceId;
+
+    /**
+     * @var string
+     */
+    protected $locale;
+
+    /**
+     * @var EventReference
+     */
+    protected $branchedFrom;
+
+    /**
+     * @var EventReference
+     */
+    protected $translatedFrom;
+
+    /**
      * @var PropertyReference[]
      */
     protected $relations = [];

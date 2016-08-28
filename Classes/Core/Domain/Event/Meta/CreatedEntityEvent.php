@@ -20,9 +20,10 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class CreatedEntityEvent extends AbstractEvent implements Instantiable, Workspace, Locale
+class CreatedEntityEvent extends AbstractEvent implements EntityEvent, Instantiable, Workspace, Locale
 {
     use WorkspaceTrait;
     use LocaleTrait;

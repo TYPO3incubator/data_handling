@@ -21,9 +21,11 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class TranslatedEntityFromEvent extends AbstractEvent implements Instantiable, FromReference, Locale, Derivable
+class TranslatedEntityFromEvent extends AbstractEvent implements EntityEvent, Instantiable, FromReference, Locale, Derivable
 {
     use FromReferenceTrait;
     use LocaleTrait;
@@ -38,11 +40,11 @@ class TranslatedEntityFromEvent extends AbstractEvent implements Instantiable, F
 
     /**
      * @param EntityReference $aggregateReference
-     * @param EntityReference $fromReference
+     * @param EventReference $fromReference
      * @param string $locale
      * @return TranslatedEntityFromEvent
      */
-    public static function create(EntityReference $aggregateReference, EntityReference $fromReference, string $locale)
+    public static function create(EntityReference $aggregateReference, EventReference $fromReference, string $locale)
     {
         $event = static::instance();
         $event->aggregateReference = $aggregateReference;

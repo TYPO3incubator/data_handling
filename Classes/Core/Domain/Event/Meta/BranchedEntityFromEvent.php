@@ -19,11 +19,13 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class BranchedEntityFromEvent extends AbstractEvent implements Instantiable, FromReference, Workspace, Derivable
+class BranchedEntityFromEvent extends AbstractEvent implements EntityEvent, Instantiable, FromReference, Workspace, Derivable
 {
     use FromReferenceTrait;
     use WorkspaceTrait;
@@ -38,11 +40,11 @@ class BranchedEntityFromEvent extends AbstractEvent implements Instantiable, Fro
 
     /**
      * @param EntityReference $aggregateReference
-     * @param EntityReference $fromReference
+     * @param EventReference $fromReference
      * @param int $workspaceId
      * @return BranchedEntityFromEvent
      */
-    public static function create(EntityReference $aggregateReference, EntityReference $fromReference, int $workspaceId = null)
+    public static function create(EntityReference $aggregateReference, EventReference $fromReference, int $workspaceId = null)
     {
         $event = static::instance();
         $event->aggregateReference = $aggregateReference;

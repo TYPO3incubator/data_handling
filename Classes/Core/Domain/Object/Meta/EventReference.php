@@ -18,43 +18,25 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsString;
 
-class RevisionReference implements RepresentableAsString
+class EventReference implements RepresentableAsString
 {
     /**
-     * @return RevisionReference
+     * @return EventReference
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(RevisionReference::class);
+        return GeneralUtility::makeInstance(EventReference::class);
     }
 
     /**
      * @param array $array
-     * @return RevisionReference
+     * @return EventReference
      */
     public static function fromArray(array $array)
     {
         return static::instance()
-            ->setRevision($array['revision'])
+            ->setEventId($array['eventId'])
             ->setEntityReference(EntityReference::fromArray($array['entity']));
-    }
-
-    /**
-     * @param string $name
-     * @param array $record
-     * @return RevisionReference
-     */
-    public static function fromRecord(string $name, array $record)
-    {
-        if (empty($record[Common::FIELD_REVISION])) {
-            throw new \RuntimeException('Value for revision is required', 1471468749);
-        }
-
-        $reference = static::instance()
-            ->setRevision($record[Common::FIELD_REVISION])
-            ->setEntityReference(EntityReference::fromRecord($name, $record));
-
-        return $reference;
     }
 
     /**
@@ -63,20 +45,20 @@ class RevisionReference implements RepresentableAsString
     protected $entityReference;
 
     /**
-     * @var int
+     * @var string
      */
-    protected $revision;
+    protected $eventId;
 
     public function __toString(): string
     {
-        return $this->entityReference->__toString() . '@' . $this->revision;
+        return $this->entityReference->__toString() . '@' . $this->eventId;
     }
 
     public function __toArray(): array
     {
         return [
             'entity' => $this->entityReference->__toArray(),
-            'revision' => $this->revision,
+            'eventId' => $this->eventId,
         ];
     }
 
@@ -85,31 +67,31 @@ class RevisionReference implements RepresentableAsString
         return $this->entityReference;
     }
 
-    public function setEntityReference(EntityReference $entityReference): RevisionReference
+    public function setEntityReference(EntityReference $entityReference): EventReference
     {
         $this->entityReference = $entityReference;
         return $this;
     }
 
-    public function getRevision(): int
+    public function getEventId(): string
     {
-        return $this->revision;
+        return $this->eventId;
     }
 
-    public function setRevision(int $revision): RevisionReference
+    public function setEventId(string $eventId): EventReference
     {
-        $this->revision = $revision;
+        $this->eventId = $eventId;
         return $this;
     }
 
-    public function import(RevisionReference $reference): RevisionReference
+    public function import(EventReference $reference): EventReference
     {
         if ($this->entityReference === null) {
             $this->entityReference = EntityReference::instance();
         }
 
         $this->entityReference->import($reference->getEntityReference());
-        $this->revision = $reference->getRevision();
+        $this->eventId = $reference->getEventId();
 
         return $this;
     }

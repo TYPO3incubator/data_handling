@@ -15,10 +15,15 @@ namespace TYPO3\CMS\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\OriginatedEntityEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\GetEventStoreDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionPool;
+use TYPO3\CMS\DataHandling\Core\Process\Projection\GenericEntityProjectionProvider;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
@@ -138,6 +143,15 @@ class Common
 //                    GetEventStoreDriver::create('http://127.0.0.1:2113', 'admin', 'changeit', true)
 //                )
 //            );
+
+        ProjectionPool::provide()
+            ->enrolProjection(
+                '[' . AbstractEvent::class . ']'
+            )
+            ->setProviderName(GenericEntityProjectionProvider::class)
+            ->onEvent(OriginatedEntityEvent::class, function(OriginatedEntityEvent $event) {
+                $event->cancel();
+            });
     }
 
     /**

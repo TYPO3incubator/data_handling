@@ -14,12 +14,52 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\AggregateEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\EventProjecting;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectingTrait;
 
 class AbstractGenericEntityProjection
 {
     use ProjectingTrait;
+
+    /**
+     * @param EntityReference $aggregateReference
+     * @param string $eventId
+     * @return GenericEntity
+     */
+    protected function fetchEventSubject(EntityReference $aggregateReference, string $eventId = '')
+    {
+        $eventRepository = GenericEntityEventRepository::create(
+            $aggregateReference->getName()
+        );
+        return $eventRepository->findByUuid(
+            $aggregateReference->getUuidInterface(),
+            $eventId
+        );
+    }
+
+    /**
+     * @param AbstractEvent $event
+     * @return GenericEntity
+     */
+    protected function provideSubject(AbstractEvent $event)
+    {
+        if ($event instanceof EntityEvent) {
+            return GenericEntity::instance();
+        } else {
+            return $this->fetchEventSubject(
+                $event->getAggregateReference(),
+                $event->getEventId()
+            );
+        }
+    }
 }

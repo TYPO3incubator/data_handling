@@ -18,6 +18,7 @@ use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
@@ -26,11 +27,11 @@ use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 class OriginEventRepository implements EventRepository
 {
     /**
-     * @return GenericEntityEventRepository
+     * @return OriginEventRepository
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(GenericEntityEventRepository::class);
+        return GeneralUtility::makeInstance(OriginEventRepository::class);
     }
 
     /**
@@ -40,10 +41,12 @@ class OriginEventRepository implements EventRepository
 
     /**
      * @param UuidInterface $uuid
+     * @param string $eventId
+     * @param string $type
      * @return void
      * @throws \RuntimeException
      */
-    public function findByUuid(UuidInterface $uuid)
+    public function findByUuid(UuidInterface $uuid, string $eventId = '', string $type = Saga::EVENT_EXCLUDING)
     {
         throw new \RuntimeException('This stream does not provide more specific streams');
     }

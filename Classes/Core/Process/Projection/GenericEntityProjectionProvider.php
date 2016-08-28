@@ -51,6 +51,8 @@ class GenericEntityProjectionProvider implements ProjectionProvidable
     public function forStream()
     {
         $projection = GenericEntityStreamProjection::instance();
+        $projection->setListeners($this->streamListeners);
+        return $projection;
     }
 
     /**
@@ -59,5 +61,7 @@ class GenericEntityProjectionProvider implements ProjectionProvidable
     public function forEvent()
     {
         $projection = GenericEntityEventProjection::instance();
+        $projection->setListeners($this->eventListeners);
+        return $projection;
     }
 }

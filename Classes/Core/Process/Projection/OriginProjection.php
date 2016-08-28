@@ -15,29 +15,32 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\EventProjecting;
 
-class GenericEntityEventProjection extends AbstractGenericEntityProjection implements EventProjecting
+class OriginProjection extends AbstractGenericEntityProjection implements EventProjecting
 {
     /**
-     * @return GenericEntityEventProjection
+     * @return OriginProjection
      */
     static public function instance()
     {
-        return GeneralUtility::makeInstance(GenericEntityEventProjection::class);
+        return GeneralUtility::makeInstance(OriginProjection::class);
     }
 
     /**
-     * @param BaseEvent $event
+     * @param BaseEvent|AbstractEvent $event
      */
     public function project(BaseEvent $event) {
-        $this->handleListeners($event);
+        $subject = $this->provideSubject($event);
+        $subject->apply($event);
+        $this->persist($subject);
+    }
 
-        if ($event->isCancelled()) {
-            return;
-        }
-
-        OriginProjection::instance()->project($event);
+    protected function persist(GenericEntity $subject)
+    {
+        var_dump($subject);
     }
 }

@@ -54,7 +54,7 @@ class GenericEntityEventRepository implements EventRepository
      * @param UuidInterface $uuid
      * @param string $eventId
      * @param string $type
-     * @return ProjectableEntity
+     * @return GenericEntity
      */
     public function findByUuid(UuidInterface $uuid, string $eventId = '', string $type = Saga::EVENT_EXCLUDING)
     {

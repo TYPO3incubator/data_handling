@@ -274,22 +274,36 @@ class GenericEntity extends State implements EventApplicable
 
     protected function onBranchedEntityToEvent(MetaEvent\BranchedEntityToEvent $event)
     {
-        #$this->subject = $event->getAggregateReference();
     }
 
     protected function onBranchedEntityFromEvent(MetaEvent\BranchedEntityFromEvent $event)
     {
-        #$this->subject = $event->getAggregateReference();
+        $this->subject = $event->getAggregateReference();
+
+        $aggregateReference = $event->getAggregateReference();
+        $fromEntity = GenericEntityEventRepository::create($aggregateReference->getName())
+            ->findByUuid($aggregateReference->getUuidInterface(), $event->getEventId());
+
+        $this->setValues($fromEntity->getValues());
+        $this->setRelations($fromEntity->getRelations());
+        $this->getContext()->setWorkspaceId($event->getWorkspaceId());
     }
 
     protected function onTranslatedToEvent(MetaEvent\TranslatedEntityToEvent $event)
     {
-        $this->subject = $event->getAggregateReference();
     }
 
     protected function onTranslatedFromEvent(MetaEvent\TranslatedEntityFromEvent $event)
     {
         $this->subject = $event->getAggregateReference();
+
+        $aggregateReference = $event->getAggregateReference();
+        $fromEntity = GenericEntityEventRepository::create($aggregateReference->getName())
+            ->findByUuid($aggregateReference->getUuidInterface(), $event->getEventId());
+
+        $this->setValues($fromEntity->getValues());
+        $this->setRelations($fromEntity->getRelations());
+        $this->getContext()->setLanguageId($event->getLocale());
     }
 
     protected function onChangedEntityEvent(MetaEvent\ChangedEntityEvent $event)

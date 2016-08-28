@@ -29,6 +29,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta as MetaEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
@@ -187,18 +188,22 @@ class EventInitializationService
                 $liveData = $this->fetchRecordByUid($tableName, $data['t3ver_oid']);
                 $liveReference = EntityReference::fromRecord($tableName, $liveData);
 
-                $this->handleEvent(
-                    MetaEvent\BranchedEntityToEvent::create(
-                        $liveReference,
-                        $state->getSubject(),
-                        $workspaceId
-                    )->setMetadata($metadata)
+                $branchEntityToEvent = MetaEvent\BranchedEntityToEvent::create(
+                    $liveReference,
+                    $state->getSubject(),
+                    $workspaceId
                 );
+                $this->handleEvent(
+                    $branchEntityToEvent->setMetadata($metadata)
+                );
+
                 // @todo Decide whether to keep, without this event, the workspace version cannot be projected alone
                 $this->handleEvent(
                     MetaEvent\BranchedEntityFromEvent::create(
                         $state->getSubject(),
-                        $liveReference,
+                        EventReference::instance()
+                            ->setEntityReference($liveReference)
+                            ->setEventId($branchEntityToEvent->getEventId()),
                         $workspaceId
                     )->setMetadata($metadata)
                 );
@@ -222,17 +227,21 @@ class EventInitializationService
                 $pointsToReference = $state->getSubject();
             }
 
-            $this->handleEvent(
-                MetaEvent\TranslatedEntityToEvent::create(
-                    $pointsToReference,
-                    $state->getSubject(),
-                    $languageId
-                )->setMetadata($metadata)
+            $translatedEntityToEvent = MetaEvent\TranslatedEntityToEvent::create(
+                $pointsToReference,
+                $state->getSubject(),
+                $languageId
             );
+            $this->handleEvent(
+                $translatedEntityToEvent->setMetadata($metadata)
+            );
+
             $this->handleEvent(
                 MetaEvent\TranslatedEntityFromEvent::create(
                     $state->getSubject(),
-                    $pointsToReference,
+                    EventReference::instance()
+                        ->setEntityReference($pointsToReference)
+                        ->setEventId($translatedEntityToEvent->getEventId()),
                     $languageId
                 )->setMetadata($metadata)
             );

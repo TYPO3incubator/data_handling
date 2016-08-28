@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\Regular;
+namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Regular;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -33,7 +33,7 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
     /**
      * @var CommandPublisherFixture
      */
-    protected $commandManager;
+    protected $commandPublisher;
 
     protected function setup()
     {
@@ -41,18 +41,18 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
 
         EventInitializationUpdate::instance()->performUpdate($queriesReference = [], $messagesReference = []);
 
-        $this->commandManager = new CommandPublisherFixture();
+        $this->commandPublisher = new CommandPublisherFixture();
 
         GeneralUtility::setSingletonInstance(
             CommandPublisher::class,
-            $this->commandManager
+            $this->commandPublisher
         );
     }
 
     protected function tearDown()
     {
         GeneralUtility::purgeInstances();
-        unset($this->commandManager);
+        unset($this->commandPublisher);
     }
 
     /**
@@ -73,7 +73,7 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
                     [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #2' ],
                 ],
             ],
-            $this->commandManager->getCommands()
+            $this->commandPublisher->getCommands()
         );
     }
 
@@ -90,7 +90,7 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
                     [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #1' ],
                 ],
             ],
-            $this->commandManager->getCommands()
+            $this->commandPublisher->getCommands()
         );
     }
 

@@ -122,7 +122,7 @@ class EventInitializationService
             throw new \RuntimeException('Value for uuid must be available', 1470840257);
         }
 
-        $nodeReference = EntityReference::create('pages')->setUuid($data['pid']);
+        $nodeReference = EntityReference::create('pages')->setUid($data['pid']);
         $nodeReference->setUuid(UuidUtility::fetchUuid($nodeReference));
         $entityReference = EntityReference::fromRecord($tableName, $data);
 

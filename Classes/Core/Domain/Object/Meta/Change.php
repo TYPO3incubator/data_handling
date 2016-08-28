@@ -33,11 +33,6 @@ class Change
     protected $new = false;
 
     /**
-     * @var Context
-     */
-    protected $context;
-
-    /**
      * @var State
      */
     protected $sourceState;
@@ -55,17 +50,6 @@ class Change
     public function setNew(bool $new): Change
     {
         $this->new = $new;
-        return $this;
-    }
-
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    public function setContext(Context $context)
-    {
-        $this->context = $context;
         return $this;
     }
 

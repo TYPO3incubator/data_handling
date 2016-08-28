@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 
 class State
 {
@@ -25,6 +26,11 @@ class State
     {
         return GeneralUtility::makeInstance(State::class);
     }
+
+    /**
+     * @var Context
+     */
+    protected $context;
 
     /**
      * @var EntityReference
@@ -40,16 +46,6 @@ class State
      * @var array
      */
     protected $values = [];
-
-    /**
-     * @var int
-     */
-    protected $workspaceId;
-
-    /**
-     * @var string
-     */
-    protected $locale;
 
     /**
      * @var EventReference
@@ -70,6 +66,18 @@ class State
     {
         $this->node = EntityReference::instance();
         $this->subject = EntityReference::instance();
+        $this->context = Context::instance();
+    }
+
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    public function setContext(Context $context)
+    {
+        $this->context = $context;
+        return $this;
     }
 
     public function getNode(): EntityReference

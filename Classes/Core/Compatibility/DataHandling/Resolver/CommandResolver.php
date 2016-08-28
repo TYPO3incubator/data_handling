@@ -78,14 +78,15 @@ class CommandResolver
     protected function processContext()
     {
         $aggregateReference = $this->change->getTargetState()->getSubject();
+        $targetStateContext = $this->change->getTargetState()->getContext();
 
         if ($this->change->isNew()) {
             $this->bundle = true;
             $this->collectCommand(
                 Meta\CreateEntityCommand::create(
                     $aggregateReference->getName(),
-                    $this->change->getContext()->getWorkspaceId(),
-                    $this->change->getContext()->getLanguageId()
+                    $targetStateContext->getWorkspaceId(),
+                    $targetStateContext->getLanguageId()
                 )
             );
         } elseif ($this->isDifferentContext()) {
@@ -93,7 +94,7 @@ class CommandResolver
             $this->collectCommand(
                 Meta\BranchEntityCommand::create(
                     $aggregateReference,
-                    $this->change->getContext()->getWorkspaceId()
+                    $targetStateContext->getWorkspaceId()
                 )
             );
         }

@@ -196,10 +196,10 @@ class CommandMapper
                     ->setName($tableName)
                     ->setUid($uid);
                 $targetState = State::instance()
+                    ->setContext($context)
                     ->setSubject($subject)
                     ->setValues($values);
                 $changes[] = Change::instance()
-                    ->setContext($context)
                     ->setTargetState($targetState);
             }
         }

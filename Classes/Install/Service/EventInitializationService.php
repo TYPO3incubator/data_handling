@@ -32,6 +32,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
+use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\OriginEventRepository;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
@@ -169,7 +170,8 @@ class EventInitializationService
 
         // no workspace, no translation -> just CreateEntityCommand
         if (!$isWorkspaceAspect && !$isTranslationAspect) {
-            $this->handleEvent(
+
+            $this->handleGenericEntityEvent(
                 MetaEvent\CreatedEntityEvent::create(
                     $state->getSubject(),
                     $state->getNode(),
@@ -183,7 +185,7 @@ class EventInitializationService
             $versionState = VersionState::cast($data['t3ver_state']);
 
             if ($versionState->equals(VersionState::NEW_PLACEHOLDER_VERSION)) {
-                $this->handleEvent(
+                $this->handleGenericEntityEvent(
                     MetaEvent\CreatedEntityEvent::create(
                         $state->getSubject(),
                         $state->getNode(),
@@ -200,12 +202,12 @@ class EventInitializationService
                     $state->getSubject(),
                     $workspaceId
                 );
-                $this->handleEvent(
+                $this->handleGenericEntityEvent(
                     $branchEntityToEvent->setMetadata($metadata)
                 );
 
                 // @todo Decide whether to keep, without this event, the workspace version cannot be projected alone
-                $this->handleEvent(
+                $this->handleGenericEntityEvent(
                     MetaEvent\BranchedEntityFromEvent::create(
                         $state->getSubject(),
                         EventReference::instance()
@@ -239,11 +241,11 @@ class EventInitializationService
                 $state->getSubject(),
                 $languageId
             );
-            $this->handleEvent(
+            $this->handleGenericEntityEvent(
                 $translatedEntityToEvent->setMetadata($metadata)
             );
 
-            $this->handleEvent(
+            $this->handleGenericEntityEvent(
                 MetaEvent\TranslatedEntityFromEvent::create(
                     $state->getSubject(),
                     EventReference::instance()
@@ -279,7 +281,7 @@ class EventInitializationService
             CoreResolver\ValueResolver::instance()->resolve($state->getSubject(), $data)
         );
 
-        $this->handleEvent(
+        $this->handleGenericEntityEvent(
             MetaEvent\ChangedEntityEvent::create(
                 $state->getSubject(),
                 $temporaryState->getValues()
@@ -305,7 +307,7 @@ class EventInitializationService
         foreach ($temporaryState->getRelations() as $relation) {
             $metaModelProperty = $metaModelSchema->getProperty($relation->getName());
             if ($metaModelProperty->hasActiveRelationTo($relation->getEntityReference()->getName())) {
-                $this->handleEvent(
+                $this->handleGenericEntityEvent(
                     MetaEvent\AttachedRelationEvent::create(
                         $state->getSubject(),
                         $relation
@@ -330,7 +332,7 @@ class EventInitializationService
             $versionState = VersionState::cast($data['t3ver_state']);
 
             if ($versionState->equals(VersionState::DELETE_PLACEHOLDER)) {
-                $this->handleEvent(
+                $this->handleGenericEntityEvent(
                     MetaEvent\DeletedEntityEvent::create(
                         $state->getSubject()
                     )->setMetadata($metadata)
@@ -345,13 +347,34 @@ class EventInitializationService
     /**
      * @param MetaEvent\AbstractEvent $event
      */
-    protected function handleEvent(MetaEvent\AbstractEvent $event)
+    protected function handleGenericEntityEvent(MetaEvent\AbstractEvent $event)
     {
+        if ($event instanceof MetaEvent\CreatedEntityEvent) {
+            $this->handleOriginatedEntityEvent(
+                MetaEvent\OriginatedEntityEvent::create(
+                    $event->getAggregateReference()
+                )
+            );
+        }
+
         $metadata = (array)$event->getMetadata();
         $metadata['trigger'] = EventInitializationService::class;
 
         $aggregateType = $event->getAggregateReference()->getName();
-        GenericEntityEventRepository::create($aggregateType)->addEvent($event);
+        GenericEntityEventRepository::create($aggregateType)
+            ->addEvent($event->setMetadata($metadata));
+    }
+
+    /**
+     * @param MetaEvent\OriginatedEntityEvent $event
+     */
+    protected function handleOriginatedEntityEvent(MetaEvent\OriginatedEntityEvent $event)
+    {
+        $metadata = (array)$event->getMetadata();
+        $metadata['trigger'] = EventInitializationService::class;
+
+        OriginEventRepository::instance()
+            ->addEvent($event->setMetadata($metadata));
     }
 
     /**

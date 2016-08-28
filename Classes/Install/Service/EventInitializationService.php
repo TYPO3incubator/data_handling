@@ -34,6 +34,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
 class EventInitializationService
 {
@@ -121,9 +122,13 @@ class EventInitializationService
             throw new \RuntimeException('Value for uuid must be available', 1470840257);
         }
 
-        $genericEntity = State::instance()->setSubject(
-            EntityReference::fromRecord($tableName, $data)
-        );
+        $nodeReference = EntityReference::create('pages')->setUuid($data['pid']);
+        $nodeReference->setUuid(UuidUtility::fetchUuid($nodeReference));
+        $entityReference = EntityReference::fromRecord($tableName, $data);
+
+        $genericEntity = State::instance()
+            ->setNode($nodeReference)
+            ->setSubject($entityReference);
 
         if ($this->instruction & static::INSTRUCTION_ENTITY) {
             $this->createEntityEvents($genericEntity, $data);
@@ -167,6 +172,7 @@ class EventInitializationService
             $this->handleEvent(
                 MetaEvent\CreatedEntityEvent::create(
                     $state->getSubject(),
+                    $state->getNode(),
                     0,
                     0
                 )->setMetadata($metadata)
@@ -180,6 +186,7 @@ class EventInitializationService
                 $this->handleEvent(
                     MetaEvent\CreatedEntityEvent::create(
                         $state->getSubject(),
+                        $state->getNode(),
                         $workspaceId,
                         $languageId
                     )->setMetadata($metadata)

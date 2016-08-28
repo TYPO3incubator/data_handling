@@ -67,16 +67,18 @@ class GenericEntity extends State implements EventApplicable
 
     /**
      * @param string $aggregateType
+     * @param EntityReference $nodeReference
      * @param int $workspaceId
      * @param string $locale
      * @return GenericEntity
      */
-    public static function createdEntity(string $aggregateType, int $workspaceId, string $locale)
+    public static function createdEntity(string $aggregateType, EntityReference $nodeReference, int $workspaceId, string $locale)
     {
         $genericEntity = static::createNew($aggregateType);
 
         $event = MetaEvent\CreatedEntityEvent::create(
             $genericEntity->getSubject(),
+            $nodeReference,
             $workspaceId,
             $locale
         );
@@ -269,6 +271,7 @@ class GenericEntity extends State implements EventApplicable
 
     protected function onCreatedEntityEvent(MetaEvent\CreatedEntityEvent $event)
     {
+        $this->node = $event->getNodeReference();
         $this->subject = $event->getAggregateReference();
     }
 

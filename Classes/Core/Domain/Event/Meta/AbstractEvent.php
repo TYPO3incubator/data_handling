@@ -24,6 +24,8 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\NodeReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\NodeReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence;
@@ -48,6 +50,9 @@ abstract class AbstractEvent extends BaseEvent implements StorableEvent, Aggrega
 
         if ($this instanceof AggregateReference) {
             $data['aggregateReference'] = $this->getAggregateReference()->__toArray();
+        }
+        if ($this instanceof NodeReference) {
+            $data['nodeReference'] = $this->getNodeReference()->__toArray();
         }
         if ($this instanceof TargetReference) {
             $data['targetReference'] = $this->getTargetReference()->__toArray();
@@ -83,6 +88,10 @@ abstract class AbstractEvent extends BaseEvent implements StorableEvent, Aggrega
         if ($this instanceof AggregateReference) {
             /** @var $this AggregateReferenceTrait */
             $this->aggregateReference = EntityReference::fromArray($data['aggregateReference']);
+        }
+        if ($this instanceof NodeReference) {
+            /** @var $this NodeReferenceTrait */
+            $this->nodeReference = EntityReference::fromArray($data['nodeReference']);
         }
         if ($this instanceof TargetReference) {
             /** @var $this TargetReferenceTrait */

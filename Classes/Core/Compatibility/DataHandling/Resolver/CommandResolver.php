@@ -77,14 +77,16 @@ class CommandResolver
 
     protected function processContext()
     {
-        $aggregateReference = $this->change->getTargetState()->getSubject();
-        $targetStateContext = $this->change->getTargetState()->getContext();
+        $targetState = $this->change->getTargetState();
+        $aggregateReference = $targetState->getSubject();
+        $targetStateContext = $targetState->getContext();
 
         if ($this->change->isNew()) {
             $this->bundle = true;
             $this->collectCommand(
                 Meta\CreateEntityCommand::create(
                     $aggregateReference->getName(),
+                    $targetState->getNode(),
                     $targetStateContext->getWorkspaceId(),
                     $targetStateContext->getLanguageId()
                 )

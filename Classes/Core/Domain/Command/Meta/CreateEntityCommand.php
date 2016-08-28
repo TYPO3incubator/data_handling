@@ -17,12 +17,16 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\NodeReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\NodeReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class CreateEntityCommand extends AbstractCommand implements Instantiable, Workspace, Locale
+class CreateEntityCommand extends AbstractCommand implements Instantiable, NodeReference, Workspace, Locale
 {
+    use NodeReferenceTrait;
     use WorkspaceTrait;
     use LocaleTrait;
 
@@ -36,14 +40,16 @@ class CreateEntityCommand extends AbstractCommand implements Instantiable, Works
 
     /**
      * @param string $aggregateType
+     * @param EntityReference $nodeReference
      * @param int $workspaceId
      * @param string $locale
      * @return CreateEntityCommand
      */
-    public static function create(string $aggregateType, int $workspaceId, string $locale)
+    public static function create(string $aggregateType, EntityReference $nodeReference, int $workspaceId, string $locale)
     {
         $command = static::instance();
         $command->aggregateType = $aggregateType;
+        $command->nodeReference = $nodeReference;
         $command->workspaceId = $workspaceId;
         $command->locale = $locale;
         return $command;

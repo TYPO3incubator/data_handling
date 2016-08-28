@@ -66,6 +66,7 @@ class CommandHandler implements Instantiable, CommandApplicable
     {
         return GenericEntity::createdEntity(
             $command->getAggregateType(),
+            $command->getNodeReference(),
             $command->getWorkspaceId(),
             $command->getLocale()
         );

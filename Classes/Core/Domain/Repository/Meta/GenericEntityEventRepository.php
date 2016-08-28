@@ -52,14 +52,19 @@ class GenericEntityEventRepository implements EventRepository
 
     /**
      * @param UuidInterface $uuid
+     * @param string $eventId
+     * @param string $type
      * @return ProjectableEntity
      */
-    public function findByUuid(UuidInterface $uuid)
+    public function findByUuid(UuidInterface $uuid, string $eventId = '', string $type = Saga::EVENT_EXCLUDING)
     {
         $streamName = Common::STREAM_PREFIX_META
             . '-' . $this->aggregateType . '/' . $uuid->toString();
         $eventSelector = EventSelector::instance()->setStreamName($streamName);
-        return Saga::instance()->tell(GenericEntity::instance(), $eventSelector);
+
+        return Saga::instance()
+            ->constraint($eventId, $type)
+            ->tell(GenericEntity::instance(), $eventSelector);
     }
 
     /**

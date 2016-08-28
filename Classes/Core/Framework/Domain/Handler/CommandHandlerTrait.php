@@ -38,8 +38,9 @@ trait CommandHandlerTrait
      */
     protected static function emitEvent(EventRepository $repository, BaseEvent $event)
     {
-        $repository->addEvent($event);
+        // @todo Decide whether to store first, then publish
         EventPublisher::instance()->publish($event);
+        $repository->addEvent($event);
     }
 
     /**

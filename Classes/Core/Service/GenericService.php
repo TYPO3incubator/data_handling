@@ -51,6 +51,8 @@ class GenericService implements SingletonInterface
             'be_sessions',
             'fe_session_data',
             'fe_sessions',
+            'tx_extensionmanager_domain_model_extension',
+            'tx_extensionmanager_domain_model_repository',
         ];
 
         $nonSystemInternalTables = [

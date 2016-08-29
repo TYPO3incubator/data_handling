@@ -25,6 +25,7 @@ use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\SourceManager;
+use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
 use TYPO3\CMS\Install\Updates\AbstractUpdate;
 
@@ -87,7 +88,12 @@ class EventInitializationUpdate extends AbstractUpdate
      */
     public function performUpdate(array &$databaseQueries, &$customMessages)
     {
-        $allTableNames = array_keys($GLOBALS['TCA']);
+        $allTableNames = array_filter(
+            array_keys($GLOBALS['TCA']),
+            function(string $tableName) {
+                return (!GenericService::instance()->isSystemInternal($tableName));
+            }
+        );
         // filter out tables that are registered as source tables already
         $tableNames = array_diff($allTableNames, SourceManager::provide()->getSourcedTableNames());
         $recordTableNames = array_diff($tableNames, ['pages']);

@@ -59,7 +59,7 @@ class GenericEntityEventRepository implements EventRepository
     public function findByUuid(UuidInterface $uuid, string $eventId = '', string $type = Saga::EVENT_EXCLUDING)
     {
         $streamName = Common::STREAM_PREFIX_META
-            . '-' . $this->aggregateType . '/' . $uuid->toString();
+            . '/' . $this->aggregateType . '/' . $uuid->toString();
         $eventSelector = EventSelector::instance()->setStreamName($streamName);
 
         return Saga::instance()
@@ -74,7 +74,7 @@ class GenericEntityEventRepository implements EventRepository
     {
         $uuid = $event->getAggregateReference()->getUuid();
         $streamName = Common::STREAM_PREFIX_META
-            . '-' . $this->aggregateType . '/' . $uuid;
+            . '/' . $this->aggregateType . '/' . $uuid;
 
         $eventSelector = EventSelector::instance()
             ->setEvents([get_class($event)])

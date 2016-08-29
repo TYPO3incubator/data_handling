@@ -21,11 +21,11 @@ use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\StreamProjecting;
 class GenericEntityStreamProjection extends AbstractGenericEntityProjection  implements StreamProjecting
 {
     /**
-     * @return GenericEntityEventProjection
+     * @return GenericEntityStreamProjection
      */
     static public function instance()
     {
-        return GeneralUtility::makeInstance(GenericEntityEventProjection::class);
+        return GeneralUtility::makeInstance(GenericEntityStreamProjection::class);
     }
 
     /**

@@ -24,6 +24,7 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionPool;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\GenericEntityProjectionProvider;
+use TYPO3\CMS\DataHandling\Core\Process\Projection\GenericEntityStreamProjection;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
@@ -146,12 +147,37 @@ class Common
 
         ProjectionPool::provide()
             ->enrolProjection(
+                '$' . static::STREAM_PREFIX_META_ORIGIN
+            )
+            ->setProviderName(GenericEntityProjectionProvider::class)
+            ->onStream(
+                OriginatedEntityEvent::class,
+                function(OriginatedEntityEvent $event, GenericEntityStreamProjection $projection) {
+                    $projection->triggerProjection(
+                        static::STREAM_PREFIX_META
+                            . '/' . $event->getAggregateReference()->getName()
+                            . '/' . $event->getAggregateReference()->getUuid()
+                    );
+                }
+            );
+
+        ProjectionPool::provide()
+            ->enrolProjection(
+                '$' . static::STREAM_PREFIX_META . '/*'
+            )
+            ->setProviderName(GenericEntityProjectionProvider::class);
+
+        ProjectionPool::provide()
+            ->enrolProjection(
                 '[' . AbstractEvent::class . ']'
             )
             ->setProviderName(GenericEntityProjectionProvider::class)
-            ->onEvent(OriginatedEntityEvent::class, function(OriginatedEntityEvent $event) {
-                $event->cancel();
-            });
+            ->onEvent(
+                OriginatedEntityEvent::class,
+                function(OriginatedEntityEvent $event) {
+                    $event->cancel();
+                }
+            );
     }
 
     /**

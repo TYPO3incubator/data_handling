@@ -14,10 +14,10 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface RepresentableAsString
+interface RepresentableAsArray
 {
     /**
-     * @return string
+     * @return array
      */
-    public function __toString();
+    public function toArray();
 }

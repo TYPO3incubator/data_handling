@@ -16,10 +16,10 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 
-interface CommandApplicable
+interface CommandHandlerBundlable
 {
     /**
      * @param DomainCommand $command
      */
-    public function execute(DomainCommand $command);
+    public function handle(DomainCommand $command);
 }

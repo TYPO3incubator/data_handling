@@ -22,10 +22,11 @@ use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\EventPublisher;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
-trait CommandHandlerTrait
+trait CommandHandlerBundlableTrait
 {
     /**
      * @return UuidInterface
+     * @deprecated
      */
     protected static function createUuid()
     {
@@ -35,19 +36,20 @@ trait CommandHandlerTrait
     /**
      * @param EventRepository $repository
      * @param BaseEvent $event
+     * @deprecated
      */
     protected static function emitEvent(EventRepository $repository, BaseEvent $event)
     {
-        // @todo Decide whether to store first, then publish
-        EventPublisher::instance()->publish($event);
+        // first store event, then publish
         $repository->addEvent($event);
+        EventPublisher::instance()->publish($event);
     }
 
     /**
      * @param DomainCommand $command
      * @return null|mixed
      */
-    public function execute(DomainCommand $command)
+    public function handle(DomainCommand $command)
     {
         // determine method name, that is used to execute the command
         $methodName = $this->getCommandHandlerMethodName($command);
@@ -64,6 +66,6 @@ trait CommandHandlerTrait
     protected function getCommandHandlerMethodName(DomainCommand $command)
     {
         $commandName = ClassNamingUtility::getLastPart($command);
-        return 'on' . $commandName;
+        return 'handle' . $commandName;
     }
 }

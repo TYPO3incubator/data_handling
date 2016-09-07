@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Stream;
  * The TYPO3 project - inspiring people to share!
  */
 
-use H4ck3r31\BankAccountExample\Domain\Event\AbstractEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\EventTraversable;
 

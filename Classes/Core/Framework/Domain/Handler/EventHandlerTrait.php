@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
  */
 
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\EventPublisher;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
 trait EventHandlerTrait
@@ -22,7 +23,17 @@ trait EventHandlerTrait
     /**
      * @var int
      */
-    protected $revision;
+    protected $revision = null;
+
+    /**
+     * @var bool
+     */
+    protected $projected = false;
+
+    /**
+     * @var array
+     */
+    protected $recordedEvents = [];
 
     /**
      * @var string[]
@@ -38,9 +49,39 @@ trait EventHandlerTrait
     }
 
     /**
+     * @return array
+     */
+    public function getRecordedEvents()
+    {
+        return $this->recordedEvents;
+    }
+
+    public function purgeRecordedEvents()
+    {
+        $this->recordedEvents = [];
+    }
+
+    protected function manageEvent(BaseEvent $event)
+    {
+        $this->recordEvent($event);
+        $this->applyEvent($event);
+        $this->publishEvent($event);
+    }
+
+    protected function recordEvent(BaseEvent $event)
+    {
+        $this->recordedEvents[] = $event;
+    }
+
+    protected function publishEvent(BaseEvent $event)
+    {
+        EventPublisher::instance()->publish($event);
+    }
+
+    /**
      * @param BaseEvent $event
      */
-    public function apply(BaseEvent $event)
+    public function applyEvent(BaseEvent $event)
     {
         // this just checks for applied events in the current processing, the
         // ids of previously applied events might not be available in this scope
@@ -48,7 +89,8 @@ trait EventHandlerTrait
             throw new \RuntimeException('Event "' . $event->getEventId() . '" was already applied', 1472041262);
         }
         // validate and assign event version to subject
-        if ($event->getEventVersion() !== null
+        if (!$this->projected
+            && $event->getEventVersion() !== null
             && $this->revision + 1 !== $event->getEventVersion()
             && ($this->revision !== null || $event->getEventVersion() !== 0)
         ) {
@@ -71,6 +113,6 @@ trait EventHandlerTrait
     protected function getEventHandlerMethodName(BaseEvent $event)
     {
         $eventName = ClassNamingUtility::getLastPart($event);
-        return 'on' . $eventName;
+        return 'apply' . $eventName;
     }
 }

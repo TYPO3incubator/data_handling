@@ -21,5 +21,5 @@ interface EventApplicable
     /**
      * @param BaseEvent $event
      */
-    public function apply(BaseEvent $event);
+    public function applyEvent(BaseEvent $event);
 }

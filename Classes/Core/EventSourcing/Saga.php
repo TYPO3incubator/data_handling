@@ -102,7 +102,7 @@ class Saga
                 break;
             }
 
-            $state->apply($event);
+            $state->applyEvent($event);
 
             // stop telling events, after the event is applied
             if ($this->including === $event->getEventId()) {

@@ -8,8 +8,8 @@ CREATE TABLE sys_event_store (
 	event_id varchar(36) NOT NULL,
 	event_version int(11) unsigned NOT NULL,
 	event_name varchar(256) NOT NULL,
-	event_date TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+	event_date TIMESTAMP(6) NOT NULL,
 	data mediumtext,
 	metadata text,
-  PRIMARY KEY (uid)
+	PRIMARY KEY (uid)
 );

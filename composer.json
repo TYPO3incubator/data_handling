@@ -8,7 +8,8 @@
 	"require": {
 		"php" : "^7.0",
 		"ramsey/uuid": "~3.5",
-		"dbellettini/eventstore-client": "dev-master"
+		"dbellettini/eventstore-client": "dev-master",
+		"league/tactician": "^1.0"
 	},
 	"replace": {
 		"data_handling": "*"

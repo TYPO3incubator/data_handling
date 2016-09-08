@@ -253,11 +253,12 @@ class CommandMapper
     {
         foreach ($this->actionCollection as $tableName => $idCommands) {
             foreach ($idCommands as $id => $commands) {
+                if (!isset($this->dataCollection[$tableName][$id])) {
+                    continue;
+                }
                 foreach ($commands as $command => $value) {
-                    if ($value && $command == 'delete') {
-                        if (isset($this->dataCollection[$tableName][$id])) {
-                            unset($this->dataCollection[$tableName][$id]);
-                        }
+                    if (!empty($value) && $command == 'delete') {
+                        unset($this->dataCollection[$tableName][$id]);
                     }
                 }
             }

@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
  */
 
 use Doctrine\DBAL\Driver\Statement;
+use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
@@ -97,9 +98,13 @@ class SqlDriverIterator implements \Iterator, EventTraversable
         // @todo microsecond part is omitted if fetching from database
         $eventDate = new \DateTime($rawEvent['event_date']);
 
+        $aggregateId = null;
         $data = $rawEvent['data'];
         $metadata = $rawEvent['metadata'];
 
+        if (!empty($rawEvent['aggregate_id'])) {
+            $aggregateId = Uuid::fromString($rawEvent['aggregate_id']);
+        }
         if ($data !== null) {
             $data = json_decode($data, true);
         }
@@ -107,12 +112,13 @@ class SqlDriverIterator implements \Iterator, EventTraversable
             $metadata = json_decode($metadata, true);
         }
 
-        $this->event = call_user_func(
-            $eventClassName . '::reconstitute',
+        /** @var BaseEvent $eventClassName */
+        $this->event = $eventClassName::reconstitute(
             $rawEvent['event_name'],
             $rawEvent['event_id'],
             $rawEvent['event_version'],
             $eventDate,
+            $aggregateId,
             $data,
             $metadata
         );

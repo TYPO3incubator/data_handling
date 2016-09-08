@@ -9,6 +9,7 @@ CREATE TABLE sys_event_store (
 	event_version int(11) unsigned NOT NULL,
 	event_name varchar(256) NOT NULL,
 	event_date TIMESTAMP(6) NOT NULL,
+	aggregate_id varchar(36) DEFAULT NULL,
 	data mediumtext,
 	metadata text,
 	PRIMARY KEY (uid)

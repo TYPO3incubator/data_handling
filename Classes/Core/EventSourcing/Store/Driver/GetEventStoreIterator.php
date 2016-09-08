@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver;
  */
 
 use EventStore\StreamFeed\StreamFeedIterator;
+use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
@@ -100,14 +101,24 @@ class GetEventStoreIterator implements \Iterator, EventTraversable
         $entryData = $this->extractPrivateProperty($item->getEntry(), 'json');
         $eventDate = new \DateTime($entryData['updated']);
 
-        $this->event = call_user_func(
-            $eventClassName . '::reconstitute',
+        $aggregateId = null;
+        $data = $item->getEvent()->getData();
+        $metadata = $item->getEvent()->getMetadata();
+
+        if (!empty($metadata['$aggregateId'])) {
+            $aggregateId = Uuid::fromString($metadata['$aggregateId']);
+            unset($metadata['$aggregateId']);
+        }
+
+        /** @var BaseEvent $eventClassName */
+        $this->event = $eventClassName::reconstitute(
             $item->getEvent()->getType(),
             $item->getEvent()->getEventId()->toNative(),
             $item->getEvent()->getVersion(),
             $eventDate,
-            $item->getEvent()->getData(),
-            $item->getEvent()->getMetadata()
+            $aggregateId,
+            $data,
+            $metadata
         );
 
         return true;

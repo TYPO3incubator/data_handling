@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
  */
 
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Type\MicroDateTime;
 
@@ -25,11 +26,20 @@ abstract class BaseEvent implements DomainEvent
      * @param string $eventId
      * @param int $eventVersion
      * @param \DateTime $date
+     * @param UuidInterface $aggregateId
      * @param null|array $data
      * @param null|array $metadata
      * @return BaseEvent
      */
-    static function reconstitute(string $eventType, string $eventId, int $eventVersion, \DateTime $date, $data, $metadata)
+    static function reconstitute(
+        string $eventType,
+        string $eventId,
+        int $eventVersion,
+        \DateTime $date,
+        UuidInterface $aggregateId = null,
+        $data,
+        $metadata
+    )
     {
         if (!in_array(Instantiable::class, class_implements($eventType))) {
             throw new \RuntimeException('Cannot instantiate "' . $eventType . '"', 1470935798);
@@ -39,7 +49,8 @@ abstract class BaseEvent implements DomainEvent
         $event = call_user_func($eventType . '::instance');
         $event->eventId = $eventId;
         $event->eventVersion = $eventVersion;
-        $event->date = $date;
+        $event->eventDate = $date;
+        $event->aggregateId = $aggregateId;
         $event->metadata = $metadata;
         $event->importData($data);
         return $event;
@@ -63,7 +74,12 @@ abstract class BaseEvent implements DomainEvent
     /**
      * @var \DateTime
      */
-    protected $date;
+    protected $eventDate;
+
+    /**
+     * @var UuidInterface
+     */
+    protected $aggregateId;
 
     /**
      * @var array|null
@@ -78,7 +94,7 @@ abstract class BaseEvent implements DomainEvent
     public function __construct()
     {
         $this->eventId = Uuid::uuid4()->toString();
-        $this->date = MicroDateTime::create('now');
+        $this->eventDate = MicroDateTime::create('now');
     }
 
     /**
@@ -130,9 +146,9 @@ abstract class BaseEvent implements DomainEvent
     /**
      * @return \DateTime
      */
-    public function getDate(): \DateTime
+    public function getEventDate(): \DateTime
     {
-        return $this->date;
+        return $this->eventDate;
     }
 
     /**
@@ -179,5 +195,13 @@ abstract class BaseEvent implements DomainEvent
     public function getMetadata()
     {
         return $this->metadata;
+    }
+
+    /**
+     * @return UuidInterface
+     */
+    public function getAggregateId()
+    {
+        return $this->aggregateId;
     }
 }

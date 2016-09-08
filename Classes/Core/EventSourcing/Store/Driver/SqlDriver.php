@@ -44,12 +44,18 @@ class SqlDriver implements PersistableDriver
      */
     public function attach(string $streamName, BaseEvent $event, array $categories = [])
     {
+        $aggregateId = null;
+        if ($event->getAggregateId() !== null) {
+            $aggregateId = $event->getAggregateId()->toString();
+        }
+
         $rawEvent = [
             'event_stream' => $streamName,
             'event_categories' => (!empty($categories) ? implode(',', $categories) : null),
             'event_id' => $event->getEventId(),
             'event_name' => get_class($event),
-            'event_date' => $event->getDate()->format(static::FORMAT_DATETIME),
+            'event_date' => $event->getEventDate()->format(static::FORMAT_DATETIME),
+            'aggregate_id' => $aggregateId,
             'data' => $event->exportData(),
             'metadata' => $event->getMetadata(),
         ];

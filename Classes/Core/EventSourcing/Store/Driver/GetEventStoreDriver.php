@@ -92,11 +92,18 @@ class GetEventStoreDriver implements PersistableDriver
             $event->getEventId()
         );
 
+        $data = ($event->exportData() ?? []);
+        $metadata = ($event->getMetadata() ?? []);
+
+        if ($event->getAggregateId() !== null) {
+            $metadata['$aggregateId'] = $event->getAggregateId()->toString();
+        }
+
         $writableEvent = new \EventStore\WritableEvent(
             $UUID,
             get_class($event),
-            ($event->exportData() ?? []),
-            ($event->getMetadata() ?? [])
+            $data,
+            $metadata
         );
 
         try {

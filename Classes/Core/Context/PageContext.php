@@ -1,0 +1,62 @@
+<?php
+namespace TYPO3\CMS\DataHandling\Core\Context;
+
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
+
+class PageContext implements Providable
+{
+    /**
+     * @var PageContext
+     */
+    static $instance;
+
+    /**
+     * @param bool $force
+     * @return PageContext
+     */
+    public static function provide(bool $force = false)
+    {
+        if ($force || !isset(static::$instance)) {
+            static::$instance = new static();
+        }
+        return static::$instance;
+    }
+
+    private function __construct()
+    {
+    }
+
+    /**
+     * @var int
+     */
+    private $pageId;
+
+    public function getPageId()
+    {
+        if (!isset($this->pageId) && !empty($GLOBALS['TSFE']->id)) {
+            return (int)$GLOBALS['TSFE']->id;
+        }
+        return $this->pageId;
+    }
+
+    /**
+     * @param int $pageId
+     */
+    public function setPageId(int $pageId)
+    {
+        $this->pageId = $pageId;
+    }
+}

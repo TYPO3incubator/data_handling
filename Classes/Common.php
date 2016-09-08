@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider\TcaCommandModifier;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\OriginatedEntityEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\GetEventStoreDriver;
@@ -55,6 +56,14 @@ class Common
      */
     public static function overrideConfiguration()
     {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaDatabaseRecord'][TcaCommandModifier::class] = [
+            'depends' => [
+                \TYPO3\CMS\Backend\Form\FormDataProvider\PageTsConfig::class,
+                \TYPO3\CMS\Backend\Form\FormDataProvider\DatabaseRowInitializeNew::class,
+                \TYPO3\CMS\Backend\Form\FormDataProvider\EvaluateDisplayConditions::class,
+            ]
+        ];
+
         $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Origin'] =
             $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Default'];
 

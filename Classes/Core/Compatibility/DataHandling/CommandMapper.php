@@ -32,6 +32,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandManager;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
@@ -319,18 +320,36 @@ class CommandMapper
             $reference->setUuid($this->fetchUuid($reference));
         }
 
-        // @todo lookup in context-based projection
+        $genericEntity = null;
+        if (!TcaCommandManager::provide()->has($reference->getName())) {
+            $genericEntity = $this->fetchEventState($reference);
+        }
 
+        if (
+            $genericEntity === null
+            || $genericEntity->getSubject()->getUuidInterface() === null
+        ) {
+            $genericEntity = $this->fetchOriginState($reference);
+        }
+
+        return $genericEntity;
+    }
+
+    /**
+     * @param EntityReference $reference
+     * @return GenericEntity
+     */
+    private function fetchEventState(EntityReference $reference)
+    {
         return GenericEntityEventRepository::create($reference->getName())
             ->findByUuid($reference->getUuidInterface());
     }
 
     /**
      * @param EntityReference $reference
-     * @return State
-     * @deprecated Kept for development, use fetchState() instead
+     * @return GenericEntity
      */
-    private function fetchOriginState(EntityReference $reference): State
+    private function fetchOriginState(EntityReference $reference)
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
@@ -344,17 +363,17 @@ class CommandMapper
             throw new \RuntimeException('State for "' . $reference->getName() . ':' . $reference->getUid() . '" not available', 1469963429);
         }
 
-        $state = State::instance();
-        $state->getSubject()->import($reference)->setUuid($data[Common::FIELD_UUID]);
+        $genericEntity = GenericEntity::instance();
+        $genericEntity->getSubject()->import($reference)->setUuid($data[Common::FIELD_UUID]);
 
-        $state->setValues(
-            CoreResolver\ValueResolver::instance()->resolve($state->getSubject(), $data)
+        $genericEntity->setValues(
+            CoreResolver\ValueResolver::instance()->resolve($genericEntity->getSubject(), $data)
         );
-        $state->setRelations(
-            CoreResolver\RelationResolver::instance()->resolve($state->getSubject(), $data)
+        $genericEntity->setRelations(
+            CoreResolver\RelationResolver::instance()->resolve($genericEntity->getSubject(), $data)
         );
 
-        return $state;
+        return $genericEntity;
     }
 
     /**

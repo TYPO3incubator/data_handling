@@ -37,6 +37,16 @@ class MetaModelService implements SingletonInterface
         return ($GLOBALS['TCA'][$tableName]['ctrl']['delete'] ?? null);
     }
 
+    public function getTimestampFieldName(string $tableName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['tstamp'] ?? null);
+    }
+
+    public function getCreationDateFieldName(string $tableName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['crdate'] ?? null);
+    }
+
     public function getDisabledFieldName(string $tableName)
     {
         return ($GLOBALS['TCA'][$tableName]['ctrl']['enablecolumns']['disabled'] ?? null);

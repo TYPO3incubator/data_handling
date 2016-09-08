@@ -38,12 +38,13 @@ class DataHandlerHook
             return;
         }
 
-        CommandMapper::instance()
-            ->setDataCollection($dataHandler->datamap)
-            ->setActionCollection($dataHandler->cmdmap)
-            ->mapCommands()
-            ->emitCommands();
-
+        $commandMapper = CommandMapper::create(
+            $dataHandler->datamap,
+            $dataHandler->cmdmap
+        );
+        // emit built commands
+        $commandMapper->emitCommands();
+        // reset DataHandler maps
         $dataHandler->datamap = [];
         $dataHandler->cmdmap = [];
     }

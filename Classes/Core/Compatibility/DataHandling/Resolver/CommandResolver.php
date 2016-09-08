@@ -34,17 +34,17 @@ class CommandResolver
     /**
      * @var Change
      */
-    protected $change;
+    private $change;
 
     /**
      * @var Meta\AbstractCommand[]
      */
-    protected $commands;
+    private $commands;
 
     /**
      * @var bool
      */
-    protected $bundle = false;
+    private $bundle = false;
 
     public function setChange(Change $change)
     {
@@ -66,7 +66,7 @@ class CommandResolver
         return $this->commands;
     }
 
-    protected function bundleCommands()
+    private function bundleCommands()
     {
         if ($this->bundle && !empty($this->commands)) {
             $this->commands =[
@@ -75,7 +75,7 @@ class CommandResolver
         }
     }
 
-    protected function processContext()
+    private function processContext()
     {
         $targetState = $this->change->getTargetState();
         $aggregateReference = $targetState->getSubject();
@@ -105,7 +105,7 @@ class CommandResolver
         // @todo Maybe use CommandFactory or AimResolver
     }
 
-    protected function processValues()
+    private function processValues()
     {
         $aggregateReference = $this->change->getTargetState()->getSubject();
 
@@ -124,7 +124,7 @@ class CommandResolver
         }
     }
 
-    protected function processRelations()
+    private function processRelations()
     {
         /** @var PropertyReference[][] $sourceRelationsByProperty */
         $sourceRelationsByProperty = [];
@@ -173,7 +173,7 @@ class CommandResolver
      * @param PropertyReference[] $sourceRelations
      * @param PropertyReference[] $targetRelations
      */
-    protected function comparePropertyRelations(array $sourceRelations, array $targetRelations)
+    private function comparePropertyRelations(array $sourceRelations, array $targetRelations)
     {
         $aggregateReference = $this->change->getTargetState()->getSubject();
 
@@ -217,7 +217,7 @@ class CommandResolver
         }
     }
 
-    protected function collectCommand(Meta\AbstractCommand $command)
+    private function collectCommand(Meta\AbstractCommand $command)
     {
         $this->commands[] = $command;
     }
@@ -226,7 +226,7 @@ class CommandResolver
      * @return bool
      * @todo Implement context switch
      */
-    protected function isDifferentContext(): bool
+    private function isDifferentContext(): bool
     {
         return false;
     }

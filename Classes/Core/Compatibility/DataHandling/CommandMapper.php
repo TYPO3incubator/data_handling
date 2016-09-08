@@ -40,49 +40,50 @@ class CommandMapper
     /**
      * @var array
      */
-    protected $dataCollection = [];
+    private $dataCollection = [];
 
     /**
      * @var array
      */
-    protected $actionCollection = [];
+    private $actionCollection = [];
 
     /**
      * @var Change[]
      */
-    protected $dataCollectionChanges = [];
+    private $dataCollectionChanges = [];
 
     /**
      * @var CommandMapperScope
      */
-    protected $scope;
+    private $scope;
 
     /**
      * @var AbstractCommand[]
      */
-    protected $commands = [];
+    private $commands = [];
 
     /**
+     * @param array $dataCollection
+     * @param array $actionCollection
      * @return CommandMapper
      */
-    public static function instance()
+    public static function create(array $dataCollection, array $actionCollection)
     {
-        return GeneralUtility::makeInstance(CommandMapper::class);
+        return GeneralUtility::makeInstance(
+            CommandMapper::class,
+            $dataCollection,
+            $actionCollection
+        );
     }
 
-    public function setDataCollection(array $dataCollection): CommandMapper
+    public function __construct(array $dataCollection, array $actionCollection)
     {
         $this->dataCollection = $dataCollection;
-        return $this;
-    }
-
-    public function setActionCollection(array $actionCollection): CommandMapper
-    {
         $this->actionCollection = $actionCollection;
-        return $this;
+        $this->mapCommands();
     }
 
-    public function mapCommands(): CommandMapper
+    private function mapCommands()
     {
         $this->initialize();
 
@@ -93,8 +94,6 @@ class CommandMapper
 
         $this->mapDataCollectionCommands();
         $this->mapActionCollectionCommands();
-
-        return $this;
     }
 
     /**
@@ -105,41 +104,40 @@ class CommandMapper
         return $this->commands;
     }
 
-    public function emitCommands(): CommandMapper
+    public function emitCommands()
     {
         foreach ($this->commands as $command) {
             CommandPublisher::provide()->publish($command);
         }
-        return $this;
     }
 
-    protected function initialize()
+    private function initialize()
     {
         $this->scope = CommandMapperScope::instance();
         $this->dataCollectionChanges = [];
         $this->commands = [];
     }
 
-    protected function sanitizeCollections()
+    private function sanitizeCollections()
     {
         $this->unsetDataCollectionsToBeDeleted();
     }
 
-    protected function buildPageChanges()
+    private function buildPageChanges()
     {
         foreach ($this->createDataCollectionChanges(['pages']) as $change) {
             $this->dataCollectionChanges[] = $change;
         }
     }
 
-    protected function buildRecordChanges()
+    private function buildRecordChanges()
     {
         foreach ($this->createDataCollectionChanges(['!pages']) as $change) {
             $this->dataCollectionChanges[] = $change;
         }
     }
 
-    protected function extendChanges()
+    private function extendChanges()
     {
         foreach ($this->dataCollectionChanges as $change) {
             $this->extendChangeIdentity($change);
@@ -161,7 +159,7 @@ class CommandMapper
      * @param string[] $conditions
      * @return Change[]
      */
-    protected function createDataCollectionChanges(array $conditions = []): array
+    private function createDataCollectionChanges(array $conditions = []): array
     {
         $changes = [];
         $onlyTableNames = [];
@@ -207,7 +205,7 @@ class CommandMapper
         return $changes;
     }
 
-    protected function extendChangeIdentity(Change $change)
+    private function extendChangeIdentity(Change $change)
     {
         $targetStateReference = $change->getTargetState()->getSubject();
 
@@ -251,7 +249,7 @@ class CommandMapper
         }
     }
 
-    protected function unsetDataCollectionsToBeDeleted()
+    private function unsetDataCollectionsToBeDeleted()
     {
         foreach ($this->actionCollection as $tableName => $idCommands) {
             foreach ($idCommands as $id => $commands) {
@@ -266,13 +264,17 @@ class CommandMapper
         }
     }
 
-    protected function mapDataCollectionCommands()
+    private function mapDataCollectionCommands()
     {
         // sequence of changes ordered by accordant relative aggregate
-        $changes = CoreResolver\AggregateResolver::instance()
-            ->setSubjects($this->dataCollectionChanges)
-            ->resolve();
-        foreach ($changes as $change) {
+        $aggregateResolver = CoreResolver\AggregateResolver::create(
+            $this->dataCollectionChanges
+        );
+        // @todo Process aggregates in a bundle
+        // - try to translate into specific commands
+        // - handle sequences remaining commands (per aggregate)
+
+        foreach ($aggregateResolver->getSequence() as $change) {
             $commands = CommandResolver::instance()
                 ->setChange($change)
                 ->resolve();
@@ -280,22 +282,22 @@ class CommandMapper
         }
     }
 
-    protected function mapActionCollectionCommands()
+    private function mapActionCollectionCommands()
     {
 
     }
 
-    protected function isValidUid($uid): bool
+    private function isValidUid($uid): bool
     {
         return (!empty($uid) && MathUtility::canBeInterpretedAsInteger($uid));
     }
 
-    protected function fetchUuid(EntityReference $reference): string
+    private function fetchUuid(EntityReference $reference): string
     {
         return UuidUtility::fetchUuid($reference);
     }
 
-    protected function fetchPageId(EntityReference $reference): string
+    private function fetchPageId(EntityReference $reference): string
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
@@ -310,7 +312,7 @@ class CommandMapper
      * @param EntityReference $reference
      * @return GenericEntity
      */
-    protected function fetchState(EntityReference $reference)
+    private function fetchState(EntityReference $reference)
     {
         if ($reference->getUuid() === null) {
             $reference->setUuid($this->fetchUuid($reference));
@@ -327,7 +329,7 @@ class CommandMapper
      * @return State
      * @deprecated Kept for development, use fetchState() instead
      */
-    protected function fetchOriginState(EntityReference $reference): State
+    private function fetchOriginState(EntityReference $reference): State
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
@@ -357,7 +359,7 @@ class CommandMapper
     /**
      * @return int
      */
-    protected function getWorkspaceId()
+    private function getWorkspaceId()
     {
         return $this->getBackendUser()->workspace;
     }
@@ -365,7 +367,7 @@ class CommandMapper
     /**
      * @return BackendUserAuthentication
      */
-    protected function getBackendUser()
+    private function getBackendUser()
     {
         return $GLOBALS['BE_USER'];
     }

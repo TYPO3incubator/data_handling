@@ -23,63 +23,85 @@ use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
 class AggregateResolver
 {
     /**
+     * @param Change[] $subjects
+     * @param null|mixed $proxy
      * @return AggregateResolver
      */
-    public static function instance()
+    public static function create(array $subjects, $proxy = null)
     {
-        return GeneralUtility::makeInstance(AggregateResolver::class);
+        return GeneralUtility::makeInstance(AggregateResolver::class, $subjects, $proxy);
     }
 
-    protected $proxy;
+    /**
+     * AggregateResolver constructor.
+     * @param Change[] $subjects
+     * @param null|mixed $proxy
+     */
+    public function __construct(array $subjects, $proxy = null)
+    {
+        $this->subjects = $subjects;
+        $this->proxy = $proxy;
+        $this->build();
+    }
 
     /**
      * @var Change[]
      */
-    protected $subjects;
+    private $subjects;
+
+    /**
+     * @var mixed|null
+     */
+    private $proxy;
 
     /**
      * @var Aggregate[]
      */
-    protected $aggregates;
+    private $aggregates;
 
     /**
      * @var Aggregate[]
      */
-    protected $rootAggregates;
+    private $rootAggregates;
 
-    public function setProxy($proxy): AggregateResolver
-    {
-        $this->proxy = $proxy;
-        return $this;
-    }
+    /**
+     * @var Change[]
+     */
+    private $sequence;
 
-    public function getProxy()
+    /**
+     * @return Aggregate[]
+     */
+    public function getRootAggregates()
     {
-        return $this->proxy;
-    }
-
-    public function setSubjects(array $subjects): AggregateResolver
-    {
-        $this->subjects = $subjects;
-        return $this;
+        return $this->rootAggregates;
     }
 
     /**
      * @return Change[]
      */
-    public function resolve(): array
+    public function getSequence(): array
     {
-        if (!isset($this->rootAggregates)) {
-            $this->build();
+        if (!isset($this->sequence)) {
+            $this->sequence = [];
+            foreach ($this->rootAggregates as $rootAggregate) {
+                $this->sequence[] = $this->resolveSubject($rootAggregate);
+                foreach ($rootAggregate->getDeepNestedAggregates() as $nestedAggregate) {
+                    $subject = $this->resolveSubject($nestedAggregate);
+                    if (!in_array($subject, $this->sequence)) {
+                        $this->sequence[] = $subject;
+                    }
+                }
+            }
         }
-        return $this->sequence();
+        return $this->sequence;
     }
 
     /**
      * @param Aggregate $aggregate
      * @return Aggregate[]
      */
-    protected function getRootAggregates(Aggregate $aggregate): array
+    private function resolveRootAggregates(Aggregate $aggregate): array
     {
         /** @var Aggregate[] $activeAggregates */
         $rootAggregates = [];
@@ -117,7 +139,10 @@ class AggregateResolver
 
         foreach ($activeAggregates as $activeAggregate) {
             $activeAggregate->addNestedAggregate($aggregate);
-            $rootAggregates = $rootAggregates + $this->getRootAggregates($activeAggregate);
+            $rootAggregates = array_merge(
+                $rootAggregates,
+                $this->resolveRootAggregates($activeAggregate)
+            );
         }
 
         if (empty($rootAggregates)) {
@@ -127,7 +152,7 @@ class AggregateResolver
         return $rootAggregates;
     }
 
-    protected function build()
+    private function build()
     {
         $this->aggregates = [];
         $this->rootAggregates = [];
@@ -138,7 +163,7 @@ class AggregateResolver
         }
 
         foreach ($this->aggregates as $aggregate) {
-            foreach ($this->getRootAggregates($aggregate) as $rootAggregate) {
+            foreach ($this->resolveRootAggregates($aggregate) as $rootAggregate) {
                 if (!in_array($rootAggregate, $this->rootAggregates, true)) {
                     $this->rootAggregates[] = $rootAggregate;
                 }
@@ -147,28 +172,10 @@ class AggregateResolver
     }
 
     /**
-     * @return Change[]
-     */
-    protected function sequence(): array
-    {
-        $sequence = [];
-        foreach ($this->rootAggregates as $rootAggregate) {
-            $sequence[] = $this->resolveSubject($rootAggregate);
-            foreach ($rootAggregate->getDeepNestedAggregates() as $nestedAggregate) {
-                $subject = $this->resolveSubject($nestedAggregate);
-                if (!in_array($subject, $sequence)) {
-                    $sequence[] = $subject;
-                }
-            }
-        }
-        return $sequence;
-    }
-
-    /**
      * @param Aggregate $aggregate
      * @return Change
      */
-    protected function resolveSubject(Aggregate $aggregate): Change
+    private function resolveSubject(Aggregate $aggregate): Change
     {
         foreach ($this->subjects as $subject) {
             // @todo Proxy
@@ -185,7 +192,7 @@ class AggregateResolver
      * @param Aggregate $needle
      * @return Aggregate[]
      */
-    protected function findActiveRelationAggregates(PassiveRelation $passiveRelation, Aggregate $needle): array
+    private function findActiveRelationAggregates(PassiveRelation $passiveRelation, Aggregate $needle): array
     {
         $activeAggregates = [];
         $activeProperty = $passiveRelation->getFrom();

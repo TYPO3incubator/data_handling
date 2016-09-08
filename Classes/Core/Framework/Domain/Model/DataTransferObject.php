@@ -14,27 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
-
-interface ProjectableEntity
+interface DataTransferObject
 {
-    /**
-     * @param string $uuid
-     */
-    public function _setUuid(string $uuid);
-
-    /**
-     * @return string
-     */
-    public function getUuid();
-
-    /**
-     * @return UuidInterface
-     */
-    public function getUuidInterface();
-
-    /**
-     * @return int
-     */
-    public function getRevision();
 }

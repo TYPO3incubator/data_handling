@@ -15,9 +15,25 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
  */
 
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Model\AggregateEntity;
 
-interface EventApplicable
+interface EventApplicable extends AggregateEntity
 {
+    /**
+     * @return int
+     */
+    public function getRevision();
+
+    /**
+     * @return array
+     */
+    public function getRecordedEvents();
+
+    /**
+     * @return void
+     */
+    public function purgeRecordedEvents();
+
     /**
      * @param BaseEvent $event
      */

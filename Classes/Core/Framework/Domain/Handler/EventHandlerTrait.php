@@ -14,6 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\EventPublisher;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
@@ -24,6 +25,11 @@ trait EventHandlerTrait
      * @var int
      */
     protected $revision = null;
+
+    /**
+     * @var UuidInterface
+     */
+    protected $aggregateId;
 
     /**
      * @var bool
@@ -46,6 +52,14 @@ trait EventHandlerTrait
     public function getRevision()
     {
         return $this->revision;
+    }
+
+    /**
+     * @return UuidInterface
+     */
+    public function getAggregateId()
+    {
+        return $this->aggregateId;
     }
 
     /**
@@ -101,9 +115,15 @@ trait EventHandlerTrait
         $this->appliedEventIds[] = $event->getEventId();
         // determine method name, that is used to apply the event
         $methodName = $this->getEventHandlerMethodName($event);
-        if (method_exists($this, $methodName)) {
-            $this->{$methodName}($event);
+        if (!method_exists($this, $methodName)) {
+            return;
         }
+        // assign aggregate ID if defined
+        if (empty($event->getAggregateId())) {
+            $this->aggregateId = $event->getAggregateId();
+        }
+        // apply event
+        $this->{$methodName}($event);
     }
 
     /**

@@ -101,9 +101,9 @@ class TcaCommandModifier implements FormDataProviderInterface
 
         foreach ($behavior->getProperties() as $name => $instruction) {
             if ($instruction instanceof \Closure) {
-                $this->defaultDefaultValue($name, $instruction());
+                $this->defineDefaultValue($name, $instruction());
             } elseif (is_callable($instruction)) {
-                $this->defaultDefaultValue($name, call_user_func($instruction));
+                $this->defineDefaultValue($name, call_user_func($instruction));
             }
         }
 
@@ -182,7 +182,7 @@ class TcaCommandModifier implements FormDataProviderInterface
      * @param string $name
      * @param string $defaultValue
      */
-    private function defaultDefaultValue(string $name, string $defaultValue)
+    private function defineDefaultValue(string $name, string $defaultValue)
     {
         $this->formEngineResult['processedTca']['columns'][$name]['config']['default'] = $defaultValue;
     }

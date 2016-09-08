@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Extbase\Persistence\Generic;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Model\ProjectableEntity;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Model\AggregateEntity;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class PersistenceManager extends \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
@@ -25,7 +25,7 @@ class PersistenceManager extends \TYPO3\CMS\Extbase\Persistence\Generic\Persiste
      */
     public function isNewObject($object)
     {
-        if (!($object instanceof ProjectableEntity)) {
+        if (!($object instanceof AggregateEntity)) {
             return parent::isNewObject($object);
         }
 

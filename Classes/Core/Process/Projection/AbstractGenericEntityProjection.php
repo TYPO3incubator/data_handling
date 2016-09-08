@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
@@ -24,7 +23,6 @@ use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventReposit
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\AggregateEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\EventProjecting;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectingTrait;
 
 class AbstractGenericEntityProjection

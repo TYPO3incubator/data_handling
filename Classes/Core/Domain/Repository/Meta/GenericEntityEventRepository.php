@@ -23,7 +23,6 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Model\ProjectableEntity;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 
 class GenericEntityEventRepository implements EventRepository

@@ -14,13 +14,14 @@ namespace TYPO3\CMS\DataHandling\Extbase\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
+/**
+ * @deprecated Currently not required anymore
+ */
 class ExtensionUtility implements Instantiable
 {
     /**

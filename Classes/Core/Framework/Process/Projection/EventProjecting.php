@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Process\Projection;
 
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
-interface EventProjecting extends Projecting
+interface EventProjecting
 {
     /**
      * @param BaseEvent $event

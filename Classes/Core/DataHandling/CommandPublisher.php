@@ -51,7 +51,7 @@ class CommandPublisher implements Providable
     {
         // @todo Add subscription logic
         if ($command instanceof AbstractCommand) {
-            CommandHandler::instance()->execute($command);
+            CommandHandler::instance()->handle($command);
         }
     }
 }

@@ -18,13 +18,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta as GenericEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandApplicable;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandlerTrait;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandlerBundlable;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandlerBundlableTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class CommandHandler implements Instantiable, CommandApplicable
+class CommandHandler implements Instantiable, CommandHandlerBundlable
 {
-    use CommandHandlerTrait;
+    use CommandHandlerBundlableTrait;
 
     /**
      * @return CommandHandler
@@ -49,10 +49,10 @@ class CommandHandler implements Instantiable, CommandApplicable
     {
         $bundleCommands = $command->getCommands();
         $firstCommand = array_shift($bundleCommands);
-        $this->bundleEntity = $this->execute($firstCommand);
+        $this->bundleEntity = $this->handle($firstCommand);
 
         foreach ($bundleCommands as $bundleCommand) {
-            $this->execute($bundleCommand);
+            $this->handle($bundleCommand);
         }
 
         unset($this->bundleEntity);

@@ -38,7 +38,7 @@ class Change
     protected $sourceState;
 
     /**
-     * @var State
+     * @var SuggestedState
      */
     protected $targetState;
 
@@ -64,12 +64,15 @@ class Change
         return $this;
     }
 
-    public function getTargetState(): State
+    /**
+     * @return SuggestedState
+     */
+    public function getTargetState(): SuggestedState
     {
         return $this->targetState;
     }
 
-    public function setTargetState(State $currentState): Change
+    public function setTargetState(SuggestedState $currentState): Change
     {
         $this->targetState = $currentState;
         return $this;

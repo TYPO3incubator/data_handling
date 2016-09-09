@@ -33,16 +33,6 @@ class RelationResolver extends AbstractResolver
     }
 
     /**
-     * @var CommandMapperScope
-     */
-    protected $scope;
-
-    public function setScope(CommandMapperScope $scope): RelationResolver
-    {
-        $this->scope = $scope;
-    }
-
-    /**
      * @param EntityReference $reference
      * @param array $rawValues
      * @return PropertyReference[]
@@ -78,8 +68,8 @@ class RelationResolver extends AbstractResolver
                     $entityReference
                         ->setName($relationName)
                         ->setUid($pointer);
-                } elseif (isset($this->scope->newChangesMap[$pointer])) {
-                    $entityReference = $this->scope->newChangesMap[$pointer]->getTargetState()->getSubject();
+                } elseif (isset($this->scope->newEntityReferences[$pointer])) {
+                    $entityReference = $this->scope->newEntityReferences[$pointer];
                 } else {
                     throw new \UnexpectedValueException('EntityReference cannot be resolved', 1469968439);
                 }

@@ -32,16 +32,6 @@ class ValueResolver extends AbstractResolver
         return GeneralUtility::makeInstance(ValueResolver::class);
     }
 
-    /**
-     * @var CommandMapperScope
-     */
-    protected $scope;
-
-    public function setScope(CommandMapperScope $scope): RelationResolver
-    {
-        $this->scope = $scope;
-    }
-
     public function resolve(EntityReference $reference, array $rawValues): array
     {
         $values = [];

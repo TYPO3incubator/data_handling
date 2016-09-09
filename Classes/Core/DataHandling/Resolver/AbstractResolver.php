@@ -14,6 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapperScope;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
@@ -24,6 +25,21 @@ abstract class AbstractResolver
      * @todo Assign and use context
      */
     protected $context;
+
+    /**
+     * @var CommandMapperScope
+     */
+    protected $scope;
+
+    /**
+     * @param CommandMapperScope $scope
+     * @return static
+     */
+    public function setScope(CommandMapperScope $scope)
+    {
+        $this->scope = $scope;
+        return $this;
+    }
 
     abstract public function resolve(EntityReference $reference, array $rawValues): array;
 

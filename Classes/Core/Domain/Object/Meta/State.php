@@ -74,6 +74,10 @@ class State
         return $this->context;
     }
 
+    /**
+     * @param Context $context
+     * @return static
+     */
     public function setContext(Context $context)
     {
         $this->context = $context;
@@ -85,7 +89,11 @@ class State
         return $this->node;
     }
 
-    public function setNode(EntityReference $node): State
+    /**
+     * @param EntityReference $node
+     * @return static
+     */
+    public function setNode(EntityReference $node)
     {
         $this->node = $node;
         return $this;
@@ -96,7 +104,11 @@ class State
         return $this->subject;
     }
 
-    public function setSubject(EntityReference $subject): State
+    /**
+     * @param EntityReference $subject
+     * @return static
+     */
+    public function setSubject(EntityReference $subject)
     {
         $this->subject = $subject;
         return $this;
@@ -107,7 +119,11 @@ class State
         return $this->values;
     }
 
-    public function setValues(array $values): State
+    /**
+     * @param array $values
+     * @return static
+     */
+    public function setValues(array $values)
     {
         $this->values = $values;
         return $this;
@@ -134,9 +150,9 @@ class State
 
     /**
      * @param PropertyReference[] $relations
-     * @return State
+     * @return static
      */
-    public function setRelations(array $relations): State
+    public function setRelations(array $relations)
     {
         $this->relations = $relations;
         return $this;

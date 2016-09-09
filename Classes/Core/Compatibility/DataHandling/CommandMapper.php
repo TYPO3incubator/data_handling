@@ -23,6 +23,7 @@ use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as Compatibi
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\SuggestedState;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandPublisher;
@@ -35,6 +36,15 @@ use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandManager;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
+
+/*
+ * - first create all suggested states
+ * - extend changes by entity information
+ * - extend changes by resolved values and relations
+ * - then(!) convert to regular state
+ * - build changes
+ * - fetch source state (generic entity)
+ */
 
 class CommandMapper
 {
@@ -140,16 +150,23 @@ class CommandMapper
 
     private function extendChanges()
     {
+        // extend all changes & register new entities in scope
         foreach ($this->dataCollectionChanges as $change) {
             $this->extendChangeIdentity($change);
-
+        }
+        // process all changes & resolve value and relations
+        foreach ($this->dataCollectionChanges as $change) {
             $targetState = $change->getTargetState();
 
             $targetState->setValues(
-                CompatibilityResolver\ValueResolver::instance()->resolve($targetState->getSubject(), $targetState->getValues())
+                CompatibilityResolver\ValueResolver::instance()
+                    ->setScope($this->scope)
+                    ->resolve($targetState->getSubject(), $targetState->getSuggestedValues())
             );
             $targetState->setRelations(
-                CompatibilityResolver\RelationResolver::instance()->resolve($targetState->getSubject(), $targetState->getValues())
+                CompatibilityResolver\RelationResolver::instance()
+                    ->setScope($this->scope)
+                    ->resolve($targetState->getSubject(), $targetState->getSuggestedValues())
             );
 
             unset($targetState);
@@ -194,10 +211,10 @@ class CommandMapper
                 $subject = EntityReference::instance()
                     ->setName($tableName)
                     ->setUid($uid);
-                $targetState = State::instance()
+                $targetState = SuggestedState::instance()
                     ->setContext($context)
                     ->setSubject($subject)
-                    ->setValues($values);
+                    ->setSuggestedValues($values);
                 $changes[] = Change::instance()
                     ->setTargetState($targetState);
             }
@@ -222,13 +239,13 @@ class CommandMapper
             $change->setNew(true);
             $targetStateReference->setUuid(Uuid::uuid4()->toString());
             // @todo Check whether NEW-id is defined already and throw exception
-            $this->scope->newChangesMap[$targetStateReference->getUid()] = $targetStateReference->getUuid();
+            $this->scope->newEntityReferences[$targetStateReference->getUid()] = $targetStateReference;
 
             // @todo Check for nested new pages here
-            $pageIdValue = $change->getTargetState()->getValue('pid');
+            $pageIdValue = $change->getTargetState()->getSuggestedValue('pid');
             // relating to a new page
-            if (!empty($this->scope->newChangesMap[$pageIdValue])) {
-                $nodeReference = $this->scope->newChangesMap[$pageIdValue]->getTargetState()->getSubject();
+            if (!empty($this->scope->newEntityReferences[$pageIdValue])) {
+                $nodeReference = $this->scope->newEntityReferences[$pageIdValue];
                 $change->getTargetState()->getNode()->import($nodeReference);
             // negative page-id, fetch record and retrieve pid value
             } elseif ($pageIdValue < 0) {

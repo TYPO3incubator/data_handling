@@ -65,11 +65,6 @@ class AggregateResolver
     private $rootAggregates;
 
     /**
-     * @var Change[]
-     */
-    private $sequence;
-
-    /**
      * @return Aggregate[]
      */
     public function getRootAggregates()
@@ -78,23 +73,42 @@ class AggregateResolver
     }
 
     /**
+     * Get all changes for one root aggregate, thus it's change is the
+     * first in the returned sequence.
+     *
+     * Useful if working with a top-down approach, e.g. on traversing
+     * all (nested) child entities of a (relative) parent.
+     *
+     * @param Aggregate $rootAggregate
      * @return Change[]
      */
-    public function getSequence(): array
+    public function getTopDownChanges(Aggregate $rootAggregate)
     {
-        if (!isset($this->sequence)) {
-            $this->sequence = [];
-            foreach ($this->rootAggregates as $rootAggregate) {
-                $this->sequence[] = $this->resolveSubject($rootAggregate);
-                foreach ($rootAggregate->getDeepNestedAggregates() as $nestedAggregate) {
-                    $subject = $this->resolveSubject($nestedAggregate);
-                    if (!in_array($subject, $this->sequence)) {
-                        $this->sequence[] = $subject;
-                    }
-                }
+        $sequence[] = $this->resolveSubject($rootAggregate);
+        foreach ($rootAggregate->getDeepNestedAggregates() as $nestedAggregate) {
+            $subject = $this->resolveSubject($nestedAggregate);
+            if (!in_array($subject, $sequence)) {
+                $sequence[] = $subject;
             }
         }
-        return $this->sequence;
+        return $sequence;
+    }
+
+    /**
+     * Get all changes for one root aggregate in reverse order, thus it's
+     * change thus is last in the returned sequence.
+     *
+     * Useful if working with a bottom-up approach, e.g. on actually creating
+     * new child entities which can afterwards be referenced from an accordant
+     * parent entity (entities need to exist for references, which would not be
+     * the case in a top-down approach).
+     *
+     * @param Aggregate $rootAggregate
+     * @return Change[]
+     */
+    public function getBottomUpChanges(Aggregate $rootAggregate)
+    {
+        return array_reverse($this->getTopDownChanges($rootAggregate));
     }
 
     /**

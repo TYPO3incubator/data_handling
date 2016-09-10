@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
@@ -24,115 +25,115 @@ use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 class CommandResolver
 {
     /**
+     * @param Change[] $changes
      * @return CommandResolver
      */
-    public static function instance()
+    public static function create(array $changes)
     {
-        return GeneralUtility::makeInstance(CommandResolver::class);
+        return GeneralUtility::makeInstance(static::class, $changes);
     }
 
     /**
-     * @var Change
+     * @param Change[] $changes
      */
-    private $change;
+    public function __construct(array $changes)
+    {
+        $this->changes = $changes;
+        $this->resolve();
+    }
+
+    /**
+     * @var Change[]
+     */
+    private $changes;
 
     /**
      * @var Meta\AbstractCommand[]
      */
-    private $commands;
+    private $commands = [];
 
     /**
-     * @var bool
+     * @var Meta\CommandBuilder
      */
-    private $bundle = false;
+    private $commandBuilder;
 
-    public function setChange(Change $change)
-    {
-        $this->change = $change;
-        return $this;
-    }
     /**
      * @return Meta\AbstractCommand[]
      */
-    public function resolve(): array
+    public function getCommands()
     {
-        if (!isset($this->commands)) {
-            $this->commands = [];
-            $this->processContext();
-            $this->processValues();
-            $this->processRelations();
-            $this->bundleCommands();
-        }
         return $this->commands;
     }
 
-    private function bundleCommands()
+    private function resolve()
     {
-        if ($this->bundle && !empty($this->commands)) {
-            $this->commands =[
-                Meta\BundleEntityCommand::create($this->commands)
-            ];
+        // root aggregate change is processed first
+        foreach ($this->changes as $change) {
+            $this->commandBuilder = Meta\CommandBuilder::instance();
+            $this->processContext($change);
+            $this->processValues($change);
+            $this->processRelations($change);
+
+            if (!is_null($command = $this->commandBuilder->build())) {
+                $this->commands[] = $command;
+            }
         }
     }
 
-    private function processContext()
+    private function processContext(Change $change)
     {
-        $targetState = $this->change->getTargetState();
+        $targetState = $change->getTargetState();
         $aggregateReference = $targetState->getSubject();
         $targetStateContext = $targetState->getContext();
 
-        if ($this->change->isNew()) {
-            $this->bundle = true;
-            $this->collectCommand(
-                Meta\CreateEntityCommand::create(
-                    $aggregateReference->getName(),
-                    $targetState->getNode(),
-                    $targetStateContext->getWorkspaceId(),
-                    $targetStateContext->getLanguageId()
-                )
+        if ($change->isNew()) {
+            $this->commandBuilder->newCreateCommand(
+                $aggregateReference,
+                $targetState->getNode(),
+                $targetStateContext->getWorkspaceId(),
+                $targetStateContext->getLanguageId()
             );
         } elseif ($this->isDifferentContext()) {
-            $this->bundle = true;
-            $this->collectCommand(
-                Meta\BranchEntityCommand::create(
-                    $aggregateReference,
-                    $targetStateContext->getWorkspaceId()
-                )
+            $this->commandBuilder->newBranchCommand(
+                $aggregateReference,
+                $targetStateContext->getWorkspaceId()
+            );
+        } else {
+            $this->commandBuilder->newModifyCommand(
+                $aggregateReference
             );
         }
-
-        // @todo TranslationCommand is missing here
-        // @todo Maybe use CommandFactory or AimResolver
     }
 
-    private function processValues()
+    private function processValues(Change $change)
     {
-        $aggregateReference = $this->change->getTargetState()->getSubject();
+        $aggregateReference = $change->getTargetState()->getSubject();
 
-        if ($this->change->isNew()) {
-            $values = $this->change->getTargetState()->getValues();
+        if ($change->isNew()) {
+            $values = $change->getTargetState()->getValues();
         } else {
             $values = array_diff_assoc(
-                $this->change->getTargetState()->getValues(),
-                $this->change->getSourceState()->getValues()
+                $change->getTargetState()->getValues(),
+                $change->getSourceState()->getValues()
             );
         }
         if (!empty($values)) {
-            $this->collectCommand(
+            $this->commandBuilder->addCommand(
                 Meta\ChangeEntityCommand::create($aggregateReference, $values)
             );
         }
     }
 
-    private function processRelations()
+    private function processRelations(Change $change)
     {
+        $aggregateReference = $change->getTargetState()->getSubject();
         /** @var PropertyReference[][] $sourceRelationsByProperty */
         $sourceRelationsByProperty = [];
         /** @var PropertyReference[][] $targetRelationsByProperty */
-        $targetRelationsByProperty = $this->change->getTargetState()->getRelationsByProperty();
+        $targetRelationsByProperty = $change->getTargetState()->getRelationsByProperty();
 
-        if (!$this->change->isNew()) {
-            $sourceRelationsByProperty = $this->change->getSourceState()->getRelationsByProperty();
+        if (!$change->isNew()) {
+            $sourceRelationsByProperty = $change->getSourceState()->getRelationsByProperty();
         }
 
         $removedPropertyNames = array_diff(
@@ -147,12 +148,20 @@ class CommandResolver
         // process all relations for properties that does
         // not exist in the target relations anymore
         foreach ($removedPropertyNames as $removedPropertyName) {
-            $this->comparePropertyRelations($sourceRelationsByProperty[$removedPropertyName], array());
+            $this->comparePropertyRelations(
+                $aggregateReference,
+                $sourceRelationsByProperty[$removedPropertyName],
+                []
+            );
         }
         // process all relations for properties that did not
         // not exist in the source relations before
         foreach ($addedPropertyNames as $addedPropertyName) {
-            $this->comparePropertyRelations(array(), $targetRelationsByProperty[$addedPropertyName]);
+            $this->comparePropertyRelations(
+                $aggregateReference,
+                [],
+                $targetRelationsByProperty[$addedPropertyName]
+            );
         }
         // process all relations for properties that did exist in source
         // relations before and still does exists in target relations
@@ -165,18 +174,24 @@ class CommandResolver
             }
 
             $sourceRelations = $sourceRelationsByProperty[$propertyName];
-            $this->comparePropertyRelations($targetRelations, $sourceRelations);
+            $this->comparePropertyRelations(
+                $aggregateReference,
+                $sourceRelations,
+                $targetRelations
+            );
         }
     }
 
     /**
+     * @param EntityReference $aggregateReference
      * @param PropertyReference[] $sourceRelations
      * @param PropertyReference[] $targetRelations
      */
-    private function comparePropertyRelations(array $sourceRelations, array $targetRelations)
-    {
-        $aggregateReference = $this->change->getTargetState()->getSubject();
-
+    private function comparePropertyRelations(
+        EntityReference $aggregateReference,
+        array $sourceRelations,
+        array $targetRelations
+    ) {
         $comparisonActions = SortingComparisonService::instance()->compare(
             $sourceRelations,
             $targetRelations
@@ -186,7 +201,7 @@ class CommandResolver
             if ($comparisonAction['action'] === SortingComparisonService::ACTION_REMOVE) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
-                $this->collectCommand(
+                $this->commandBuilder->addCommand(
                     Meta\RemoveRelationCommand::create(
                         $aggregateReference,
                         $relationPropertyReference
@@ -195,7 +210,7 @@ class CommandResolver
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ADD) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
-                $this->collectCommand(
+                $this->commandBuilder->addCommand(
                     Meta\AttachRelationCommand::create(
                         $aggregateReference,
                         $relationPropertyReference
@@ -207,19 +222,14 @@ class CommandResolver
                 foreach ($comparisonAction['items'] as $relationPropertyReference) {
                     $relationSequence->attach($relationPropertyReference);
                 }
-                $this->collectCommand(
+                $this->commandBuilder->addCommand(
                     Meta\OrderRelationsCommand::create(
-                        $aggregateReference,
+                        $relationPropertyReference,
                         $relationSequence
                     )
                 );
             }
         }
-    }
-
-    private function collectCommand(Meta\AbstractCommand $command)
-    {
-        $this->commands[] = $command;
     }
 
     /**

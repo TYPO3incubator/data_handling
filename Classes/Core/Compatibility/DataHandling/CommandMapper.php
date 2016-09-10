@@ -26,18 +26,20 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\SuggestedState;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\DataHandling\CommandPublisher;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\CommandBus;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandManager;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandTranslator;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
 /*
+ * @todo
  * - first create all suggested states
  * - extend changes by entity information
  * - extend changes by resolved values and relations
@@ -91,10 +93,9 @@ class CommandMapper
     {
         $this->dataCollection = $dataCollection;
         $this->actionCollection = $actionCollection;
-        $this->mapCommands();
     }
 
-    private function mapCommands()
+    public function process()
     {
         $this->initialize();
 
@@ -113,13 +114,6 @@ class CommandMapper
     public function getCommands(): array
     {
         return $this->commands;
-    }
-
-    public function emitCommands()
-    {
-        foreach ($this->commands as $command) {
-            CommandPublisher::provide()->publish($command);
-        }
     }
 
     private function initialize()
@@ -293,11 +287,19 @@ class CommandMapper
         // - try to translate into specific commands
         // - handle sequences remaining commands (per aggregate)
 
-        foreach ($aggregateResolver->getSequence() as $change) {
-            $commands = CommandResolver::instance()
-                ->setChange($change)
-                ->resolve();
-            $this->commands = array_merge($this->commands, $commands);
+        foreach ($aggregateResolver->getRootAggregates() as $rootAggregate) {
+            $rootAggregateChanges = $aggregateResolver->getBottomUpChanges(
+                $rootAggregate
+            );
+            // resolve meta commands
+            $resolver = CommandResolver::create($rootAggregateChanges);
+            $commands = $resolver->getCommands();
+            // try to translate into specific commands
+            $commands = TcaCommandTranslator::create($commands)->translate();
+
+            foreach ($commands as $command) {
+                CommandBus::provide()->handle($command);
+            }
         }
     }
 

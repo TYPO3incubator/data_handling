@@ -37,13 +37,13 @@ class DataHandlerHook
         if (empty($dataHandler->datamap) && empty($dataHandler->cmdmap)) {
             return;
         }
-
+        // create command mapper for incoming data
         $commandMapper = CommandMapper::create(
             $dataHandler->datamap,
             $dataHandler->cmdmap
         );
-        // emit built commands
-        $commandMapper->emitCommands();
+        // processes incoming data and emits commands
+        $commandMapper->process();
         // reset DataHandler maps
         $dataHandler->datamap = [];
         $dataHandler->cmdmap = [];

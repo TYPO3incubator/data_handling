@@ -20,6 +20,9 @@ use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\CommandHandler;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
+/**
+ * @deprecated
+ */
 class CommandPublisher implements Providable
 {
     /**

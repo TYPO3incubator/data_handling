@@ -70,13 +70,13 @@ class TcaCommandModifier implements FormDataProviderInterface
 
     private function handleNewAction()
     {
-        $behavior = $this->tcaCommand->create();
+        $behavior = $this->tcaCommand->onCreate();
         $this->handleBehavior($behavior);
     }
 
     private function handleEditAction()
     {
-        $behavior = $this->tcaCommand->modify();
+        $behavior = $this->tcaCommand->onModify();
         $this->handleBehavior($behavior);
     }
 
@@ -143,17 +143,17 @@ class TcaCommandModifier implements FormDataProviderInterface
 
             // @todo "localize" is missing here
 
-            if ($relationBehavior->isAttachAllowed() && $referenceTableBehavior->create()->isAllowed()) {
+            if ($relationBehavior->isAttachAllowed() && $referenceTableBehavior->onCreate()->isAllowed()) {
                 $enabledControls['new'] = true;
             }
-            if ($relationBehavior->isRemoveAllowed() && $referenceTableBehavior->delete()->isAllowed()) {
+            if ($relationBehavior->isRemoveAllowed() && $referenceTableBehavior->onDelete()->isAllowed()) {
                 $enabledControls['delete'] = true;
             }
             if ($relationBehavior->isOrderAllowed()) {
                 $enabledControls['sort'] = true;
                 $enabledControls['dragdrop'] = true;
             }
-            if ($referenceTableBehavior->disable()->isAllowed()) {
+            if ($referenceTableBehavior->onDisable()->isAllowed()) {
                 $enabledControls['delete'] = true;
             }
 

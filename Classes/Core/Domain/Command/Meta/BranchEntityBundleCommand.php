@@ -15,37 +15,42 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\BundleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class TranslateEntityCommand extends AbstractCommand implements Instantiable, AggregateReference, Locale, Derivable
+class BranchEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, Derivable, AggregateReference, Workspace
 {
+    use BundleTrait;
     use AggregateReferenceTrait;
-    use LocaleTrait;
+    use WorkspaceTrait;
 
     /**
-     * @return TranslateEntityCommand
+     * @return BranchEntityBundleCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(TranslateEntityCommand::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**
      * @param EntityReference $aggregateReference
-     * @param string $locale
-     * @return TranslateEntityCommand
+     * @param int $workspaceId
+     * @param AbstractCommand[] $commands
+     * @return BranchEntityBundleCommand
      */
-    public static function create(EntityReference $aggregateReference, string $locale)
+    public static function create(EntityReference $aggregateReference, int $workspaceId, array $commands)
     {
         $command = static::instance();
         $command->aggregateReference = $aggregateReference;
-        $command->locale = $locale;
+        $command->workspaceId = $workspaceId;
+        $command->commands = $commands;
         return $command;
     }
 }

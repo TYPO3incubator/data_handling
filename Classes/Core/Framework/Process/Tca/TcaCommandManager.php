@@ -52,7 +52,7 @@ final class TcaCommandManager implements Providable
     {
         if (!$this->has($tableName))
         {
-            $this->tableCommand[$tableName] = TcaCommand::instance();
+            $this->tableCommand[$tableName] = TcaCommand::create($tableName);
         }
         return $this->tableCommand[$tableName];
     }

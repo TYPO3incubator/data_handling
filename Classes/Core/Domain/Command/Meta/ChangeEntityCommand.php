@@ -29,7 +29,7 @@ class ChangeEntityCommand extends AbstractCommand implements Instantiable, Aggre
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ChangeEntityCommand::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**
@@ -48,7 +48,7 @@ class ChangeEntityCommand extends AbstractCommand implements Instantiable, Aggre
     /**
      * @var array|null
      */
-    protected $data;
+    private $data;
 
     /**
      * @return array

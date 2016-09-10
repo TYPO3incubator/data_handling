@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Framework\Process\Tca;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,11 +16,18 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Process\Tca;
 
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
 
-interface TcaCommandFactory
+trait BundleTrait
 {
-    public function process(AbstractCommand $command, TcaCommand $tcaCommand, TcaCommandEntityBehavior $entityBehavior);
+    /**
+     * @var AbstractCommand[]
+     */
+    protected $commands;
 
-    public function getCreatedCommands(): \SplObjectStorage;
-
-    public function getTranslatedCommands(): \SplObjectStorage;
+    /**
+     * @return AbstractCommand[]
+     */
+    public function getCommands()
+    {
+        return $this->commands;
+    }
 }

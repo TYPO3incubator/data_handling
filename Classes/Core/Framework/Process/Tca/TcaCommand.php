@@ -16,12 +16,17 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Process\Tca;
 
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-final class TcaCommand implements Instantiable
+final class TcaCommand
 {
-    public static function instance()
+    public static function create(string $tableName)
     {
-        return new static();
+        return new static($tableName);
     }
+
+    /**
+     * @var string
+     */
+    private $tableName;
 
     /**
      * @var TcaCommandEntityBehavior
@@ -53,8 +58,14 @@ final class TcaCommand implements Instantiable
      */
     private $mapping = [];
 
-    private function __construct()
+    /**
+     * @var bool
+     */
+    private $deniedPerDefault = false;
+
+    private function __construct(string $tableName)
     {
+        $this->tableName = $tableName;
         $this->create = TcaCommandEntityBehavior::instance();
         $this->modify = TcaCommandEntityBehavior::instance();
         $this->delete = TcaCommandEntityBehavior::instance();
@@ -63,9 +74,17 @@ final class TcaCommand implements Instantiable
     }
 
     /**
+     * @return string
+     */
+    public function getTableName()
+    {
+        return $this->tableName;
+    }
+
+    /**
      * @return TcaCommandEntityBehavior
      */
-    public function create()
+    public function onCreate()
     {
         return $this->create;
     }
@@ -73,7 +92,7 @@ final class TcaCommand implements Instantiable
     /**
      * @return TcaCommandEntityBehavior
      */
-    public function modify()
+    public function onModify()
     {
         return $this->modify;
     }
@@ -81,7 +100,7 @@ final class TcaCommand implements Instantiable
     /**
      * @return TcaCommandEntityBehavior
      */
-    public function delete()
+    public function onDelete()
     {
         return $this->delete;
     }
@@ -89,7 +108,7 @@ final class TcaCommand implements Instantiable
     /**
      * @return TcaCommandEntityBehavior
      */
-    public function disable()
+    public function onDisable()
     {
         return $this->disable;
     }
@@ -97,7 +116,7 @@ final class TcaCommand implements Instantiable
     /**
      * @return TcaCommandEntityBehavior
      */
-    public function enable()
+    public function onEnable()
     {
         return $this->enable;
     }
@@ -117,6 +136,24 @@ final class TcaCommand implements Instantiable
     public function setMapping(array $mapping)
     {
         $this->mapping = $mapping;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDeniedPerDefault()
+    {
+        return $this->deniedPerDefault;
+    }
+
+    /**
+     * @param boolean $deniedPerDefault
+     * @return static
+     */
+    public function setDeniedPerDefault($deniedPerDefault)
+    {
+        $this->deniedPerDefault = $deniedPerDefault;
         return $this;
     }
 }

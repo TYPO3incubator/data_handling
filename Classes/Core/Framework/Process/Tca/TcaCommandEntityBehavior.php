@@ -28,9 +28,9 @@ final class TcaCommandEntityBehavior implements Instantiable
     }
 
     /**
-     * @var TcaCommandFactory
+     * @var string
      */
-    private $factory;
+    private $factoryName;
 
     /**
      * @var bool
@@ -89,20 +89,20 @@ final class TcaCommandEntityBehavior implements Instantiable
     }
 
     /**
-     * @return TcaCommandFactory
+     * @return string
      */
-    public function getFactory()
+    public function getFactoryName()
     {
-        return $this->factory;
+        return $this->factoryName;
     }
 
     /**
-     * @param TcaCommandFactory $factory
+     * @param string $factoryName
      * @return static
      */
-    public function setFactory(TcaCommandFactory $factory)
+    public function setFactoryName(string $factoryName)
     {
-        $this->factory = $factory;
+        $this->factoryName = $factoryName;
         return $this;
     }
 

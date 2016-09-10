@@ -17,19 +17,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\BundleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class RemoveRelationCommand extends AbstractCommand implements Instantiable, AggregateReference, RelationReference
+class ModifyEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, AggregateReference
 {
+    use BundleTrait;
     use AggregateReferenceTrait;
-    use RelationReferenceTrait;
 
     /**
-     * @return RemoveRelationCommand
+     * @return ModifyEntityBundleCommand
      */
     public static function instance()
     {
@@ -38,14 +37,14 @@ class RemoveRelationCommand extends AbstractCommand implements Instantiable, Agg
 
     /**
      * @param EntityReference $aggregateReference
-     * @param PropertyReference $relationReference
-     * @return RemoveRelationCommand
+     * @param array $commands
+     * @return ModifyEntityBundleCommand
      */
-    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
+    public static function create(EntityReference $aggregateReference, array $commands)
     {
         $command = static::instance();
         $command->aggregateReference = $aggregateReference;
-        $command->relationReference = $relationReference;
+        $command->commands = $commands;
         return $command;
     }
 }

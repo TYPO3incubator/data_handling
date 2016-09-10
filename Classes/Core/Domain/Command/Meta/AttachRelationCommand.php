@@ -33,7 +33,7 @@ class AttachRelationCommand extends AbstractCommand implements Instantiable, Agg
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(AttachRelationCommand::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**

@@ -29,7 +29,7 @@ class DeleteEntityCommand extends AbstractCommand implements Instantiable, Aggre
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(DeleteEntityCommand::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**

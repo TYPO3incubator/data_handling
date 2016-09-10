@@ -31,7 +31,7 @@ class CommandHandler implements Instantiable, CommandHandlerBundlable
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(CommandHandler::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**
@@ -59,10 +59,10 @@ class CommandHandler implements Instantiable, CommandHandlerBundlable
     }
 
     /**
-     * @param CreateEntityCommand $command
+     * @param CreateEntityBundleCommand $command
      * @return GenericEntity
      */
-    protected function onCreateEntityCommand(CreateEntityCommand $command)
+    protected function onCreateEntityCommand(CreateEntityBundleCommand $command)
     {
         return GenericEntity::createdEntity(
             $command->getAggregateType(),
@@ -76,17 +76,17 @@ class CommandHandler implements Instantiable, CommandHandlerBundlable
      * @param BranchEntityCommand $command
      * @return GenericEntity
      */
-    protected function onBranchEntityCommand(BranchEntityCommand $command)
+    protected function onBranchEntityCommand(BranchEntityBundleCommand $command)
     {
         return $this->fetchGenericEntity($command)
             ->branchedEntityTo($command->getWorkspaceId());
     }
 
     /**
-     * @param TranslateEntityCommand $command
+     * @param TranslateEntityBundleCommand $command
      * @return GenericEntity
      */
-    protected function onTranslateEntityCommand(TranslateEntityCommand $command)
+    protected function onTranslateEntityCommand(TranslateEntityBundleCommand $command)
     {
         return $this->fetchGenericEntity($command)
             ->translatedEntityTo($command->getLocale());

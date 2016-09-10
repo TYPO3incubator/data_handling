@@ -15,16 +15,20 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\BundleTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class BundleEntityCommand extends AbstractCommand implements Instantiable
+class BundleEntityCommand extends AbstractCommand implements Instantiable, Bundle
 {
+    use BundleTrait;
+
     /**
      * @return BundleEntityCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(BundleEntityCommand::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**
@@ -33,21 +37,21 @@ class BundleEntityCommand extends AbstractCommand implements Instantiable
      */
     public static function create(array $commands)
     {
+        if (empty($commands)) {
+            throw new \LogicException('At least one command required in bundle', 1473452055);
+        }
+
         $command = static::instance();
         $command->commands = $commands;
         return $command;
     }
 
     /**
-     * @var AbstractCommand[]
+     * @return AbstractCommand
      */
-    protected $commands;
-
-    /**
-     * @return AbstractCommand[]
-     */
-    public function getCommands()
+    public function getFirstCommand()
     {
-        return $this->commands;
+        reset($this->commands);
+        return current($this->commands);
     }
 }

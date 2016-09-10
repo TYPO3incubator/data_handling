@@ -56,6 +56,9 @@ class RelationResolver extends AbstractResolver
                     $entityReference
                         ->setUid(array_pop($pointerParts))
                         ->setName(implode('_', $pointerParts));
+                    $entityReference->setUuid(
+                        $this->fetchUuid($entityReference)
+                    );
                 } elseif (MathUtility::canBeInterpretedAsInteger($pointer)) {
                     $configuration = $GLOBALS['TCA'][$reference->getName()]['columns'][$propertyName]['config'];
                     if ($configuration['type'] === 'group') {
@@ -68,6 +71,9 @@ class RelationResolver extends AbstractResolver
                     $entityReference
                         ->setName($relationName)
                         ->setUid($pointer);
+                    $entityReference->setUuid(
+                        $this->fetchUuid($entityReference)
+                    );
                 } elseif (isset($this->scope->newEntityReferences[$pointer])) {
                     $entityReference = $this->scope->newEntityReferences[$pointer];
                 } else {

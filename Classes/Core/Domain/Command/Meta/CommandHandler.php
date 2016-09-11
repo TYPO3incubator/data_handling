@@ -40,25 +40,6 @@ class CommandHandler implements Instantiable, CommandHandlerBundlable
     protected $bundleEntity;
 
     /**
-     * Executes a command bundle by asserting that all commands are
-     * executed on the resulting entity of the first command.
-     *
-     * @param BundleEntityCommand $command
-     */
-    protected function onBundleEntityCommand(BundleEntityCommand $command)
-    {
-        $bundleCommands = $command->getCommands();
-        $firstCommand = array_shift($bundleCommands);
-        $this->bundleEntity = $this->handle($firstCommand);
-
-        foreach ($bundleCommands as $bundleCommand) {
-            $this->handle($bundleCommand);
-        }
-
-        unset($this->bundleEntity);
-    }
-
-    /**
      * @param CreateEntityBundleCommand $command
      * @return GenericEntity
      */

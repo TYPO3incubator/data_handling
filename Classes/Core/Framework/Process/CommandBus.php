@@ -20,6 +20,7 @@ use League\Tactician\Handler\Locator\HandlerLocator;
 use League\Tactician\Handler\Locator\InMemoryLocator;
 use League\Tactician\Handler\MethodNameInflector\HandleInflector;
 use League\Tactician\Plugins\LockingMiddleware;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandler;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
 final class CommandBus implements Providable
@@ -65,12 +66,20 @@ final class CommandBus implements Providable
         $this->commandBus =  new \League\Tactician\CommandBus([$lockingMiddleware, $handlerMiddleware]);
     }
 
-    public function addHandler($handler, string $commandClassName)
+    /**
+     * @param CommandHandler $handler
+     * @param string $commandClassName
+     */
+    public function addHandler(CommandHandler $handler, string $commandClassName)
     {
         $this->locator->addHandler($handler, $commandClassName);
     }
 
-    public function addHandlerBundle($handlerBundle, array $commandClassNames)
+    /**
+     * @param CommandHandler $handlerBundle
+     * @param string[] $commandClassNames
+     */
+    public function addHandlerBundle(CommandHandler $handlerBundle, array $commandClassNames)
     {
         foreach ($commandClassNames as $commandClassName) {
             $this->addHandler($handlerBundle, $commandClassName);

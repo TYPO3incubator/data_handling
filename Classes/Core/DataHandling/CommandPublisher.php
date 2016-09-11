@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\CommandHandler;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\CommandHandlerBundle;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
@@ -54,7 +54,7 @@ class CommandPublisher implements Providable
     {
         // @todo Add subscription logic
         if ($command instanceof AbstractCommand) {
-            CommandHandler::instance()->handle($command);
+            CommandHandlerBundle::instance()->handle($command);
         }
     }
 }

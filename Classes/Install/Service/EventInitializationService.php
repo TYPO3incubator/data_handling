@@ -31,7 +31,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
-use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\OriginEventRepository;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
@@ -426,9 +426,10 @@ class EventInitializationService
      */
     protected function projectRevision(string $tableName, array $row)
     {
-        $uuid = Uuid::fromString($row[Common::FIELD_UUID]);
+        $aggregateReference = EntityReference::create($tableName)
+            ->setUuid($row[Common::FIELD_UUID]);
         $revision = GenericEntityEventRepository::create($tableName)
-            ->findByUuid($uuid)
+            ->findByAggregateReference($aggregateReference)
             ->getRevision();
 
         if (

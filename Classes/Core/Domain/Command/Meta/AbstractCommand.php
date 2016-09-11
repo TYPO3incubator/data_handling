@@ -14,10 +14,11 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 
-abstract class AbstractCommand implements DomainCommand
+abstract class AbstractCommand implements DomainCommand, AggregateReference
 {
     /**
      * Subject the command is applied to.

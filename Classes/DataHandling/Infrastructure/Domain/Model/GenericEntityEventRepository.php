@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta;
+namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -19,13 +19,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionManager;
 
-class GenericEntityEventRepository implements EventRepository
+class GenericEntityEventRepository implements Instantiable, EventRepository
 {
     /**
      * @param string $aggregateType
@@ -33,13 +36,16 @@ class GenericEntityEventRepository implements EventRepository
      */
     public static function create(string $aggregateType)
     {
-        return GeneralUtility::makeInstance(GenericEntityEventRepository::class, $aggregateType);
+        return GeneralUtility::makeInstance(static::class, $aggregateType);
     }
 
     /**
-     * @var string
+     * @return GenericEntityEventRepository
      */
-    protected $aggregateType;
+    public static function instance()
+    {
+        return GeneralUtility::makeInstance(static::class);
+    }
 
     /**
      * @param string $tableName
@@ -50,15 +56,14 @@ class GenericEntityEventRepository implements EventRepository
     }
 
     /**
-     * @param UuidInterface $uuid
+     * @param EntityReference $aggregateReference
      * @param string $eventId
      * @param string $type
      * @return GenericEntity
      */
-    public function findByUuid(UuidInterface $uuid, string $eventId = '', string $type = Saga::EVENT_EXCLUDING)
+    public function findByAggregateReference(EntityReference $aggregateReference, string $eventId = '', string $type = Saga::EVENT_EXCLUDING)
     {
-        $streamName = Common::STREAM_PREFIX_META
-            . '/' . $this->aggregateType . '/' . $uuid->toString();
+        $streamName = Common::STREAM_PREFIX_META . '/' . (string)$aggregateReference;
         $eventSelector = EventSelector::instance()->setStreamName($streamName);
 
         return Saga::instance()
@@ -67,13 +72,27 @@ class GenericEntityEventRepository implements EventRepository
     }
 
     /**
+     * @param GenericEntity $genericEntity
+     */
+    public function add(GenericEntity $genericEntity)
+    {
+        foreach ($genericEntity->getRecordedEvents() as $event) {
+            $this->addEvent($event);
+        }
+
+        ProjectionManager::provide()->projectEvents(
+            $genericEntity->getRecordedEvents()
+        );
+        $genericEntity->purgeRecordedEvents();
+    }
+
+    /**
      * @param BaseEvent|AbstractEvent $event
      */
     public function addEvent(BaseEvent $event)
     {
-        $uuid = $event->getAggregateReference()->getUuid();
         $streamName = Common::STREAM_PREFIX_META
-            . '/' . $this->aggregateType . '/' . $uuid;
+            . '/' . (string)$event->getAggregateReference();
 
         $eventSelector = EventSelector::instance()
             ->setEvents([get_class($event)])

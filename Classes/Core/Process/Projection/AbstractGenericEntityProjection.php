@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\AggregateEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
@@ -39,8 +39,8 @@ class AbstractGenericEntityProjection
         $eventRepository = GenericEntityEventRepository::create(
             $aggregateReference->getName()
         );
-        return $eventRepository->findByUuid(
-            $aggregateReference->getUuidInterface(),
+        return $eventRepository->findByAggregateReference(
+            $aggregateReference,
             $eventId
         );
     }

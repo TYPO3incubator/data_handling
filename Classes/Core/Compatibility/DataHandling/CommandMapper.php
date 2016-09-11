@@ -24,7 +24,7 @@ use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResol
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\SuggestedState;
-use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\GenericEntityEventRepository;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
@@ -360,8 +360,8 @@ class CommandMapper
      */
     private function fetchEventState(EntityReference $reference)
     {
-        return GenericEntityEventRepository::create($reference->getName())
-            ->findByUuid($reference->getUuidInterface());
+        return GenericEntityEventRepository::instance()
+            ->findByAggregateReference($reference);
     }
 
     /**

@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider\TcaCommandModifier;
+use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\OriginatedEntityEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\GetEventStoreDriver;
@@ -23,6 +24,7 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\CommandBus;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionPool;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\GenericEntityProjectionProvider;
 use TYPO3\CMS\DataHandling\Core\Process\Projection\GenericEntityStreamProjection;
@@ -138,6 +140,17 @@ class Common
 
     public static function registerEventSources()
     {
+        CommandBus::provide()->addHandlerBundle(
+            Meta\CommandHandlerBundle::instance(), [
+                Meta\CreateEntityBundleCommand::class,
+                Meta\BranchEntityBundleCommand::class,
+                Meta\BranchAndTranslateEntityBundleCommand::class,
+                Meta\TranslateEntityBundleCommand::class,
+                Meta\DeleteEntityCommand::class,
+                // @todo: enable, disable, move
+            ]
+        );
+
         // initialize default EventStore using SqlDriver
         EventStorePool::provide()
             ->enrolStore('sql')

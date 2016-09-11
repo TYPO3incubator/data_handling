@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 
-interface CommandHandlerBundlable
+interface CommandHandler
 {
     /**
      * @param DomainCommand $command

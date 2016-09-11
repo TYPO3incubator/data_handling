@@ -25,15 +25,6 @@ use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 trait CommandHandlerBundlableTrait
 {
     /**
-     * @return UuidInterface
-     * @deprecated
-     */
-    protected static function createUuid()
-    {
-        return Uuid::uuid4();
-    }
-
-    /**
      * @param EventRepository $repository
      * @param BaseEvent $event
      * @deprecated

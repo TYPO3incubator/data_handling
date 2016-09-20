@@ -15,18 +15,15 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\TargetReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\TargetReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class TranslatedEntityToEvent extends AbstractEvent implements Instantiable, TargetReference, Locale, Derivable
+class TranslatedEntityToEvent extends AbstractEvent implements Instantiable, TargetReference
 {
     use TargetReferenceTrait;
-    use LocaleTrait;
 
     /**
      * @return TranslatedEntityToEvent
@@ -37,17 +34,17 @@ class TranslatedEntityToEvent extends AbstractEvent implements Instantiable, Tar
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param EntityReference $targetReference
-     * @param string $locale
      * @return TranslatedEntityToEvent
      */
-    public static function create(EntityReference $aggregateReference, EntityReference $targetReference, string $locale)
+    public static function create(Context $context, EntityReference $aggregateReference, EntityReference $targetReference)
     {
         $event = static::instance();
+        $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->targetReference = $targetReference;
-        $event->locale = $locale;
         return $event;
     }
 }

@@ -17,8 +17,8 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\SuggestedState;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 
@@ -82,25 +82,21 @@ class CommandResolver
 
     private function processContext(Change $change)
     {
-        $targetState = $change->getTargetState();
-        $aggregateReference = $targetState->getSubject();
-        $targetStateContext = $targetState->getContext();
-
         if ($change->isNew()) {
             $this->commandBuilder->newCreateCommand(
-                $aggregateReference,
-                $targetState->getNode(),
-                $targetStateContext->getWorkspaceId(),
-                $targetStateContext->getLanguageId()
+                $change->getTargetState()->getContext(),
+                $change->getTargetState()->getSubject(),
+                $change->getTargetState()->getNode()
             );
         } elseif ($this->isDifferentContext()) {
             $this->commandBuilder->newBranchCommand(
-                $aggregateReference,
-                $targetStateContext->getWorkspaceId()
+                $change->getTargetState()->getContext(),
+                $change->getTargetState()->getSubject()
             );
         } else {
             $this->commandBuilder->newModifyCommand(
-                $aggregateReference
+                $change->getTargetState()->getContext(),
+                $change->getTargetState()->getSubject()
             );
         }
     }
@@ -119,14 +115,17 @@ class CommandResolver
         }
         if (!empty($values)) {
             $this->commandBuilder->addCommand(
-                Command\ChangeEntityCommand::create($aggregateReference, $values)
+                Command\ModifyEntityCommand::create(
+                    $change->getTargetState()->getContext(),
+                    $aggregateReference,
+                    $values
+                )
             );
         }
     }
 
     private function processRelations(Change $change)
     {
-        $aggregateReference = $change->getTargetState()->getSubject();
         /** @var PropertyReference[][] $sourceRelationsByProperty */
         $sourceRelationsByProperty = [];
         /** @var PropertyReference[][] $targetRelationsByProperty */
@@ -149,7 +148,7 @@ class CommandResolver
         // not exist in the target relations anymore
         foreach ($removedPropertyNames as $removedPropertyName) {
             $this->comparePropertyRelations(
-                $aggregateReference,
+                $change->getTargetState(),
                 $sourceRelationsByProperty[$removedPropertyName],
                 []
             );
@@ -158,7 +157,7 @@ class CommandResolver
         // not exist in the source relations before
         foreach ($addedPropertyNames as $addedPropertyName) {
             $this->comparePropertyRelations(
-                $aggregateReference,
+                $change->getTargetState(),
                 [],
                 $targetRelationsByProperty[$addedPropertyName]
             );
@@ -175,7 +174,7 @@ class CommandResolver
 
             $sourceRelations = $sourceRelationsByProperty[$propertyName];
             $this->comparePropertyRelations(
-                $aggregateReference,
+                $change->getTargetState(),
                 $sourceRelations,
                 $targetRelations
             );
@@ -183,15 +182,17 @@ class CommandResolver
     }
 
     /**
-     * @param EntityReference $aggregateReference
+     * @param SuggestedState $targetState
      * @param PropertyReference[] $sourceRelations
      * @param PropertyReference[] $targetRelations
      */
     private function comparePropertyRelations(
-        EntityReference $aggregateReference,
+        SuggestedState $targetState,
         array $sourceRelations,
         array $targetRelations
     ) {
+        $aggregateReference = $targetState->getSubject();
+
         $comparisonActions = SortingComparisonService::instance()->compare(
             $sourceRelations,
             $targetRelations
@@ -203,6 +204,7 @@ class CommandResolver
                 $relationPropertyReference = $comparisonAction['item'];
                 $this->commandBuilder->addCommand(
                     Command\RemoveRelationCommand::create(
+                        $targetState->getContext(),
                         $aggregateReference,
                         $relationPropertyReference
                     )
@@ -212,6 +214,7 @@ class CommandResolver
                 $relationPropertyReference = $comparisonAction['item'];
                 $this->commandBuilder->addCommand(
                     Command\AttachRelationCommand::create(
+                        $targetState->getContext(),
                         $aggregateReference,
                         $relationPropertyReference
                     )
@@ -224,6 +227,7 @@ class CommandResolver
                 }
                 $this->commandBuilder->addCommand(
                     Command\OrderRelationsCommand::create(
+                        $targetState->getContext(),
                         $relationPropertyReference,
                         $relationSequence
                     )

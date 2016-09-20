@@ -14,13 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-/**
- * @deprecated
- */
-interface Workspace
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
+
+interface Contextual
 {
     /**
-     * @return int
+     * @return Context
      */
-    public function getWorkspaceId();
+    public function getContext();
 }

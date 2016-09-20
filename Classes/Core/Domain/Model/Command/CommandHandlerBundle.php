@@ -17,15 +17,17 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event as GenericEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\GenericEntity;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandler;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandlerBundlableTrait;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandlerTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class CommandHandlerBundle implements Instantiable, CommandHandler
 {
-    use CommandHandlerBundlableTrait;
+    use CommandHandlerTrait;
 
     /**
      * @return CommandHandlerBundle
@@ -41,11 +43,10 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
      */
     protected function handleCreateEntityBundleCommand(CreateEntityBundleCommand $command)
     {
-        $genericEntity = GenericEntity::createdEntity(
+        $genericEntity = GenericEntity::createEntity(
+            $command->getContext(),
             $command->getAggregateReference(),
-            $command->getNodeReference(),
-            $command->getWorkspaceId(),
-            $command->getLocale()
+            $command->getNodeReference()
         );
 
         $this->handleBundle($command, $genericEntity);
@@ -60,7 +61,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     protected function handleBranchEntityBundleCommand(BranchEntityBundleCommand $command)
     {
         $sourceEntity = $this->fetchGenericEntity($command);
-        $targetEntity = $sourceEntity->branchedEntityTo($command->getWorkspaceId());
+        $targetEntity = $sourceEntity->branchEntityTo($command->getContext());
 
         $this->handleBundle($command, $targetEntity);
 
@@ -75,11 +76,13 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     protected function handleBranchAndTranslateEntityBundleCommand(BranchAndTranslateEntityBundleCommand $command)
     {
         $sourceEntity = $this->fetchGenericEntity($command);
-        $targetEntity = $sourceEntity->branchedEntityTo($command->getWorkspaceId());
+        $branchedEntity = $sourceEntity->branchEntityTo($command->getContext());
+        $targetEntity = $sourceEntity->translateEntityTo($command->getContext());
 
         $this->handleBundle($command, $targetEntity);
 
         GenericEntityEventRepository::instance()->add($sourceEntity);
+        GenericEntityEventRepository::instance()->add($branchedEntity);
         GenericEntityEventRepository::instance()->add($targetEntity);
     }
 
@@ -90,7 +93,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     protected function handleTranslateEntityBundleCommand(TranslateEntityBundleCommand $command)
     {
         $sourceEntity = $this->fetchGenericEntity($command);
-        $targetEntity = $sourceEntity->translatedEntityTo($command->getLocale());
+        $targetEntity = $sourceEntity->translateEntityTo($command->getContext());
 
         $this->handleBundle($command, $targetEntity);
 
@@ -112,13 +115,16 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     }
 
     /**
-     * @param ChangeEntityCommand $command
+     * @param ModifyEntityCommand $command
      * @return GenericEntity
      */
-    protected function handleChangeEntityCommand(ChangeEntityCommand $command)
+    protected function handleChangeEntityCommand(ModifyEntityCommand $command)
     {
         $genericEntity = $this->fetchGenericEntity($command);
-        $genericEntity->changedEntity($command->getData());
+        $genericEntity->modifyEntity(
+            $command->getContext(),
+            $command->getData()
+        );
         GenericEntityEventRepository::instance()->add($genericEntity);
     }
 
@@ -129,7 +135,9 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     protected function handleDeleteEntityCommand(DeleteEntityCommand $command)
     {
         $genericEntity = $this->fetchGenericEntity($command);
-        $genericEntity->deletedEntity();
+        $genericEntity->deleteEntity(
+            $command->getContext()
+        );
         GenericEntityEventRepository::instance()->add($genericEntity);
     }
 
@@ -140,7 +148,10 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     protected function handleAttachRelationCommand(AttachRelationCommand $command)
     {
         $genericEntity = $this->fetchGenericEntity($command);
-        $genericEntity->attachedRelation($command->getRelationReference());
+        $genericEntity->attachRelation(
+            $command->getContext(),
+            $command->getRelationReference()
+        );
         GenericEntityEventRepository::instance()->add($genericEntity);
     }
 
@@ -150,7 +161,10 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     protected function handleRemoveRelationCommand(RemoveRelationCommand $command)
     {
         $genericEntity = $this->fetchGenericEntity($command);
-        $genericEntity->removedRelation($command->getRelationReference());
+        $genericEntity->removeRelation(
+            $command->getContext(),
+            $command->getRelationReference()
+        );
         GenericEntityEventRepository::instance()->add($genericEntity);
     }
 
@@ -160,7 +174,10 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     protected function handleOrderRelationsCommand(OrderRelationsCommand $command)
     {
         $genericEntity = $this->fetchGenericEntity($command);
-        $genericEntity->orderedRelations($command->getSequence());
+        $genericEntity->orderRelations(
+            $command->getContext(),
+            $command->getSequence()
+        );
         GenericEntityEventRepository::instance()->add($genericEntity);
     }
 
@@ -180,12 +197,21 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     }
 
     /**
-     * @param AbstractCommand $command
+     * @param AbstractCommand|AggregateReference|RelationReference $command
      * @return GenericEntity
      */
     private function fetchGenericEntity(AbstractCommand $command)
     {
+        if ($command instanceof RelationReference) {
+            $aggregateReference = $command
+                ->getRelationReference()
+                ->getEntityReference();
+        } else {
+            $aggregateReference = $command
+                ->getAggregateReference();
+        }
+
         return GenericEntityEventRepository::instance()
-            ->findByAggregateReference($command->getAggregateReference());
+            ->findByAggregateReference($aggregateReference);
     }
 }

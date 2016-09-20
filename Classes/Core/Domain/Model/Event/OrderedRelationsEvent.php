@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence;
@@ -34,13 +35,15 @@ class OrderedRelationsEvent extends AbstractEvent implements Instantiable, Seque
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param AbstractSequence $sequence
      * @return OrderedRelationsEvent
      */
-    public static function create(EntityReference $aggregateReference, AbstractSequence $sequence)
+    public static function create(Context $context, EntityReference $aggregateReference, AbstractSequence $sequence)
     {
         $event = static::instance();
+        $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->sequence = $sequence;
         return $event;

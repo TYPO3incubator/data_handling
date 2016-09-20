@@ -15,20 +15,16 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class BranchedEntityFromEvent extends AbstractEvent implements EntityEvent, Instantiable, FromReference, Workspace, Derivable
+class BranchedEntityFromEvent extends AbstractEvent implements Instantiable, FromReference
 {
     use FromReferenceTrait;
-    use WorkspaceTrait;
 
     /**
      * @return BranchedEntityFromEvent
@@ -39,17 +35,17 @@ class BranchedEntityFromEvent extends AbstractEvent implements EntityEvent, Inst
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param EventReference $fromReference
-     * @param int $workspaceId
      * @return BranchedEntityFromEvent
      */
-    public static function create(EntityReference $aggregateReference, EventReference $fromReference, int $workspaceId = null)
+    public static function create(Context $context, EntityReference $aggregateReference, EventReference $fromReference)
     {
         $event = static::instance();
+        $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->fromReference = $fromReference;
-        $event->workspaceId = $workspaceId;
         return $event;
     }
 }

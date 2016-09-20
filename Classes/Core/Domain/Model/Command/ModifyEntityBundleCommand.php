@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
@@ -36,13 +37,15 @@ class ModifyEntityBundleCommand extends AbstractCommand implements Instantiable,
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param array $commands
      * @return ModifyEntityBundleCommand
      */
-    public static function create(EntityReference $aggregateReference, array $commands)
+    public static function create(Context $context, EntityReference $aggregateReference, array $commands)
     {
         $command = static::instance();
+        $command->context = $context;
         $command->aggregateReference = $aggregateReference;
         $command->commands = $commands;
         return $command;

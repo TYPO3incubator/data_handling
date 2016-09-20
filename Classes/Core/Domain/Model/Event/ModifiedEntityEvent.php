@@ -15,27 +15,30 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class ChangedEntityEvent extends AbstractEvent implements Instantiable
+class ModifiedEntityEvent extends AbstractEvent implements Instantiable
 {
     /**
-     * @return ChangedEntityEvent
+     * @return ModifiedEntityEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ChangedEntityEvent::class);
+        return GeneralUtility::makeInstance(ModifiedEntityEvent::class);
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param array $values
-     * @return ChangedEntityEvent
+     * @return ModifiedEntityEvent
      */
-    public static function create(EntityReference $aggregateReference, array $values)
+    public static function create(Context $context, EntityReference $aggregateReference, array $values)
     {
         $event = static::instance();
+        $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->values = $values;
         return $event;

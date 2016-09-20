@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
@@ -29,12 +30,14 @@ class OriginatedEntityEvent extends AbstractEvent implements Instantiable
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @return OriginatedEntityEvent
      */
-    public static function create(EntityReference $aggregateReference)
+    public static function create(Context $context, EntityReference $aggregateReference)
     {
         $event = static::instance();
+        $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         return $event;
     }

@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 
 class Change
 {

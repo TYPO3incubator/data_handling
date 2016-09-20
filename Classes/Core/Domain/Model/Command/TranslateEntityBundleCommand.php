@@ -15,21 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\BundleTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class TranslateEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, AggregateReference, Locale, Derivable
+class TranslateEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, AggregateReference
 {
     use BundleTrait;
     use AggregateReferenceTrait;
-    use LocaleTrait;
 
     /**
      * @return TranslateEntityBundleCommand
@@ -40,16 +37,16 @@ class TranslateEntityBundleCommand extends AbstractCommand implements Instantiab
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
-     * @param string $locale
      * @param AbstractCommand[] $commands
      * @return TranslateEntityBundleCommand
      */
-    public static function create(EntityReference $aggregateReference, string $locale, array $commands)
+    public static function create(Context $context, EntityReference $aggregateReference, array $commands)
     {
         $command = static::instance();
+        $command->context = $context;
         $command->aggregateReference = $aggregateReference;
-        $command->locale = $locale;
         $command->commands = $commands;
         return $command;
     }

@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Install\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\BackendWorkspaceRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -26,16 +25,15 @@ use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Database\Query\Restriction\LanguageRestriction;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event as MetaEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
-use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\OriginEventRepository;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
+use TYPO3\CMS\DataHandling\Install\Domain\Model\MigrationEntity;
 
 class EventInitializationService
 {
@@ -57,12 +55,12 @@ class EventInitializationService
     /**
      * @var Context
      */
-    protected $context;
+    private $context;
 
     /**
      * @var int
      */
-    protected $instruction = 0;
+    private $instruction = 0;
 
     /**
      * @param Context $context
@@ -106,7 +104,6 @@ class EventInitializationService
 
         while ($row = $fetchStatement->fetch()) {
             $this->createEventsFor($tableName, $row);
-            $this->projectRevision($tableName, $row);
         }
     }
 
@@ -114,7 +111,7 @@ class EventInitializationService
      * @param string $tableName
      * @param array $data
      */
-    protected function createEventsFor(string $tableName, array $data)
+    private function createEventsFor(string $tableName, array $data)
     {
         if (empty($data['uid'])) {
             throw new \RuntimeException('Value for uid must be available', 1470840257);
@@ -123,98 +120,76 @@ class EventInitializationService
             throw new \RuntimeException('Value for uuid must be available', 1470840257);
         }
 
-        $nodeReference = EntityReference::create('pages')->setUid($data['pid']);
-        $nodeReference->setUuid(UuidUtility::fetchUuid($nodeReference));
-        $entityReference = EntityReference::fromRecord($tableName, $data);
-
-        $genericEntity = State::instance()
-            ->setNode($nodeReference)
-            ->setSubject($entityReference);
+        $migrationEntity = $this->createMigrationEntity(
+            $tableName, $data,
+            $this->getUpgradeMetadata($data)
+        );
 
         if ($this->instruction & static::INSTRUCTION_ENTITY) {
-            $this->createEntityEvents($genericEntity, $data);
-        } else {
-            $genericEntity->getSubject()->setUid($data['uid']);
+            $this->createEntityEvents($migrationEntity, $data);
         }
 
         if ($this->instruction & static::INSTRUCTION_VALUES) {
-            $this->createValueEvents($genericEntity, $data);
+            $this->createValueEvents($migrationEntity, $data);
         }
 
         if ($this->instruction & static::INSTRUCTION_RELATIONS) {
-            $this->createRelationEvents($genericEntity, $data);
+            $this->createRelationEvents($migrationEntity, $data);
         }
 
         if ($this->instruction & static::INSTRUCTION_ACTIONS) {
-            $this->createActionEvents($genericEntity, $data);
+            $this->createActionEvents($migrationEntity, $data);
         }
     }
 
     /**+
      * Creates AggregateReference command for specific context states.
      *
-     * @param State $state
+     * @param MigrationEntity $migrationEntity
      * @param array $data
      */
-    protected function createEntityEvents(State $state, array $data)
+    private function createEntityEvents(MigrationEntity $migrationEntity, array $data)
     {
-        $tableName = $state->getSubject()->getName();
+        /** @var MigrationEntity $entities */
+        $entities = [];
         $metadata = $this->getUpgradeMetadata($data);
+        $tableName = $migrationEntity->getSubject()->getName();
 
         $isWorkspaceAspect = $this->isWorkspaceAspect($tableName);
         $isTranslationAspect = $this->isTranslationAspect($tableName, $data);
 
-        $languageField = MetaModelService::instance()->getLanguageFieldName($tableName);
-        $languagePointerField = MetaModelService::instance()->getLanguagePointerFieldName($tableName);
-        $languageId = ($isTranslationAspect ? $data[$languageField] : 0);
+        $context = $this->determineContext($tableName, $data);
 
         // no workspace, no translation -> just CreateEntityCommand
         if (!$isWorkspaceAspect && !$isTranslationAspect) {
-
-            $this->handleGenericEntityEvent(
-                MetaEvent\CreatedEntityEvent::create(
-                    $state->getSubject(),
-                    $state->getNode(),
-                    0,
-                    0
-                )->setMetadata($metadata)
+            $entities['create'] = MigrationEntity::createEntityMigration(
+                $context,
+                $migrationEntity->getSubject(),
+                $migrationEntity->getNode(),
+                $metadata
             );
         // at least workspace -> either CreateEntityCommand or BranchEntityCommand
         } elseif ($isWorkspaceAspect) {
-            $workspaceId = $data['t3ver_wsid'];
             $versionState = VersionState::cast($data['t3ver_state']);
 
             if ($versionState->equals(VersionState::NEW_PLACEHOLDER_VERSION)) {
-                $this->handleGenericEntityEvent(
-                    MetaEvent\CreatedEntityEvent::create(
-                        $state->getSubject(),
-                        $state->getNode(),
-                        $workspaceId,
-                        $languageId
-                    )->setMetadata($metadata)
+                $entities['create'] = MigrationEntity::createEntityMigration(
+                    $context,
+                    $migrationEntity->getSubject(),
+                    $migrationEntity->getNode(),
+                    $metadata
                 );
             } else {
                 $liveData = $this->fetchRecordByUid($tableName, $data['t3ver_oid']);
-                $liveReference = EntityReference::fromRecord($tableName, $liveData);
-
-                $branchEntityToEvent = MetaEvent\BranchedEntityToEvent::create(
-                    $liveReference,
-                    $state->getSubject(),
-                    $workspaceId
-                );
-                $this->handleGenericEntityEvent(
-                    $branchEntityToEvent->setMetadata($metadata)
+                $liveEntity = $this->createMigrationEntity(
+                    $tableName, $liveData,
+                    $this->getUpgradeMetadata($liveData)
                 );
 
-                // @todo Decide whether to keep, without this event, the workspace version cannot be projected alone
-                $this->handleGenericEntityEvent(
-                    MetaEvent\BranchedEntityFromEvent::create(
-                        $state->getSubject(),
-                        EventReference::instance()
-                            ->setEntityReference($liveReference)
-                            ->setEventId($branchEntityToEvent->getEventId()),
-                        $workspaceId
-                    )->setMetadata($metadata)
+                $entities['branch'] = $liveEntity->branchEntityToMigration(
+                    $context,
+                    $migrationEntity->getSubject(),
+                    $metadata
                 );
             }
 
@@ -222,166 +197,123 @@ class EventInitializationService
         // additionally translation, CreateEntityCommand or BranchEntityCommand have been issued before
         // determine whether to base TranslationCommand on live subject or branched workspace subject
         if ($isTranslationAspect) {
+            $languagePointerField = MetaModelService::instance()->getLanguagePointerFieldName($tableName);
             $pointsToTableName = MetaModelService::instance()->getLanguagePointerTableName($tableName);
             $pointsToData = $this->fetchRecordByUid($pointsToTableName, $data[$languagePointerField]);
-            $pointsToReference = EntityReference::fromRecord($pointsToTableName, $pointsToData);
+            $pointsToEntity = $this->createMigrationEntity(
+                $pointsToTableName, $pointsToData,
+                $this->getUpgradeMetadata($pointsToData)
+            );
 
-            // Translation points to newly created workspace version, instead
-            // of existing live version, so use workspace version as subject.
+            // Skip the case that translation points to newly created workspace
+            // version (instead of pointing to existing live version)...
             if (
-                $isWorkspaceAspect
-                && VersionState::cast($data['t3ver_state'])->equals(VersionState::NEW_PLACEHOLDER_VERSION)
-                && VersionState::cast($pointsToData['t3ver_state'])->equals(VersionState::NEW_PLACEHOLDER)
+                !$isWorkspaceAspect
+                || !VersionState::cast($data['t3ver_state'])->equals(VersionState::NEW_PLACEHOLDER_VERSION)
+                || !VersionState::cast($pointsToData['t3ver_state'])->equals(VersionState::NEW_PLACEHOLDER)
             ) {
-                $pointsToReference = $state->getSubject();
+                $entities['translate'] = $pointsToEntity->translateEntityToMigration(
+                    $context,
+                    $migrationEntity->getSubject(),
+                    $metadata
+                );
             }
+        }
 
-            $translatedEntityToEvent = MetaEvent\TranslatedEntityToEvent::create(
-                $pointsToReference,
-                $state->getSubject(),
-                $languageId
-            );
-            $this->handleGenericEntityEvent(
-                $translatedEntityToEvent->setMetadata($metadata)
-            );
-
-            $this->handleGenericEntityEvent(
-                MetaEvent\TranslatedEntityFromEvent::create(
-                    $state->getSubject(),
-                    EventReference::instance()
-                        ->setEntityReference($pointsToReference)
-                        ->setEventId($translatedEntityToEvent->getEventId()),
-                    $languageId
-                )->setMetadata($metadata)
-            );
+        foreach ($entities as $entity) {
+            GenericEntityEventRepository::instance()->add($entity);
         }
     }
 
     /**
-     * Creates ChangedEntityEvent for assigned values.
+     * Creates ModifiedEntityEvent for assigned values.
      *
-     * @param State $state
+     * @param MigrationEntity $migrationEntity
      * @param array $data
      */
-    protected function createValueEvents(State $state, array $data)
+    private function createValueEvents(MigrationEntity $migrationEntity, array $data)
     {
-        $tableName = $state->getSubject()->getName();
-        $metadata = $this->getUpgradeMetadata($data);
+        $tableName = $migrationEntity->getSubject()->getName();
+        $context = $this->determineContext($tableName, $data);
 
         // skip, if in valid workspace context, but record is
         // not in default version state, thus not only modified
         if (
             $this->isWorkspaceAspect($tableName)
-            && !VersionState::cast($data['t3ver_state'])->equals(VersionState::DEFAULT_STATE))
+            && !VersionState::cast($data['t3ver_state'])->equals(
+                VersionState::DEFAULT_STATE
+            )
+        )
         {
             return;
         }
 
         $temporaryState = State::instance()->setValues(
-            CoreResolver\ValueResolver::instance()->resolve($state->getSubject(), $data)
+            CoreResolver\ValueResolver::instance()->resolve(
+                $migrationEntity->getSubject(), $data
+            )
         );
 
-        $this->handleGenericEntityEvent(
-            MetaEvent\ChangedEntityEvent::create(
-                $state->getSubject(),
-                $temporaryState->getValues()
-            )->setMetadata($metadata)
-        );
+        $migrationEntity->modifyEntity($context, $temporaryState->getValues());
+        GenericEntityEventRepository::instance()->add($migrationEntity);
     }
 
     /**
      * Creates AttachedRelationEvents for relations (inline, group, select, special language).
      *
-     * @param State $state
+     * @param MigrationEntity $migrationEntity
      * @param array $data
      */
-    protected function createRelationEvents(State $state, array $data)
+    private function createRelationEvents(MigrationEntity $migrationEntity, array $data)
     {
-        $metadata = $this->getUpgradeMetadata($data);
+        $tableName = $migrationEntity->getSubject()->getName();
+        $context = $this->determineContext($tableName, $data);
 
         $temporaryState = State::instance()->setRelations(
-            CoreResolver\RelationResolver::instance()->resolve($state->getSubject(), $data)
+            CoreResolver\RelationResolver::instance()->resolve($migrationEntity->getSubject(), $data)
         );
 
-        $metaModelSchema = Map::instance()->getSchema($state->getSubject()->getName());
+        $metaModelSchema = Map::instance()->getSchema($migrationEntity->getSubject()->getName());
         foreach ($temporaryState->getRelations() as $relation) {
             $metaModelProperty = $metaModelSchema->getProperty($relation->getName());
             if ($metaModelProperty->hasActiveRelationTo($relation->getEntityReference()->getName())) {
-                $this->handleGenericEntityEvent(
-                    MetaEvent\AttachedRelationEvent::create(
-                        $state->getSubject(),
-                        $relation
-                    )->setMetadata($metadata)
-                );
+                $migrationEntity->attachRelation($context, $relation);
             }
         }
+
+        GenericEntityEventRepository::instance()->add($migrationEntity);
     }
 
     /**
      * Creates command for specific context state.
      *
-     * @param State $state
+     * @param MigrationEntity $migrationEntity
      * @param array $data
      */
-    protected function createActionEvents(State $state, array $data)
+    private function createActionEvents(MigrationEntity $migrationEntity, array $data)
     {
-        $tableName = $state->getSubject()->getName();
-        $metadata = $this->getUpgradeMetadata($data);
+        $tableName = $migrationEntity->getSubject()->getName();
+        $context = $this->determineContext($tableName, $data);
 
         if ($this->isWorkspaceAspect($tableName)) {
             $versionState = VersionState::cast($data['t3ver_state']);
 
             if ($versionState->equals(VersionState::DELETE_PLACEHOLDER)) {
-                $this->handleGenericEntityEvent(
-                    MetaEvent\DeletedEntityEvent::create(
-                        $state->getSubject()
-                    )->setMetadata($metadata)
-                );
+                $migrationEntity->deleteEntity($context);
             } elseif ($versionState->equals(VersionState::MOVE_POINTER)) {
                 // MoveBeforeCommand or MoveAfterCommand (or OrderRelationsComman for parent node)
                 // @todo Implement events
             }
         }
-    }
 
-    /**
-     * @param MetaEvent\AbstractEvent $event
-     */
-    protected function handleGenericEntityEvent(MetaEvent\AbstractEvent $event)
-    {
-        if ($event instanceof MetaEvent\CreatedEntityEvent) {
-            $this->handleOriginatedEntityEvent(
-                MetaEvent\OriginatedEntityEvent::create(
-                    $event->getAggregateReference()
-                )
-            );
-        }
-
-        $metadata = (array)$event->getMetadata();
-        $metadata['trigger'] = EventInitializationService::class;
-
-        $aggregateType = $event->getAggregateReference()->getName();
-        GenericEntityEventRepository::create($aggregateType)
-            ->addEvent($event->setMetadata($metadata));
-    }
-
-    /**
-     * @param MetaEvent\OriginatedEntityEvent $event
-     */
-    protected function handleOriginatedEntityEvent(MetaEvent\OriginatedEntityEvent $event)
-    {
-        $metadata = (array)$event->getMetadata();
-        $metadata['trigger'] = EventInitializationService::class;
-
-        OriginEventRepository::instance()
-            ->addEvent($event->setMetadata($metadata));
+        GenericEntityEventRepository::instance()->add($migrationEntity);
     }
 
     /**
      * @param string $tableName
      * @return bool
      */
-    protected function isWorkspaceAspect(string $tableName)
+    private function isWorkspaceAspect(string $tableName)
     {
         return (
             $this->context->getWorkspaceId() > 0
@@ -394,7 +326,7 @@ class EventInitializationService
      * @param array $data
      * @return bool
      */
-    protected function isTranslationAspect(string $tableName, array $data)
+    private function isTranslationAspect(string $tableName, array $data)
     {
         $languageField = MetaModelService::instance()->getLanguageFieldName($tableName);
         $languagePointerField = MetaModelService::instance()->getLanguagePointerFieldName($tableName);
@@ -411,38 +343,14 @@ class EventInitializationService
      * @param array $data
      * @return array
      */
-    protected function getUpgradeMetadata(array $data)
+    private function getUpgradeMetadata(array $data)
     {
         return [
             static::KEY_UPGRADE => [
                 'uid' => $data['uid']
-            ]
+            ],
+            'trigger' => EventInitializationService::class,
         ];
-    }
-
-    /**
-     * @param string $tableName
-     * @param array $row
-     */
-    protected function projectRevision(string $tableName, array $row)
-    {
-        $aggregateReference = EntityReference::create($tableName)
-            ->setUuid($row[Common::FIELD_UUID]);
-        $revision = GenericEntityEventRepository::create($tableName)
-            ->findByAggregateReference($aggregateReference)
-            ->getRevision();
-
-        if (
-            !empty($row[Common::FIELD_REVISION])
-            && $revision === $row[Common::FIELD_REVISION]
-        ) {
-            return;
-        }
-
-        $data[Common::FIELD_REVISION] = $revision;
-
-        ConnectionPool::instance()->getOriginConnection()
-            ->update($tableName, $data, [Common::FIELD_UUID => $uuid->toString()]);
     }
 
     /**
@@ -450,7 +358,7 @@ class EventInitializationService
      * @param int $uid
      * @return array
      */
-    protected function fetchRecordByUid(string $tableName, int $uid)
+    private function fetchRecordByUid(string $tableName, int $uid)
     {
         $fetchQueryBuilder = $this->getQueryBuilder();
         $fetchQueryBuilder->getRestrictions()
@@ -468,8 +376,9 @@ class EventInitializationService
      * @param string $tableName
      * @param int $uid
      * @return array
+     * @deprecated Not used anymore
      */
-    protected function fetchVersionRecordForUid(string $tableName, int $uid)
+    private function fetchVersionRecordForUid(string $tableName, int $uid)
     {
         $fetchQueryBuilder = $this->getQueryBuilder();
         $fetchQueryBuilder->getRestrictions()
@@ -487,7 +396,7 @@ class EventInitializationService
     /**
      * @return QueryBuilder
      */
-    protected function getQueryBuilder()
+    private function getQueryBuilder()
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $queryBuilder->getRestrictions()
@@ -502,7 +411,7 @@ class EventInitializationService
     /**
      * @return DeletedRestriction
      */
-    protected function getDeletedRestriction()
+    private function getDeletedRestriction()
     {
         return GeneralUtility::makeInstance(DeletedRestriction::class);
     }
@@ -510,7 +419,7 @@ class EventInitializationService
     /**
      * @return BackendWorkspaceRestriction
      */
-    protected function getWorkspaceRestriction()
+    private function getWorkspaceRestriction()
     {
         if ($this->context->getWorkspaceId() === 0) {
             // in live workspace, don't include overlays
@@ -533,8 +442,42 @@ class EventInitializationService
     /**
      * @return LanguageRestriction
      */
-    protected function getLanguageRestriction()
+    private function getLanguageRestriction()
     {
         return LanguageRestriction::create($this->context->getLanguageId());
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $data
+     * @param array $metadata
+     * @return MigrationEntity
+     */
+    private function createMigrationEntity(string $tableName, array $data, array $metadata)
+    {
+        $nodeReference = EntityReference::create('pages')->setUid($data['pid']);
+        $nodeReference->setUuid(UuidUtility::fetchUuid($nodeReference));
+        $entityReference = EntityReference::fromRecord($tableName, $data);
+
+        return MigrationEntity::instance()
+            ->setNode($nodeReference)
+            ->setSubject($entityReference)
+            ->setMetadata($metadata);
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $data
+     * @return Context
+     */
+    private function determineContext(string $tableName, array $data)
+    {
+        $isWorkspaceAspect = $this->isWorkspaceAspect($tableName);
+        $isTranslationAspect = $this->isTranslationAspect($tableName, $data);
+        $languageField = MetaModelService::instance()->getLanguageFieldName($tableName);
+
+        return Context::instance()
+            ->setWorkspaceId($isWorkspaceAspect ? $data['t3ver_wsid'] : 0)
+            ->setLanguageId($isTranslationAspect ? $data[$languageField] : 0);
     }
 }

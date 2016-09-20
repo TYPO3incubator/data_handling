@@ -14,6 +14,9 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
+/**
+ * @deprecated
+ */
 trait WorkspaceTrait
 {
     /**

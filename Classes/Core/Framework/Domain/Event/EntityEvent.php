@@ -14,6 +14,9 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
+/**
+ * @deprecated
+ */
 interface EntityEvent extends DomainEvent
 {
 }

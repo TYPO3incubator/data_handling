@@ -22,7 +22,7 @@ use TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\GenericEntity;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\SuggestedState;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;

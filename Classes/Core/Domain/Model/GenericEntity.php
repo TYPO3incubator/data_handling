@@ -16,29 +16,28 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
 
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event as MetaEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
-use TYPO3\CMS\DataHandling\Core\Domain\Repository\Meta\OriginEventRepository;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandlerBundlableTrait;
+use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\CommandHandlerTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler\EventHandlerTrait;
 
 class GenericEntity extends State implements EventApplicable
 {
-    use CommandHandlerBundlableTrait;
+    use CommandHandlerTrait;
     use EventHandlerTrait;
 
     /**
-     * @return GenericEntity
+     * @return static
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(GenericEntity::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /*
@@ -46,68 +45,55 @@ class GenericEntity extends State implements EventApplicable
      */
 
     /**
-     * @param string $aggregateType
-     * @return GenericEntity
+     * @param EntityReference $subject
+     * @return EntityReference
      */
-    protected static function createNew(string $aggregateType)
+    protected static function createNewReference(EntityReference $subject)
     {
-        $aggregateReference = EntityReference::instance()
-            ->setName($aggregateType)
+        return EntityReference::instance()
+            ->setName($subject->getName())
             ->setUuid(Uuid::uuid4());
+    }
 
-        $originatedEvent = MetaEvent\OriginatedEntityEvent::create(
+    /**
+     * @param Context $context
+     * @param EntityReference $subject
+     * @return static
+     */
+    protected static function createNewEntity(Context $context, EntityReference $subject)
+    {
+        $aggregateReference = static::createNewReference($subject);
+        $event = Event\OriginatedEntityEvent::create(
+            $context,
             $aggregateReference
         );
 
         $genericEntity = static::instance();
         $genericEntity->subject = $aggregateReference;
-        static::emitEvent(OriginEventRepository::instance(), $originatedEvent);
-
-        return $genericEntity;
-    }
-
-    /**
-     * @param EntityReference $aggregateReference
-     * @param EntityReference $nodeReference
-     * @param int $workspaceId
-     * @param string $locale
-     * @return GenericEntity
-     */
-    public static function createdEntity(EntityReference $aggregateReference, EntityReference $nodeReference, int $workspaceId, string $locale)
-    {
-        $genericEntity = static::createNew($aggregateReference->getName());
-
-        $event = MetaEvent\CreatedEntityEvent::create(
-            $genericEntity->getSubject(),
-            $nodeReference,
-            $workspaceId,
-            $locale
-        );
-
         $genericEntity->manageEvent($event);
 
         return $genericEntity;
     }
 
     /**
-     * @param int $workspaceId
-     * @return GenericEntity
+     * @param Context $context
+     * @return static
      */
-    public function branchedEntityTo(int $workspaceId)
+    public function branchEntityTo(Context $context)
     {
-        $branchedEntity = static::createNew($this->subject->getName());
+        $branchedEntity = static::createNewEntity($context, $this->subject);
 
-        $event = MetaEvent\BranchedEntityToEvent::create(
+        $event = Event\BranchedEntityToEvent::create(
+            $context,
             $this->subject,
-            $branchedEntity->getSubject(),
-            $workspaceId
+            $branchedEntity->getSubject()
         );
 
-        $branchedEntity->branchedEntityFrom(
+        $branchedEntity->branchEntityFrom(
+            $context,
             EventReference::instance()
                 ->setEntityReference($this->getSubject())
-                ->setEventId($event->getEventId()),
-            $workspaceId
+                ->setEventId($event->getEventId())
         );
 
         $this->manageEvent($event);
@@ -116,16 +102,37 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
-     * @param EventReference $fromReference
-     * @param int $workspaceId
-     * @return GenericEntity
+     * @param Context $context
+     * @param EntityReference $aggregateReference
+     * @param EntityReference $nodeReference
+     * @return static
      */
-    public function branchedEntityFrom(EventReference $fromReference, int $workspaceId)
+    public static function createEntity(Context $context, EntityReference $aggregateReference, EntityReference $nodeReference)
     {
-        $event = MetaEvent\BranchedEntityFromEvent::create(
+        $genericEntity = static::createNewEntity($context, $aggregateReference);
+
+        $event = Event\CreatedEntityEvent::create(
+            $context,
+            $genericEntity->getSubject(),
+            $nodeReference
+        );
+
+        $genericEntity->manageEvent($event);
+
+        return $genericEntity;
+    }
+
+    /**
+     * @param Context $context
+     * @param EventReference $fromReference
+     * @return static
+     */
+    public function branchEntityFrom(Context $context, EventReference $fromReference)
+    {
+        $event = Event\BranchedEntityFromEvent::create(
+            $context,
             $this->subject,
-            $fromReference,
-            $workspaceId
+            $fromReference
         );
 
         $this->manageEvent($event);
@@ -134,24 +141,24 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
-     * @param string $locale
-     * @return GenericEntity
+     * @param Context $context
+     * @return static
      */
-    public function translatedEntityTo(string $locale)
+    public function translateEntityTo(Context $context)
     {
-        $translatedEntity = static::createNew($this->subject->getName());
+        $translatedEntity = static::createNewEntity($context, $this->subject);
 
-        $event = MetaEvent\TranslatedEntityToEvent::create(
+        $event = Event\TranslatedEntityToEvent::create(
+            $context,
             $this->subject,
-            $translatedEntity->getSubject(),
-            $locale
+            $translatedEntity->getSubject()
         );
 
-        $translatedEntity->translatedEntityFrom(
+        $translatedEntity->translateEntityFrom(
+            $context,
             EventReference::instance()
                 ->setEntityReference($this->subject)
-                ->setEventId($event->getEventId()),
-            $locale
+                ->setEventId($event->getEventId())
         );
 
         $this->manageEvent($event);
@@ -160,16 +167,16 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
+     * @param Context $context
      * @param EventReference $fromReference
-     * @param string $locale
-     * @return GenericEntity
+     * @return static
      */
-    public function translatedEntityFrom(EventReference $fromReference, string $locale)
+    public function translateEntityFrom(Context $context, EventReference $fromReference)
     {
-        $event = MetaEvent\TranslatedEntityFromEvent::create(
+        $event = Event\TranslatedEntityFromEvent::create(
+            $context,
             $this->subject,
-            $fromReference,
-            $locale
+            $fromReference
         );
 
         $this->manageEvent($event);
@@ -178,12 +185,13 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
+     * @param Context $context
      * @param array $data
-     * @return GenericEntity
      */
-    public function changedEntity(array $data)
+    public function modifyEntity(Context $context, array $data)
     {
-        $event = MetaEvent\ChangedEntityEvent::create(
+        $event = Event\ModifiedEntityEvent::create(
+            $context,
             $this->subject,
             $data
         );
@@ -192,11 +200,12 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
-     * @return GenericEntity
+     * @param Context $context
      */
-    public function deletedEntity()
+    public function deleteEntity(Context $context)
     {
-        $event = MetaEvent\DeletedEntityEvent::create(
+        $event = Event\DeletedEntityEvent::create(
+            $context,
             $this->subject
         );
 
@@ -204,12 +213,13 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
+     * @param Context $context
      * @param PropertyReference $relationReference
-     * @return GenericEntity
      */
-    public function attachedRelation(PropertyReference $relationReference)
+    public function attachRelation(Context $context, PropertyReference $relationReference)
     {
-        $event = MetaEvent\AttachedRelationEvent::create(
+        $event = Event\AttachedRelationEvent::create(
+            $context,
             $this->subject,
             $relationReference
         );
@@ -218,12 +228,13 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
+     * @param Context $context
      * @param PropertyReference $relationReference
-     * @return GenericEntity
      */
-    public function removedRelation(PropertyReference $relationReference)
+    public function removeRelation(Context $context, PropertyReference $relationReference)
     {
-        $event = MetaEvent\RemovedRelationEvent::create(
+        $event = Event\RemovedRelationEvent::create(
+            $context,
             $this->subject,
             $relationReference
         );
@@ -232,12 +243,13 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
+     * @param Context $context
      * @param AbstractSequence $sequence
-     * @return GenericEntity
      */
-    public function orderedRelations(AbstractSequence $sequence)
+    public function orderRelations(Context $context, AbstractSequence $sequence)
     {
-        $event = MetaEvent\OrderedRelationsEvent::create(
+        $event = Event\OrderedRelationsEvent::create(
+            $context,
             $this->subject,
             $sequence
         );
@@ -250,78 +262,87 @@ class GenericEntity extends State implements EventApplicable
      * Event handling
      */
 
-    protected function applyCreatedEntityEvent(MetaEvent\CreatedEntityEvent $event)
+    protected function applyCreatedEntityEvent(Event\CreatedEntityEvent $event)
     {
         $this->node = $event->getNodeReference();
         $this->subject = $event->getAggregateReference();
     }
 
-    protected function applyBranchedEntityToEvent(MetaEvent\BranchedEntityToEvent $event)
+    protected function applyBranchedEntityToEvent(Event\BranchedEntityToEvent $event)
     {
     }
 
-    protected function applyBranchedEntityFromEvent(MetaEvent\BranchedEntityFromEvent $event)
-    {
-        $this->subject = $event->getAggregateReference();
-
-        $aggregateReference = $event->getAggregateReference();
-        $fromEntity = GenericEntityEventRepository::create($aggregateReference->getName())
-            ->findByAggregateReference($aggregateReference, $event->getEventId());
-
-        $this->setValues($fromEntity->getValues());
-        $this->setRelations($fromEntity->getRelations());
-        $this->getContext()->setWorkspaceId($event->getWorkspaceId());
-    }
-
-    protected function applyTranslatedToEvent(MetaEvent\TranslatedEntityToEvent $event)
-    {
-    }
-
-    protected function applyTranslatedFromEvent(MetaEvent\TranslatedEntityFromEvent $event)
+    protected function applyBranchedEntityFromEvent(Event\BranchedEntityFromEvent $event)
     {
         $this->subject = $event->getAggregateReference();
 
         $aggregateReference = $event->getAggregateReference();
-        $fromEntity = GenericEntityEventRepository::create($aggregateReference->getName())
+        $fromEntity = GenericEntityEventRepository::instance()
             ->findByAggregateReference($aggregateReference, $event->getEventId());
 
         $this->setValues($fromEntity->getValues());
         $this->setRelations($fromEntity->getRelations());
-        $this->getContext()->setLanguageId($event->getLocale());
+        $this->getContext()->setWorkspaceId($event->getContext()->getWorkspaceId());
     }
 
-    protected function applyChangedEntityEvent(MetaEvent\ChangedEntityEvent $event)
+    protected function applyTranslatedToEvent(Event\TranslatedEntityToEvent $event)
+    {
+    }
+
+    protected function applyTranslatedFromEvent(Event\TranslatedEntityFromEvent $event)
+    {
+        $this->subject = $event->getAggregateReference();
+
+        $aggregateReference = $event->getAggregateReference();
+        $fromEntity = GenericEntityEventRepository::instance()
+            ->findByAggregateReference($aggregateReference, $event->getEventId());
+
+        $this->setValues($fromEntity->getValues());
+        $this->setRelations($fromEntity->getRelations());
+        $this->getContext()->setLanguageId($event->getContext()->getLanguageId());
+    }
+
+    protected function applyChangedEntityEvent(Event\ModifiedEntityEvent $event)
     {
         $this->values = $event->getValues();
     }
 
-    protected function applyDeletedEntityEvent(MetaEvent\DeletedEntityEvent $event)
+    protected function applyDeletedEntityEvent(Event\DeletedEntityEvent $event)
     {
         // @todo Create and apply meta-state for entity
     }
 
-    protected function handleAttachedRelationEvent(MetaEvent\AttachedRelationEvent $event)
+    protected function handleAttachedRelationEvent(Event\AttachedRelationEvent $event)
     {
-        $this->attachRelation($event->getRelationReference());
+        $this->relations[] = $event->getRelationReference();
     }
 
-    protected function handleRemovedRelationEvent(MetaEvent\RemovedRelationEvent $event)
+    protected function handleRemovedRelationEvent(Event\RemovedRelationEvent $event)
     {
-        $this->removeRelation($event->getRelationReference());
-    }
-
-    protected function handleOrderedRelationsEvent(MetaEvent\OrderedRelationsEvent $event)
-    {
-        $this->orderRelations($event->getSequence()->get());
-    }
-
-    /**
-     * @return GenericEntityEventRepository
-     */
-    protected function getGenericEntityRepository()
-    {
-        return GenericEntityEventRepository::create(
-            $this->subject->getName()
+        $relationIndex = array_search(
+            $event->getRelationReference(),
+            $this->relations,
+            true
         );
+        if ($relationIndex !== false) {
+            unset($this->relations[$relationIndex]);
+        }
+    }
+
+    protected function handleOrderedRelationsEvent(Event\OrderedRelationsEvent $event)
+    {
+        $relations = [];
+
+        foreach($event->getSequence()->get() as $orderedRelation) {
+            if (!in_array($orderedRelation, $this->relations, true)) {
+                throw new \RuntimeException(
+                    'Cannot define order with non-existing relation',
+                    1471101357
+                );
+            }
+            $relations[] = $orderedRelation;
+        }
+
+        $this->relations = $relations;
     }
 }

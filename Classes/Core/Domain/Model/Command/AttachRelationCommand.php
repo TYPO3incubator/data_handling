@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
@@ -37,13 +38,15 @@ class AttachRelationCommand extends AbstractCommand implements Instantiable, Agg
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param PropertyReference $relationReference
      * @return AttachRelationCommand
      */
-    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
+    public static function create(Context $context, EntityReference $aggregateReference, PropertyReference $relationReference)
     {
         $command = static::instance();
+        $command->context = $context;
         $command->aggregateReference = $aggregateReference;
         $command->relationReference = $relationReference;
         return $command;

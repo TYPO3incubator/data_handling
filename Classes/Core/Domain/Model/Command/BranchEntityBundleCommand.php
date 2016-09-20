@@ -15,21 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\BundleTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class BranchEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, Derivable, AggregateReference, Workspace
+class BranchEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, AggregateReference
 {
     use BundleTrait;
     use AggregateReferenceTrait;
-    use WorkspaceTrait;
 
     /**
      * @return BranchEntityBundleCommand
@@ -40,16 +37,16 @@ class BranchEntityBundleCommand extends AbstractCommand implements Instantiable,
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
-     * @param int $workspaceId
      * @param AbstractCommand[] $commands
      * @return BranchEntityBundleCommand
      */
-    public static function create(EntityReference $aggregateReference, int $workspaceId, array $commands)
+    public static function create(Context $context, EntityReference $aggregateReference, array $commands)
     {
         $command = static::instance();
+        $command->context = $context;
         $command->aggregateReference = $aggregateReference;
-        $command->workspaceId = $workspaceId;
         $command->commands = $commands;
         return $command;
     }

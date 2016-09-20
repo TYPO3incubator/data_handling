@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
@@ -34,13 +35,15 @@ class RemovedRelationEvent extends AbstractEvent implements Instantiable, Relati
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param PropertyReference $relationReference
      * @return RemovedRelationEvent
      */
-    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
+    public static function create(Context $context, EntityReference $aggregateReference, PropertyReference $relationReference)
     {
         $event = static::instance();
+        $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->relationReference = $relationReference;
         return $event;

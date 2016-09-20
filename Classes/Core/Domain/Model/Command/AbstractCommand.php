@@ -14,41 +14,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Contextual;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\ContextualTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 
-abstract class AbstractCommand implements DomainCommand, AggregateReference
+abstract class AbstractCommand implements DomainCommand, Contextual
 {
-    /**
-     * Subject the command is applied to.
-     *
-     * @var EntityReference
-     */
-    protected $subject;
+    use ContextualTrait;
 
     /**
      * @var array|null
      */
     protected $metadata;
-
-    /**
-     * @return null|EntityReference
-     */
-    public function getSubject()
-    {
-        return $this->subject;
-    }
-
-    /**
-     * @param EntityReference $subject
-     * @return AbstractCommand
-     */
-    public function setSubject(EntityReference $subject)
-    {
-        $this->subject = $subject;
-        return $this;
-    }
 
     /**
      * @param array|null $metadata

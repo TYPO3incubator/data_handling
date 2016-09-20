@@ -15,20 +15,16 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class TranslatedEntityFromEvent extends AbstractEvent implements EntityEvent, Instantiable, FromReference, Locale, Derivable
+class TranslatedEntityFromEvent extends AbstractEvent implements Instantiable, FromReference
 {
     use FromReferenceTrait;
-    use LocaleTrait;
 
     /**
      * @return TranslatedEntityFromEvent
@@ -39,17 +35,17 @@ class TranslatedEntityFromEvent extends AbstractEvent implements EntityEvent, In
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param EventReference $fromReference
-     * @param string $locale
      * @return TranslatedEntityFromEvent
      */
-    public static function create(EntityReference $aggregateReference, EventReference $fromReference, string $locale)
+    public static function create(Context $context, EntityReference $aggregateReference, EventReference $fromReference)
     {
         $event = static::instance();
+        $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->fromReference = $fromReference;
-        $event->locale = $locale;
         return $event;
     }
 }

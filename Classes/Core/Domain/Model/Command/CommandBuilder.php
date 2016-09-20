@@ -16,21 +16,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateTypeTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\ContextualTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\NodeReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
 class CommandBuilder implements Instantiable
 {
     use AggregateReferenceTrait;
     use NodeReferenceTrait;
-    use AggregateTypeTrait;
-    use WorkspaceTrait;
-    use LocaleTrait;
+    use ContextualTrait;
 
     const TYPE_CREATE = 'create';
     const TYPE_BRANCH = 'branch';
@@ -56,44 +53,43 @@ class CommandBuilder implements Instantiable
      */
     private $commands = [];
 
-    public function newCreateCommand(EntityReference $aggregateReference, EntityReference $nodeReference, int $workspaceId, string $locale)
+    public function newCreateCommand(Context $context, EntityReference $aggregateReference, EntityReference $nodeReference)
     {
         $this->type = static::TYPE_CREATE;
+        $this->context = $context;
         $this->aggregateReference = $aggregateReference;
         $this->nodeReference = $nodeReference;
-        $this->workspaceId = $workspaceId;
-        $this->locale = $locale;
         return $this;
     }
 
-    public function newBranchCommand(EntityReference $aggregateReference, int $workspaceId)
+    public function newBranchCommand(Context $context, EntityReference $aggregateReference)
     {
         $this->type = static::TYPE_BRANCH;
+        $this->context = $context;
         $this->aggregateReference = $aggregateReference;
-        $this->workspaceId = $workspaceId;
         return $this;
     }
 
-    public function newBranchAndTranslateCommand(EntityReference $aggregateReference, int $workspaceId, string $locale)
+    public function newBranchAndTranslateCommand(Context $context, EntityReference $aggregateReference)
     {
         $this->type = static::TYPE_BRANCH_AND_TRANSLATE;
+        $this->context = $context;
         $this->aggregateReference = $aggregateReference;
-        $this->workspaceId = $workspaceId;
-        $this->locale = $locale;
         return $this;
     }
 
-    public function newTranslateCommand(EntityReference $aggregateReference, string $locale)
+    public function newTranslateCommand(Context $context, EntityReference $aggregateReference)
     {
         $this->type = static::TYPE_TRANSLATE;
+        $this->context = $context;
         $this->aggregateReference = $aggregateReference;
-        $this->locale = $locale;
         return $this;
     }
 
-    public function newModifyCommand(EntityReference $aggregateReference)
+    public function newModifyCommand(Context $context, EntityReference $aggregateReference)
     {
         $this->type = static::TYPE_MODIFY;
+        $this->context = $context;
         $this->aggregateReference = $aggregateReference;
         return $this;
     }
@@ -115,37 +111,36 @@ class CommandBuilder implements Instantiable
 
         if ($this->type === static::TYPE_CREATE) {
             return CreateEntityBundleCommand::create(
+                $this->context,
                 $this->aggregateReference,
                 $this->nodeReference,
-                $this->workspaceId,
-                $this->locale,
                 $this->commands
             );
         }
         if ($this->type === static::TYPE_BRANCH) {
             return BranchEntityBundleCommand::create(
+                $this->context,
                 $this->aggregateReference,
-                $this->workspaceId,
                 $this->commands
             );
         }
         if ($this->type === static::TYPE_BRANCH_AND_TRANSLATE) {
             return BranchAndTranslateEntityBundleCommand::create(
+                $this->context,
                 $this->aggregateReference,
-                $this->workspaceId,
-                $this->locale,
                 $this->commands
             );
         }
         if ($this->type === static::TYPE_TRANSLATE) {
             return TranslateEntityBundleCommand::create(
+                $this->context,
                 $this->aggregateReference,
-                $this->locale,
                 $this->commands
             );
         }
         if ($this->type === static::TYPE_MODIFY) {
             return ModifyEntityBundleCommand::create(
+                $this->context,
                 $this->aggregateReference,
                 $this->commands
             );

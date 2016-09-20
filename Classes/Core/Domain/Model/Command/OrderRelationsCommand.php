@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
@@ -37,13 +38,15 @@ class OrderRelationsCommand extends AbstractCommand implements Instantiable, Rel
     }
 
     /**
+     * @param Context $context
      * @param PropertyReference $relationReference
      * @param AbstractSequence $sequence
      * @return OrderRelationsCommand
      */
-    public static function create(PropertyReference $relationReference, AbstractSequence $sequence)
+    public static function create(Context $context, PropertyReference $relationReference, AbstractSequence $sequence)
     {
         $command = static::instance();
+        $command->context = $context;
         $command->relationReference = $relationReference;
         $command->sequence = $sequence;
         return $command;

@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Process\Tca;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command\AbstractCommand;
 
 interface TcaCommandFactory
 {

@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,21 +15,21 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class OrderRelationsCommand extends AbstractCommand implements Instantiable, RelationReference, Sequence
+class AttachRelationCommand extends AbstractCommand implements Instantiable, AggregateReference, RelationReference
 {
+    use AggregateReferenceTrait;
     use RelationReferenceTrait;
-    use SequenceTrait;
 
     /**
-     * @return OrderRelationsCommand
+     * @return AttachRelationCommand
      */
     public static function instance()
     {
@@ -37,15 +37,15 @@ class OrderRelationsCommand extends AbstractCommand implements Instantiable, Rel
     }
 
     /**
+     * @param EntityReference $aggregateReference
      * @param PropertyReference $relationReference
-     * @param AbstractSequence $sequence
-     * @return OrderRelationsCommand
+     * @return AttachRelationCommand
      */
-    public static function create(PropertyReference $relationReference, AbstractSequence $sequence)
+    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
     {
         $command = static::instance();
+        $command->aggregateReference = $aggregateReference;
         $command->relationReference = $relationReference;
-        $command->sequence = $sequence;
         return $command;
     }
 }

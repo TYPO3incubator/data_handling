@@ -16,9 +16,9 @@ namespace TYPO3\CMS\DataHandling;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider\TcaCommandModifier;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\OriginatedEntityEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\OriginatedEntityEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\GetEventStoreDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
@@ -141,12 +141,12 @@ class Common
     public static function registerEventSources()
     {
         CommandBus::provide()->addHandlerBundle(
-            Meta\CommandHandlerBundle::instance(), [
-                Meta\CreateEntityBundleCommand::class,
-                Meta\BranchEntityBundleCommand::class,
-                Meta\BranchAndTranslateEntityBundleCommand::class,
-                Meta\TranslateEntityBundleCommand::class,
-                Meta\DeleteEntityCommand::class,
+            Command\CommandHandlerBundle::instance(), [
+                Command\CreateEntityBundleCommand::class,
+                Command\BranchEntityBundleCommand::class,
+                Command\BranchAndTranslateEntityBundleCommand::class,
+                Command\TranslateEntityBundleCommand::class,
+                Command\DeleteEntityCommand::class,
                 // @todo: enable, disable, move
             ]
         );

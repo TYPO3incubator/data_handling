@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
@@ -48,17 +48,17 @@ class CommandResolver
     private $changes;
 
     /**
-     * @var Meta\AbstractCommand[]
+     * @var Command\AbstractCommand[]
      */
     private $commands = [];
 
     /**
-     * @var Meta\CommandBuilder
+     * @var Command\CommandBuilder
      */
     private $commandBuilder;
 
     /**
-     * @return Meta\AbstractCommand[]
+     * @return Command\AbstractCommand[]
      */
     public function getCommands()
     {
@@ -69,7 +69,7 @@ class CommandResolver
     {
         // root aggregate change is processed first
         foreach ($this->changes as $change) {
-            $this->commandBuilder = Meta\CommandBuilder::instance();
+            $this->commandBuilder = Command\CommandBuilder::instance();
             $this->processContext($change);
             $this->processValues($change);
             $this->processRelations($change);
@@ -119,7 +119,7 @@ class CommandResolver
         }
         if (!empty($values)) {
             $this->commandBuilder->addCommand(
-                Meta\ChangeEntityCommand::create($aggregateReference, $values)
+                Command\ChangeEntityCommand::create($aggregateReference, $values)
             );
         }
     }
@@ -202,7 +202,7 @@ class CommandResolver
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
                 $this->commandBuilder->addCommand(
-                    Meta\RemoveRelationCommand::create(
+                    Command\RemoveRelationCommand::create(
                         $aggregateReference,
                         $relationPropertyReference
                     )
@@ -211,7 +211,7 @@ class CommandResolver
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
                 $this->commandBuilder->addCommand(
-                    Meta\AttachRelationCommand::create(
+                    Command\AttachRelationCommand::create(
                         $aggregateReference,
                         $relationPropertyReference
                     )
@@ -223,7 +223,7 @@ class CommandResolver
                     $relationSequence->attach($relationPropertyReference);
                 }
                 $this->commandBuilder->addCommand(
-                    Meta\OrderRelationsCommand::create(
+                    Command\OrderRelationsCommand::create(
                         $relationPropertyReference,
                         $relationSequence
                     )

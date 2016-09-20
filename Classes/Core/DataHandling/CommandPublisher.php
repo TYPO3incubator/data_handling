@@ -15,8 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta\CommandHandlerBundle;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command\AbstractCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command\CommandHandlerBundle;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 

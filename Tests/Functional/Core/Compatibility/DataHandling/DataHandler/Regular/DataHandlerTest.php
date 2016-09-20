@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandPublisher;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta as GenericCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command as GenericCommand;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandPublisherFixture;

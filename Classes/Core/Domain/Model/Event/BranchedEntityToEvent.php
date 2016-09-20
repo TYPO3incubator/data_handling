@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,39 +16,37 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\TargetReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\TargetReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\EntityEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class BranchedEntityFromEvent extends AbstractEvent implements EntityEvent, Instantiable, FromReference, Workspace, Derivable
+class BranchedEntityToEvent extends AbstractEvent implements Instantiable, TargetReference, Workspace, Derivable
 {
-    use FromReferenceTrait;
+    use TargetReferenceTrait;
     use WorkspaceTrait;
 
     /**
-     * @return BranchedEntityFromEvent
+     * @return BranchedEntityToEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(BranchedEntityFromEvent::class);
+        return GeneralUtility::makeInstance(BranchedEntityToEvent::class);
     }
 
     /**
      * @param EntityReference $aggregateReference
-     * @param EventReference $fromReference
+     * @param EntityReference $targetReference
      * @param int $workspaceId
-     * @return BranchedEntityFromEvent
+     * @return BranchedEntityToEvent
      */
-    public static function create(EntityReference $aggregateReference, EventReference $fromReference, int $workspaceId = null)
+    public static function create(EntityReference $aggregateReference, EntityReference $targetReference, int $workspaceId = null)
     {
         $event = static::instance();
         $event->aggregateReference = $aggregateReference;
-        $event->fromReference = $fromReference;
+        $event->targetReference = $targetReference;
         $event->workspaceId = $workspaceId;
         return $event;
     }

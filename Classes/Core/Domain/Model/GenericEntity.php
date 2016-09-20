@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
 
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta as MetaEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event as MetaEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;

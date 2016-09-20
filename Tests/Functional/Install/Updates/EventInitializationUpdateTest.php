@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Install\Updates;
  */
 
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\AbstractDataHandlerActionTestCase;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 
 /**

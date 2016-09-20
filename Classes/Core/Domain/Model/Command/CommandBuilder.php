@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateTypeTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;

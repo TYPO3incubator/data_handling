@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
@@ -34,10 +34,10 @@ class QueryBuilderInterceptor extends QueryBuilder
                 $reference = EntityReference::create($tableName);
                 $values = $this->determineValues();
                 $this->emitRecordEvent(
-                    Meta\CreatedEntityEvent::create($reference)
+                    Event\CreatedEntityEvent::create($reference)
                 );
                 $this->emitRecordEvent(
-                    Meta\ChangedEntityEvent::create($reference, $values)
+                    Event\ChangedEntityEvent::create($reference, $values)
                 );
                 $this->set(Common::FIELD_UUID, $reference->getUuid());
             }
@@ -49,11 +49,11 @@ class QueryBuilderInterceptor extends QueryBuilder
                     $values = $this->determineValues();
                     if (!GenericService::instance()->isDeleteCommand($tableName, $values)) {
                         $this->emitRecordEvent(
-                            Meta\ChangedEntityEvent::create($reference, $values)
+                            Event\ChangedEntityEvent::create($reference, $values)
                         );
                     } else {
                         $this->emitRecordEvent(
-                            Meta\DeletedEntityEvent::create($reference)
+                            Event\DeletedEntityEvent::create($reference)
                         );
                     }
                 }
@@ -64,7 +64,7 @@ class QueryBuilderInterceptor extends QueryBuilder
             if (!GenericService::instance()->isSystemInternal($tableName)) {
                 foreach ($this->determineReferences() as $reference) {
                     $this->emitRecordEvent(
-                        Meta\PurgedEntityEvent::create($reference)
+                        Event\PurgedEntityEvent::create($reference)
                     );
                 }
             }
@@ -73,7 +73,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         return parent::execute();
     }
 
-    protected function emitRecordEvent(Meta\AbstractEvent $event)
+    protected function emitRecordEvent(Event\AbstractEvent $event)
     {
         $metadata = ['trigger' => QueryBuilderInterceptor::class];
 

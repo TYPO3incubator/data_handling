@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -18,34 +18,43 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class AttachedRelationEvent extends AbstractEvent implements Instantiable, AggregateReference, RelationReference
+class ChangeEntityCommand extends AbstractCommand implements Instantiable, AggregateReference
 {
     use AggregateReferenceTrait;
-    use RelationReferenceTrait;
 
     /**
-     * @return AttachedRelationEvent
+     * @return ChangeEntityCommand
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(AttachedRelationEvent::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**
      * @param EntityReference $aggregateReference
-     * @param PropertyReference $relationReference
-     * @return AttachedRelationEvent
+     * @param array $data
+     * @return ChangeEntityCommand
      */
-    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
+    public static function create(EntityReference $aggregateReference, array $data)
     {
-        $event = static::instance();
-        $event->aggregateReference = $aggregateReference;
-        $event->relationReference = $relationReference;
-        return $event;
+        $command = static::instance();
+        $command->aggregateReference = $aggregateReference;
+        $command->data = $data;
+        return $command;
+    }
+
+    /**
+     * @var array|null
+     */
+    private $data;
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }

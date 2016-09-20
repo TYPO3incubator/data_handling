@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,24 +15,17 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\BundleTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Workspace;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\WorkspaceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class BranchEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, Derivable, AggregateReference, Workspace
+class DeleteEntityCommand extends AbstractCommand implements Instantiable, AggregateReference
 {
-    use BundleTrait;
     use AggregateReferenceTrait;
-    use WorkspaceTrait;
 
     /**
-     * @return BranchEntityBundleCommand
+     * @return DeleteEntityCommand
      */
     public static function instance()
     {
@@ -41,16 +34,12 @@ class BranchEntityBundleCommand extends AbstractCommand implements Instantiable,
 
     /**
      * @param EntityReference $aggregateReference
-     * @param int $workspaceId
-     * @param AbstractCommand[] $commands
-     * @return BranchEntityBundleCommand
+     * @return DeleteEntityCommand
      */
-    public static function create(EntityReference $aggregateReference, int $workspaceId, array $commands)
+    public static function create(EntityReference $aggregateReference)
     {
         $command = static::instance();
         $command->aggregateReference = $aggregateReference;
-        $command->workspaceId = $workspaceId;
-        $command->commands = $commands;
         return $command;
     }
 }

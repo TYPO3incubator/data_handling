@@ -25,8 +25,8 @@ use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as Compatibi
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Database\Query\Restriction\LanguageRestriction;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta as MetaEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event as MetaEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;

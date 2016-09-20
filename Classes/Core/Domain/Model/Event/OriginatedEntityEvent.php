@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -18,19 +18,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class DeletedEntityEvent extends AbstractEvent implements Instantiable
+class OriginatedEntityEvent extends AbstractEvent implements Instantiable
 {
     /**
-     * @return DeletedEntityEvent
+     * @return OriginatedEntityEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(DeletedEntityEvent::class);
+        return GeneralUtility::makeInstance(OriginatedEntityEvent::class);
     }
 
     /**
      * @param EntityReference $aggregateReference
-     * @return DeletedEntityEvent
+     * @return OriginatedEntityEvent
      */
     public static function create(EntityReference $aggregateReference)
     {

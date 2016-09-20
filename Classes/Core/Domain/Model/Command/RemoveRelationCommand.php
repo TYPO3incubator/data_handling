@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,24 +15,21 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\BundleTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class TranslateEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, AggregateReference, Locale, Derivable
+class RemoveRelationCommand extends AbstractCommand implements Instantiable, AggregateReference, RelationReference
 {
-    use BundleTrait;
     use AggregateReferenceTrait;
-    use LocaleTrait;
+    use RelationReferenceTrait;
 
     /**
-     * @return TranslateEntityBundleCommand
+     * @return RemoveRelationCommand
      */
     public static function instance()
     {
@@ -41,16 +38,14 @@ class TranslateEntityBundleCommand extends AbstractCommand implements Instantiab
 
     /**
      * @param EntityReference $aggregateReference
-     * @param string $locale
-     * @param AbstractCommand[] $commands
-     * @return TranslateEntityBundleCommand
+     * @param PropertyReference $relationReference
+     * @return RemoveRelationCommand
      */
-    public static function create(EntityReference $aggregateReference, string $locale, array $commands)
+    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
     {
         $command = static::instance();
         $command->aggregateReference = $aggregateReference;
-        $command->locale = $locale;
-        $command->commands = $commands;
+        $command->relationReference = $relationReference;
         return $command;
     }
 }

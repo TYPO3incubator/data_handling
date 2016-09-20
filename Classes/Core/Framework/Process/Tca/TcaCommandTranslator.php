@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Process\Tca;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
 
@@ -31,7 +31,7 @@ final class TcaCommandTranslator
     }
 
     /**
-     * @var Meta\AbstractCommand[]
+     * @var Command\AbstractCommand[]
      */
     private $commands = [];
 
@@ -41,7 +41,7 @@ final class TcaCommandTranslator
     private $factories = [];
 
     /**
-     * @return Meta\AbstractCommand[]
+     * @return Command\AbstractCommand[]
      */
     public function translate()
     {
@@ -68,7 +68,7 @@ final class TcaCommandTranslator
     }
 
     /**
-     * @return Meta\AbstractCommand[]
+     * @return Command\AbstractCommand[]
      */
     private function finish()
     {
@@ -85,29 +85,29 @@ final class TcaCommandTranslator
     }
 
     /**
-     * @param Meta\AbstractCommand $command
+     * @param Command\AbstractCommand $command
      * @param TcaCommand $tcaCommand
      * @return null|TcaCommandEntityBehavior
      */
-    private function resolveEntityBehavior(Meta\AbstractCommand $command, TcaCommand $tcaCommand)
+    private function resolveEntityBehavior(Command\AbstractCommand $command, TcaCommand $tcaCommand)
     {
         $entityBehavior = null;
-        if ($command instanceof Meta\CreateEntityBundleCommand) {
+        if ($command instanceof Command\CreateEntityBundleCommand) {
             $entityBehavior = $tcaCommand->onCreate();
         }
-        if ($command instanceof Meta\BranchEntityBundleCommand) {
+        if ($command instanceof Command\BranchEntityBundleCommand) {
 
         }
-        if ($command instanceof Meta\BranchAndTranslateEntityBundleCommand) {
+        if ($command instanceof Command\BranchAndTranslateEntityBundleCommand) {
 
         }
-        if ($command instanceof Meta\TranslateEntityBundleCommand) {
+        if ($command instanceof Command\TranslateEntityBundleCommand) {
 
         }
-        if ($command instanceof Meta\ModifyEntityBundleCommand) {
+        if ($command instanceof Command\ModifyEntityBundleCommand) {
             $entityBehavior = $tcaCommand->onModify();
         }
-        if ($command instanceof Meta\DeleteEntityCommand) {
+        if ($command instanceof Command\DeleteEntityCommand) {
             $entityBehavior = $tcaCommand->onDelete();
         }
 
@@ -125,12 +125,12 @@ final class TcaCommandTranslator
     /**
      * Checks whether whole command bundle can be applied.
      *
-     * @param Meta\AbstractCommand $command
+     * @param Command\AbstractCommand $command
      * @param TcaCommandEntityBehavior $entityBehavior
      * @return bool
      */
     private function isValid(
-        Meta\AbstractCommand $command,
+        Command\AbstractCommand $command,
         TcaCommandEntityBehavior $entityBehavior
     ) {
         if (!($command instanceof Bundle)) {
@@ -138,7 +138,7 @@ final class TcaCommandTranslator
         }
 
         foreach ($command->getCommands() as $bundledCommand) {
-            if ($bundledCommand instanceof Meta\ChangeEntityCommand) {
+            if ($bundledCommand instanceof Command\ChangeEntityCommand) {
                 $propertyNameIntersections = array_intersect(
                     array_keys($entityBehavior->getProperties()),
                     array_keys($bundledCommand->getData())
@@ -148,7 +148,7 @@ final class TcaCommandTranslator
                 }
                 continue;
             }
-            if ($bundledCommand instanceof Meta\AttachRelationCommand) {
+            if ($bundledCommand instanceof Command\AttachRelationCommand) {
                 $propertyName = $bundledCommand->getRelationReference()->getName();
                 if (
                     !$entityBehavior->hasRelation($propertyName)
@@ -158,7 +158,7 @@ final class TcaCommandTranslator
                 }
                 continue;
             }
-            if ($bundledCommand instanceof Meta\RemoveRelationCommand) {
+            if ($bundledCommand instanceof Command\RemoveRelationCommand) {
                 $propertyName = $bundledCommand->getRelationReference()->getName();
                 if (
                     !$entityBehavior->hasRelation($propertyName)
@@ -168,7 +168,7 @@ final class TcaCommandTranslator
                 }
                 continue;
             }
-            if ($bundledCommand instanceof Meta\OrderRelationsCommand) {
+            if ($bundledCommand instanceof Command\OrderRelationsCommand) {
                 $propertyName = $bundledCommand->getRelationReference()->getName();
                 if (
                     !$entityBehavior->hasRelation($propertyName)
@@ -184,10 +184,10 @@ final class TcaCommandTranslator
     }
 
     /**
-     * @param Meta\AbstractCommand $command
+     * @param Command\AbstractCommand $command
      * @return null|TcaCommand
      */
-    private function resolveTcaCommand(Meta\AbstractCommand $command)
+    private function resolveTcaCommand(Command\AbstractCommand $command)
     {
         $tcaCommandManager = TcaCommandManager::provide();
 
@@ -215,9 +215,9 @@ final class TcaCommandTranslator
     }
 
     /**
-     * @param Meta\AbstractCommand $command
+     * @param Command\AbstractCommand $command
      */
-    private function unsetCommand(Meta\AbstractCommand $command)
+    private function unsetCommand(Command\AbstractCommand $command)
     {
         $index = array_search($command, $this->commands);
         if ($index !== false) {

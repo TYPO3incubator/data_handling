@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,33 +16,33 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\SequenceTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class OrderedRelationsEvent extends AbstractEvent implements Instantiable, Sequence
+class RemovedRelationEvent extends AbstractEvent implements Instantiable, RelationReference
 {
-    use SequenceTrait;
+    use RelationReferenceTrait;
 
     /**
-     * @return OrderedRelationsEvent
+     * @return RemovedRelationEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(OrderedRelationsEvent::class);
+        return GeneralUtility::makeInstance(RemovedRelationEvent::class);
     }
 
     /**
      * @param EntityReference $aggregateReference
-     * @param AbstractSequence $sequence
-     * @return OrderedRelationsEvent
+     * @param PropertyReference $relationReference
+     * @return RemovedRelationEvent
      */
-    public static function create(EntityReference $aggregateReference, AbstractSequence $sequence)
+    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
     {
         $event = static::instance();
         $event->aggregateReference = $aggregateReference;
-        $event->sequence = $sequence;
+        $event->relationReference = $relationReference;
         return $event;
     }
 }

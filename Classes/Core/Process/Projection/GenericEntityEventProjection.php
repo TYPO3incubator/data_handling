@@ -17,8 +17,9 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\EventProjecting;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\Projecting;
 
-class GenericEntityEventProjection extends AbstractGenericEntityProjection implements EventProjecting
+class GenericEntityEventProjection extends AbstractGenericEntityProjection implements Projecting, EventProjecting
 {
     /**
      * @return GenericEntityEventProjection

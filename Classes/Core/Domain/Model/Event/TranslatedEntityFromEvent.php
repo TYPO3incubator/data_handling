@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.

@@ -227,21 +227,21 @@ class EventSelectorTest extends UnitTestCase
             ],
             'matching inherited events' => [
                 '[' . \TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent::class . ']',
-                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent::class . ']',
+                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent::class . ']',
                 true
             ],
             'different inherited events' => [
-                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent::class . ']',
+                '[' . \TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent::class . ']',
                 '[' . \TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent::class . ']',
                 false
             ],
             'matching chain' => [
                 '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent::class . ']',
-                '$stream/record/abcd.first.other-one[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent::class . ']',
+                '$stream/record/abcd.first.other-one[' . \TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent::class . ']',
                 true
             ],
             'different chain' => [
-                '$stream/record/abcd.first.other-one[' . \TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent::class . ']',
+                '$stream/record/abcd.first.other-one[' . \TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent::class . ']',
                 '$stream/*.first.second[' . \TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent::class . ']',
                 false
             ],

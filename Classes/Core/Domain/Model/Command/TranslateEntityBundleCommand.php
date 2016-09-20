@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,17 +15,24 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Bundle;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\BundleTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Derivable;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Locale;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\LocaleTrait;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class ChangeEntityCommand extends AbstractCommand implements Instantiable, AggregateReference
+class TranslateEntityBundleCommand extends AbstractCommand implements Instantiable, Bundle, AggregateReference, Locale, Derivable
 {
+    use BundleTrait;
     use AggregateReferenceTrait;
+    use LocaleTrait;
 
     /**
-     * @return ChangeEntityCommand
+     * @return TranslateEntityBundleCommand
      */
     public static function instance()
     {
@@ -34,27 +41,16 @@ class ChangeEntityCommand extends AbstractCommand implements Instantiable, Aggre
 
     /**
      * @param EntityReference $aggregateReference
-     * @param array $data
-     * @return ChangeEntityCommand
+     * @param string $locale
+     * @param AbstractCommand[] $commands
+     * @return TranslateEntityBundleCommand
      */
-    public static function create(EntityReference $aggregateReference, array $data)
+    public static function create(EntityReference $aggregateReference, string $locale, array $commands)
     {
         $command = static::instance();
         $command->aggregateReference = $aggregateReference;
-        $command->data = $data;
+        $command->locale = $locale;
+        $command->commands = $commands;
         return $command;
-    }
-
-    /**
-     * @var array|null
-     */
-    private $data;
-
-    /**
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 }

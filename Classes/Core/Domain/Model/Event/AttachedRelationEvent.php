@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Command\Meta;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -18,28 +18,34 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\RelationReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class DeleteEntityCommand extends AbstractCommand implements Instantiable, AggregateReference
+class AttachedRelationEvent extends AbstractEvent implements Instantiable, AggregateReference, RelationReference
 {
     use AggregateReferenceTrait;
+    use RelationReferenceTrait;
 
     /**
-     * @return DeleteEntityCommand
+     * @return AttachedRelationEvent
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(static::class);
+        return GeneralUtility::makeInstance(AttachedRelationEvent::class);
     }
 
     /**
      * @param EntityReference $aggregateReference
-     * @return DeleteEntityCommand
+     * @param PropertyReference $relationReference
+     * @return AttachedRelationEvent
      */
-    public static function create(EntityReference $aggregateReference)
+    public static function create(EntityReference $aggregateReference, PropertyReference $relationReference)
     {
-        $command = static::instance();
-        $command->aggregateReference = $aggregateReference;
-        return $command;
+        $event = static::instance();
+        $event->aggregateReference = $aggregateReference;
+        $event->relationReference = $relationReference;
+        return $event;
     }
 }

@@ -15,8 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\Process\Projection;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\GenericEntity;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;

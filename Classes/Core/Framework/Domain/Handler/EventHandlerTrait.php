@@ -37,7 +37,7 @@ trait EventHandlerTrait
     protected $projected = false;
 
     /**
-     * @var array
+     * @var BaseEvent[]
      */
     protected $recordedEvents = [];
 

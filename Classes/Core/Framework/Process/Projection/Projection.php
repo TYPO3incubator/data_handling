@@ -24,8 +24,8 @@ interface Projection
     public function listensTo();
 
     /**
-     * @param BaseEvent $events
+     * @param BaseEvent $event
      * @return void
      */
-    public function project(BaseEvent $events);
+    public function project(BaseEvent $event);
 }

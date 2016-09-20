@@ -18,6 +18,7 @@ use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\OriginatedEntityEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
@@ -31,12 +32,12 @@ use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionManager;
 class GenericEntityEventRepository implements Instantiable, EventRepository
 {
     /**
-     * @param string $aggregateType
      * @return GenericEntityEventRepository
+     * @deprecated
      */
-    public static function create(string $aggregateType)
+    public static function create()
     {
-        return GeneralUtility::makeInstance(static::class, $aggregateType);
+        return static::instance();
     }
 
     /**
@@ -45,14 +46,6 @@ class GenericEntityEventRepository implements Instantiable, EventRepository
     public static function instance()
     {
         return GeneralUtility::makeInstance(static::class);
-    }
-
-    /**
-     * @param string $tableName
-     */
-    public function __construct(string $tableName)
-    {
-        $this->aggregateType = $tableName;
     }
 
     /**
@@ -91,8 +84,12 @@ class GenericEntityEventRepository implements Instantiable, EventRepository
      */
     public function addEvent(BaseEvent $event)
     {
-        $streamName = Common::STREAM_PREFIX_META
-            . '/' . (string)$event->getAggregateReference();
+        if ($event instanceof OriginatedEntityEvent) {
+            $streamName = Common::STREAM_PREFIX_META_ORIGIN;
+        } else {
+            $streamName = Common::STREAM_PREFIX_META
+                . '/' . (string)$event->getAggregateReference();
+        }
 
         $eventSelector = EventSelector::instance()
             ->setEvents([get_class($event)])

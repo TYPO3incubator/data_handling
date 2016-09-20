@@ -138,7 +138,7 @@ final class TcaCommandTranslator
         }
 
         foreach ($command->getCommands() as $bundledCommand) {
-            if ($bundledCommand instanceof Command\ChangeEntityCommand) {
+            if ($bundledCommand instanceof Command\ModifyEntityCommand) {
                 $propertyNameIntersections = array_intersect(
                     array_keys($entityBehavior->getProperties()),
                     array_keys($bundledCommand->getData())

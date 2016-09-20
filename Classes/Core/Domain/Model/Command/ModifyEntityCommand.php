@@ -15,17 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 
-class ChangeEntityCommand extends AbstractCommand implements Instantiable, AggregateReference
+class ModifyEntityCommand extends AbstractCommand implements Instantiable, AggregateReference
 {
     use AggregateReferenceTrait;
 
     /**
-     * @return ChangeEntityCommand
+     * @return ModifyEntityCommand
      */
     public static function instance()
     {
@@ -33,13 +34,15 @@ class ChangeEntityCommand extends AbstractCommand implements Instantiable, Aggre
     }
 
     /**
+     * @param Context $context
      * @param EntityReference $aggregateReference
      * @param array $data
-     * @return ChangeEntityCommand
+     * @return ModifyEntityCommand
      */
-    public static function create(EntityReference $aggregateReference, array $data)
+    public static function create(Context $context, EntityReference $aggregateReference, array $data)
     {
         $command = static::instance();
+        $command->context = $context;
         $command->aggregateReference = $aggregateReference;
         $command->data = $data;
         return $command;

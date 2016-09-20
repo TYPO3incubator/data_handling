@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
+namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -23,7 +23,18 @@ class Context
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(Context::class);
+        return GeneralUtility::makeInstance(static::class);
+    }
+
+    /**
+     * @param array $properties
+     * @return Context
+     */
+    public static function fromArray(array $properties)
+    {
+        return static::instance()
+            ->setWorkspaceId($properties['workspace'])
+            ->setLanguageId($properties['language']);
     }
 
     /**
@@ -42,6 +53,14 @@ class Context
     public function __toString()
     {
         return sprintf('workspace-%d-language-%d', $this->workspaceId, $this->languageId);
+    }
+
+    public function __toArray()
+    {
+        return [
+            'workspace' => $this->workspaceId,
+            'language' => $this->languageId,
+        ];
     }
 
     public function getWorkspaceId(): int

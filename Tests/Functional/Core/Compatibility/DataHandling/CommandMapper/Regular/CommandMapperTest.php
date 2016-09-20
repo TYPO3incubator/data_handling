@@ -68,7 +68,7 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
                     [ 'identity.name' => static::TABLE_Content, 'identity.uuid' => '@@UUID@@' ],
                     [ 'identity.name' => static::TABLE_Content, 'identity.uuid' => '@@UUID@@' ],
                 ],
-                GenericCommand\ChangeEntityCommand::class => [
+                GenericCommand\ModifyEntityCommand::class => [
                     [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #1' ],
                     [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #2' ],
                 ],
@@ -86,7 +86,7 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
 
         $this->assertHasCommands(
             [
-                GenericCommand\ChangeEntityCommand::class => [
+                GenericCommand\ModifyEntityCommand::class => [
                     [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #1' ],
                 ],
             ],

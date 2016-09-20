@@ -14,28 +14,11 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\EventPublisher;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
-trait CommandHandlerBundlableTrait
+trait CommandHandlerTrait
 {
-    /**
-     * @param EventRepository $repository
-     * @param BaseEvent $event
-     * @deprecated
-     */
-    protected static function emitEvent(EventRepository $repository, BaseEvent $event)
-    {
-        // first store event, then publish
-        $repository->addEvent($event);
-        EventPublisher::instance()->publish($event);
-    }
-
     /**
      * @param DomainCommand $command
      * @return null|mixed

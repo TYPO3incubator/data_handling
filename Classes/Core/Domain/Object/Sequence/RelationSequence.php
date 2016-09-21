@@ -43,7 +43,12 @@ class RelationSequence extends AbstractSequence
     /**
      * @var PropertyReference[]
      */
-    protected $sequence = [];
+    private $sequence = [];
+
+    /**
+     * @var string
+     */
+    private $name;
 
     /**
      * @return array
@@ -72,8 +77,21 @@ class RelationSequence extends AbstractSequence
     public function attach($item)
     {
         if ($item instanceof PropertyReference) {
-            $this->sequence[] = $item;
+            if ($this->name === null) {
+                $this->name = $item->getName();
+            }
+            if ($this->name === $item->getName()) {
+                $this->sequence[] = $item;
+            }
         }
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

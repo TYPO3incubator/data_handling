@@ -47,6 +47,24 @@ class ProjectionContext implements Instantiable, Providable
     }
 
     /**
+     * @param int $workspaceId
+     * @param array $languageChain
+     * @return string
+     */
+    public static function asString(int $workspaceId, array $languageChain = null): string
+    {
+        $stringRepresentation = 'workspace-' . $workspaceId;
+        if (!empty($languageChain)) {
+            $stringRepresentation .= '-languages';
+            foreach ($languageChain as $languageId) {
+                $stringRepresentation .= '-' . $languageId;
+            }
+        }
+        return $stringRepresentation;
+
+    }
+
+    /**
      * @var int
      */
     protected $workspaceId = 0;
@@ -72,14 +90,7 @@ class ProjectionContext implements Instantiable, Providable
      */
     public function __toString()
     {
-        $stringRepresentation = 'workspace-' . $this->workspaceId;
-        if (!empty($this->languageChain)) {
-            $stringRepresentation .= '-languages';
-            foreach ($this->languageChain as $languageId) {
-                $stringRepresentation .= '-' . $languageId;
-            }
-        }
-        return $stringRepresentation;
+        return static::asString($this->workspaceId, $this->languageChain);
     }
 
     public function lock()

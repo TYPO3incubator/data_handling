@@ -15,7 +15,10 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
  */
 
 use Ramsey\Uuid\Uuid;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\RelationResolver;
+use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\ValueResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EventReference;
@@ -38,6 +41,31 @@ class GenericEntity extends State implements EventApplicable
     public static function instance()
     {
         return GeneralUtility::makeInstance(static::class);
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string $aggregateType
+     * @param array $data
+     * @return GenericEntity
+     */
+    public static function buildFromProjection(Connection $connection, string $aggregateType, array $data)
+    {
+        $aggregateReference = EntityReference::fromRecord($aggregateType, $data);
+
+        $genericEntity = GenericEntity::instance();
+        $genericEntity->getSubject()->import($aggregateReference);
+
+        $genericEntity->setValues(
+            ValueResolver::instance()
+                ->resolve($genericEntity->getSubject(), $data)
+        );
+        $genericEntity->setRelations(
+            RelationResolver::create($connection)
+                ->resolve($genericEntity->getSubject(), $data)
+        );
+
+        return $genericEntity;
     }
 
     /*
@@ -276,13 +304,26 @@ class GenericEntity extends State implements EventApplicable
     {
         $this->subject = $event->getAggregateReference();
 
-        $aggregateReference = $event->getAggregateReference();
         $fromEntity = GenericEntityEventRepository::instance()
-            ->findByAggregateReference($aggregateReference, $event->getEventId());
+            ->findByAggregateReference(
+                $event->getFromReference()->getEntityReference(),
+                $event->getFromReference()->getEventId()
+            );
 
-        $this->setValues($fromEntity->getValues());
-        $this->setRelations($fromEntity->getRelations());
-        $this->getContext()->setWorkspaceId($event->getContext()->getWorkspaceId());
+        $this->setNode(
+            EntityReference::instance()->import(
+                $fromEntity->getNode()
+            )
+        );
+        $this->setValues(
+            $fromEntity->getValues()
+        );
+        $this->setRelations(
+            $fromEntity->getRelations()
+        );
+        $this->getContext()->setWorkspaceId(
+            $event->getContext()->getWorkspaceId()
+        );
     }
 
     protected function applyTranslatedToEvent(Event\TranslatedEntityToEvent $event)
@@ -293,13 +334,26 @@ class GenericEntity extends State implements EventApplicable
     {
         $this->subject = $event->getAggregateReference();
 
-        $aggregateReference = $event->getAggregateReference();
         $fromEntity = GenericEntityEventRepository::instance()
-            ->findByAggregateReference($aggregateReference, $event->getEventId());
+            ->findByAggregateReference(
+                $event->getFromReference()->getEntityReference(),
+                $event->getFromReference()->getEventId()
+            );
 
-        $this->setValues($fromEntity->getValues());
-        $this->setRelations($fromEntity->getRelations());
-        $this->getContext()->setLanguageId($event->getContext()->getLanguageId());
+        $this->setNode(
+            EntityReference::instance()->import(
+                $fromEntity->getNode()
+            )
+        );
+        $this->setValues(
+            $fromEntity->getValues()
+        );
+        $this->setRelations(
+            $fromEntity->getRelations()
+        );
+        $this->getContext()->setLanguageId(
+            $event->getContext()->getLanguageId()
+        );
     }
 
     protected function applyChangedEntityEvent(Event\ModifiedEntityEvent $event)

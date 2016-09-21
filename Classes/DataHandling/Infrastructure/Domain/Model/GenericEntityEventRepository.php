@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent;
@@ -50,14 +49,27 @@ class GenericEntityEventRepository implements Instantiable, EventRepository
 
     /**
      * @param EntityReference $aggregateReference
+     * @return EventSelector
+     */
+    public static function createEventSelector(
+        EntityReference $aggregateReference
+    ) {
+        $streamName = Common::STREAM_PREFIX_META . '/' . (string)$aggregateReference;
+        return EventSelector::instance()->setStreamName($streamName);
+    }
+
+    /**
+     * @param EntityReference $aggregateReference
      * @param string $eventId
      * @param string $type
      * @return GenericEntity
      */
-    public function findByAggregateReference(EntityReference $aggregateReference, string $eventId = '', string $type = Saga::EVENT_EXCLUDING)
-    {
-        $streamName = Common::STREAM_PREFIX_META . '/' . (string)$aggregateReference;
-        $eventSelector = EventSelector::instance()->setStreamName($streamName);
+    public function findByAggregateReference(
+        EntityReference $aggregateReference,
+        string $eventId = '',
+        string $type = Saga::EVENT_EXCLUDING
+    ) {
+        $eventSelector = static::createEventSelector($aggregateReference);
 
         return Saga::instance()
             ->constraint($eventId, $type)

@@ -30,8 +30,33 @@ class UuidUtility
         $statement = $queryBuilder
             ->select(Common::FIELD_UUID)
             ->from($reference->getName())
-            ->where($queryBuilder->expr()->eq('uid', $reference->getUid()))
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid',
+                    $reference->getUid()
+                )
+            )
             ->execute();
         return $statement->fetchColumn();
+    }
+
+    /**
+     * @param EntityReference $reference
+     * @return int
+     */
+    public static function fetchUid(EntityReference $reference): int
+    {
+        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
+        $statement = $queryBuilder
+            ->select('uid')
+            ->from($reference->getName())
+            ->where(
+                $queryBuilder->expr()->eq(
+                    Common::FIELD_UUID,
+                    $queryBuilder->createNamedParameter($reference->getUuid())
+                )
+            )
+            ->execute();
+        return (int)$statement->fetchColumn();
     }
 }

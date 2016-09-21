@@ -22,9 +22,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\Core\Domain\Event\Meta;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Context;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\SourceManager;
+use TYPO3\CMS\DataHandling\Core\Service\ContextService;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
 use TYPO3\CMS\Install\Updates\AbstractUpdate;
@@ -102,9 +103,20 @@ class EventInitializationUpdate extends AbstractUpdate
             $this->assignUuid($tableName);
         }
 
-        foreach ($this->getWorkspaces() as $workspace) {
-            foreach ($this->getLanguages() as $language) {
-                $context = Context::instance()->setWorkspaceId($workspace)->setLanguageId($language);
+        $contextService = ContextService::instance();
+
+        // remove existing local storages
+        foreach ($contextService->getWorkspaceIds() as $workspaceId) {
+            ConnectionPool::instance()->purgeLocalStorage(
+                Context::instance()
+                    ->setWorkspaceId($workspaceId)
+                    ->toLocalStorageName()
+            );
+        }
+
+        foreach ($contextService->getWorkspaceIds() as $workspaceId) {
+            foreach ($contextService->getLanguageIds() as $languageId) {
+                $context = Context::instance()->setWorkspaceId($workspaceId)->setLanguageId($languageId);
                 $service = EventInitializationService::instance()->setContext($context);
 
                 // first process all pages (nodes)
@@ -130,32 +142,6 @@ class EventInitializationUpdate extends AbstractUpdate
         }
 
         return true;
-    }
-
-    protected function getLanguages(): array
-    {
-        $languages = [0];
-        $statement = $this->getQueryBuilder()
-            ->select('uid')
-            ->from('sys_language')
-            ->execute();
-        $languages = array_merge($languages, array_column($statement->fetchAll(), 'uid'));
-        return $languages;
-    }
-
-    protected function getWorkspaces(): array
-    {
-        $workspaces = [0];
-
-        if (ExtensionManagementUtility::isLoaded('workspaces')) {
-            $statement = $this->getQueryBuilder()
-                ->select('uid')
-                ->from('sys_language')
-                ->execute();
-            $workspaces = array_merge($workspaces, array_column($statement->fetchAll(), 'uid'));
-        }
-
-        return $workspaces;
     }
 
     /**

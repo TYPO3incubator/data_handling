@@ -22,6 +22,7 @@ use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\CommandBus;
+use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionManager;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
@@ -88,6 +89,9 @@ class Common
         // provides ProjectionContext, once workspace information is available
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class]['className']
             = \TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication::class;
+        // provides information whether pages have workspace changes
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Workspaces\Service\WorkspaceService::class]['className']
+            = \TYPO3\CMS\DataHandling\Workspaces\Service\WorkspaceService::class;
     }
 
     public static function registerUpdates()
@@ -135,10 +139,16 @@ class Common
                 Command\BranchEntityBundleCommand::class,
                 Command\BranchAndTranslateEntityBundleCommand::class,
                 Command\TranslateEntityBundleCommand::class,
+                Command\ModifyEntityBundleCommand::class,
                 Command\DeleteEntityCommand::class,
                 // @todo: enable, disable, move
             ]
         );
+
+        ProjectionManager::provide()->registerProjections([
+            new \TYPO3\CMS\DataHandling\Core\Domain\Model\Projection\GenericEntityProjection(),
+            new \TYPO3\CMS\DataHandling\Core\Domain\Model\Projection\TableVersionProjection(),
+        ]);
 
         // initialize default EventStore using SqlDriver
         EventStorePool::provide()

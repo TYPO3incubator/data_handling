@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Object;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\AbstractSequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 
 trait SequenceTrait
 {
@@ -24,7 +25,7 @@ trait SequenceTrait
     protected $sequence;
 
     /**
-     * @return null|AbstractSequence
+     * @return null|AbstractSequence|RelationSequence
      */
     public function getSequence()
     {

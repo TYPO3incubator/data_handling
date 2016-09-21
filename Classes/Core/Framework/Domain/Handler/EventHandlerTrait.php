@@ -16,7 +16,6 @@ namespace TYPO3\CMS\DataHandling\Core\Framework\Domain\Handler;
 
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\EventPublisher;
 use TYPO3\CMS\DataHandling\Core\Utility\ClassNamingUtility;
 
 trait EventHandlerTrait
@@ -79,17 +78,11 @@ trait EventHandlerTrait
     {
         $this->recordEvent($event);
         $this->applyEvent($event);
-        $this->publishEvent($event);
     }
 
     protected function recordEvent(BaseEvent $event)
     {
         $this->recordedEvents[] = $event;
-    }
-
-    protected function publishEvent(BaseEvent $event)
-    {
-        EventPublisher::instance()->publish($event);
     }
 
     /**

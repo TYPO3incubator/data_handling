@@ -102,8 +102,26 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
             LocalStorage::instance()->initialize(
                 $this->getConnectionByName($connectionName)
             );
+
+            GeneralUtility::fixPermissions(dirname($filePath));
+            GeneralUtility::fixPermissions($filePath);
         }
 
         return $this->getConnectionByName($connectionName);
+    }
+
+    /**
+     * @param string $name
+     */
+    public function purgeLocalStorage(string $name)
+    {
+        $filePath = GeneralUtility::getFileAbsFileName(
+            'typo3temp/var/LocalStorage/' . $name . '.sqlite'
+        );
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+            clearstatcache();
+        }
     }
 }

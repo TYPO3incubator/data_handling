@@ -126,6 +126,9 @@ final class TcaProjectionService
             if (is_bool($mapping[$fieldName])) {
                 continue;
             }
+            if (!isset($substitution[$fieldName])) {
+                continue;
+            }
             $substitutedFieldName = $substitution[$fieldName];
             $data[$substitutedFieldName] = $fieldValue;
             unset($data[$fieldName]);

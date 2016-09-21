@@ -15,6 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
  */
 
 
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Contextual;
@@ -40,6 +42,24 @@ abstract class AbstractEvent extends BaseEvent implements StorableEvent, Context
 {
     use ContextualTrait;
     use AggregateReferenceTrait;
+
+    /**
+     * @return UuidInterface
+     */
+    public function getAggregateId()
+    {
+        return Uuid::fromString(
+            $this->aggregateReference->getUuid()
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getAggregateType()
+    {
+        return $this->aggregateReference->getName();
+    }
 
     /**
      * @return array

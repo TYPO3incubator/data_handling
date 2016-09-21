@@ -79,9 +79,10 @@ class LocalStorage
     {
         foreach ($schema as $tableName => $tableParts) {
             foreach ($tableParts['fields'] as $fieldName => $fieldDefinition) {
-                $normalizedFieldDefinition = [];
-                if (preg_match('#^(?P<type>[a-z]+)(?:\s*\((?P<length>\d+)\))?(?:\s+(?P<unsigned>unsigned))?(?:\s+(?P<notNull>NOT\s+NULL))?(?:\s+default\s+(?P<default>(?:\'[^\']*\'|"[^"]*"|\d+)))?(?:\s+(?P<autoincrement>auto_increment))?#i', $fieldDefinition, $matches)) {
-                    $normalizedFieldDefinition['options'] = [];
+                $normalizedFieldDefinition = [
+                    'options' => []
+                ];
+                if (preg_match('#^(?P<type>[a-z]+)(?:\s*\((?P<length>\d+)\))?(?:\s+(?P<unsigned>unsigned))?(?:\s+(?P<notNull>NOT\s+NULL))?(?:\s+default\s+(?P<default>(?:\'[^\']*\'|"[^"]*"|\d+|NULL)))?(?:\s+(?P<autoincrement>auto_increment))?#i', $fieldDefinition, $matches)) {
                     $normalizedFieldDefinition['type'] = $this->normalizeType($matches['type']);
 
                     if (!empty($matches['length'])) {
@@ -93,12 +94,16 @@ class LocalStorage
                     if (!empty($matches['unsigned'])) {
                         $normalizedFieldDefinition['options']['unsigned'] = true;
                     }
-                    if (!empty($matches['notnull'])) {
+                    if (!empty($matches['notNull'])) {
                         $normalizedFieldDefinition['options']['notnull'] = true;
                     }
                     if (!empty($matches['autoincrement'])) {
                         $normalizedFieldDefinition['options']['autoincrement'] = true;
                     }
+
+                    $normalizedFieldDefinition = $this->adjustDefinitions(
+                        $normalizedFieldDefinition
+                    );
                 }
                 $schema[$tableName]['fields'][$fieldName] = $normalizedFieldDefinition;
             }
@@ -140,6 +145,28 @@ class LocalStorage
         }
 
         return $type;
+    }
+
+    private function adjustDefinitions(array $definitions)
+    {
+        $nullableTypes = [
+            Type::STRING,
+            Type::BLOB,
+            Type::TEXT,
+        ];
+
+        if (in_array($definitions['type'], $nullableTypes)) {
+            $definitions['options']['notnull'] = false;
+        }
+
+        if (
+            !empty($definitions['options']['default'])
+            && strtoupper($definitions['options']['default']) === 'NULL'
+        ) {
+            $definitions['options']['notnull'] = false;
+        }
+
+        return $definitions;
     }
 
     /**

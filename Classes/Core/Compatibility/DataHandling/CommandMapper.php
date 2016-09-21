@@ -17,21 +17,19 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
-use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\SuggestedState;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntity\OriginProjectionRepository;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Command\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\CommandBus;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandManager;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandTranslator;
@@ -370,27 +368,12 @@ class CommandMapper
      */
     private function fetchOriginState(EntityReference $reference)
     {
-        $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
-        $statement = $queryBuilder
-            ->select('*')
-            ->from($reference->getName())
-            ->where($queryBuilder->expr()->eq('uid', $reference->getUid()))
-            ->execute();
-        $data = $statement->fetch();
+        $repository = OriginProjectionRepository::create($reference->getName());
+        $genericEntity = $repository->findOneByUid($reference->getUid());
 
-        if (empty($data)) {
+        if ($genericEntity === null) {
             throw new \RuntimeException('State for "' . $reference->getName() . ':' . $reference->getUid() . '" not available', 1469963429);
         }
-
-        $genericEntity = GenericEntity::instance();
-        $genericEntity->getSubject()->import($reference)->setUuid($data[Common::FIELD_UUID]);
-
-        $genericEntity->setValues(
-            CoreResolver\ValueResolver::instance()->resolve($genericEntity->getSubject(), $data)
-        );
-        $genericEntity->setRelations(
-            CoreResolver\RelationResolver::instance()->resolve($genericEntity->getSubject(), $data)
-        );
 
         return $genericEntity;
     }

@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsString;
 
 class SortingComparisonService implements SingletonInterface
@@ -32,6 +33,11 @@ class SortingComparisonService implements SingletonInterface
         return GeneralUtility::makeInstance(SortingComparisonService::class);
     }
 
+    /**
+     * @param PropertyReference[] $source
+     * @param PropertyReference[] $target
+     * @return array
+     */
     public function compare(array $source, array $target) {
         $actions = [];
 

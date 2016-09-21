@@ -37,7 +37,7 @@ class ProjectionManager implements Providable
     }
 
     /**
-     * @return ProjectionPool
+     * @return ProjectionManager
      */
     private static function instance()
     {

@@ -14,8 +14,9 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Database\RelationHandler;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Compatibility\Database\LegacyRelationHandler;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
@@ -23,11 +24,22 @@ use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 class RelationResolver extends AbstractResolver
 {
     /**
-     * @return RelationResolver
+     * @param Connection $connection
+     * @return static
      */
-    public static function instance()
+    public static function create(Connection $connection)
     {
-        return GeneralUtility::makeInstance(RelationResolver::class);
+        return new static($connection);
+    }
+
+    /**
+     * @var Connection
+     */
+    private $connection;
+
+    private function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
     }
 
     /**
@@ -56,11 +68,11 @@ class RelationResolver extends AbstractResolver
                 $tableNames = ($configuration['config']['allowed'] ?? '');
                 $manyToManyTable = ($configuration['config']['MM'] ?? '');
                 $itemValues = (empty($manyToManyTable) ? $rawValue : '');
-            } elseif ($configuration['config']['type'] === 'inline') {
+            } elseif ($configuration['config']['type'] === 'select') {
                 $tableNames = ($configuration['foreign_table'] ?? '');
                 $manyToManyTable = ($configuration['config']['MM'] ?? '');
                 $itemValues = (empty($manyToManyTable) ? $rawValue : '');
-            } elseif ($configuration['config']['type'] === 'select') {
+            } elseif ($configuration['config']['type'] === 'inline') {
                 $tableNames = ($specialTableName ?? $configuration['foreign_table'] ?? '');
                 $manyToManyTable = ($configuration['config']['MM'] ?? '');
                 $foreignField = ($configuration['config']['foreign_field'] ?? '');
@@ -95,12 +107,11 @@ class RelationResolver extends AbstractResolver
     }
 
     /**
-     * @return RelationHandler
+     * @return LegacyRelationHandler
      */
     protected function createRelationHandler()
     {
-        $relationHandler = GeneralUtility::makeInstance(RelationHandler::class);
-        $relationHandler->setWorkspaceId(0);
+        $relationHandler = LegacyRelationHandler::create($this->connection);
         return $relationHandler;
     }
 }

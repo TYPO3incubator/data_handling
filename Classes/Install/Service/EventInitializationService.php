@@ -43,6 +43,7 @@ class EventInitializationService
     const INSTRUCTION_ACTIONS = 128;
 
     const KEY_UPGRADE = 'upgrade';
+    const KEY_TRIGGER = 'trigger';
 
     /**
      * @return EventInitializationService
@@ -89,6 +90,18 @@ class EventInitializationService
     {
         $predicates = [];
         $fetchQueryBuilder = $this->getQueryBuilder();
+
+        if (
+            $this->isNotWorkspaceAware($tableName)
+            || $this->isNotLanguageAware($tableName)
+        ) {
+            return;
+        }
+
+        if ($this->context->getLanguageId() > 0) {
+            $tableName = MetaModelService::instance()
+                ->getLanguageTableName($tableName);
+        }
 
         if ($this->instruction & static::INSTRUCTION_ENTITY) {
             $predicates[] = $fetchQueryBuilder->expr()->isNull(Common::FIELD_REVISION);
@@ -155,7 +168,7 @@ class EventInitializationService
         $metadata = $this->getUpgradeMetadata($data);
         $tableName = $migrationEntity->getSubject()->getName();
 
-        $isWorkspaceAspect = $this->isWorkspaceAspect($tableName);
+        $isWorkspaceAspect = $this->isWorkspaceAspect($tableName, $data);
         $isTranslationAspect = $this->isTranslationAspect($tableName, $data);
 
         $context = $this->determineContext($tableName, $data);
@@ -239,7 +252,7 @@ class EventInitializationService
         // skip, if in valid workspace context, but record is
         // not in default version state, thus not only modified
         if (
-            $this->isWorkspaceAspect($tableName)
+            $this->isWorkspaceAspect($tableName, $data)
             && !VersionState::cast($data['t3ver_state'])->equals(
                 VersionState::DEFAULT_STATE
             )
@@ -269,8 +282,14 @@ class EventInitializationService
         $tableName = $migrationEntity->getSubject()->getName();
         $context = $this->determineContext($tableName, $data);
 
+        $relationResolver = CoreResolver\RelationResolver::create(
+            ConnectionPool::instance()->getOriginConnection()
+        );
         $temporaryState = State::instance()->setRelations(
-            CoreResolver\RelationResolver::instance()->resolve($migrationEntity->getSubject(), $data)
+            $relationResolver->resolve(
+                $migrationEntity->getSubject(),
+                $data
+            )
         );
 
         $metaModelSchema = Map::instance()->getSchema($migrationEntity->getSubject()->getName());
@@ -295,7 +314,7 @@ class EventInitializationService
         $tableName = $migrationEntity->getSubject()->getName();
         $context = $this->determineContext($tableName, $data);
 
-        if ($this->isWorkspaceAspect($tableName)) {
+        if ($this->isWorkspaceAspect($tableName, $data)) {
             $versionState = VersionState::cast($data['t3ver_state']);
 
             if ($versionState->equals(VersionState::DELETE_PLACEHOLDER)) {
@@ -311,13 +330,27 @@ class EventInitializationService
 
     /**
      * @param string $tableName
+     * @param array $data
      * @return bool
      */
-    private function isWorkspaceAspect(string $tableName)
+    private function isWorkspaceAspect(string $tableName, array $data)
     {
         return (
             $this->context->getWorkspaceId() > 0
             && MetaModelService::instance()->isWorkspaceAware($tableName)
+            && isset($data['t3ver_wsid']) && $data['t3ver_wsid'] > 0
+        );
+    }
+
+    /**
+     * @param string $tableName
+     * @return bool
+     */
+    private function isNotWorkspaceAware(string $tableName)
+    {
+        return (
+            $this->context->getWorkspaceId() > 0
+            && !MetaModelService::instance()->isWorkspaceAware($tableName)
         );
     }
 
@@ -335,7 +368,22 @@ class EventInitializationService
             $this->context->getLanguageId() > 0
             && $languageField !== null
             && $languagePointerField !== null
+            && isset($data[$languagePointerField])
             && $data[$languagePointerField] > 0
+        );
+    }
+
+    /**
+     * @param string $tableName
+     * @return bool
+     */
+    private function isNotLanguageAware(string $tableName)
+    {
+        $languageField = MetaModelService::instance()->getLanguageFieldName($tableName);
+
+        return (
+            $this->context->getLanguageId() > 0
+            && $languageField === null
         );
     }
 
@@ -349,7 +397,7 @@ class EventInitializationService
             static::KEY_UPGRADE => [
                 'uid' => $data['uid']
             ],
-            'trigger' => EventInitializationService::class,
+            static::KEY_TRIGGER => EventInitializationService::class,
         ];
     }
 
@@ -421,22 +469,11 @@ class EventInitializationService
      */
     private function getWorkspaceRestriction()
     {
-        if ($this->context->getWorkspaceId() === 0) {
-            // in live workspace, don't include overlays
-            $workspaceRestriction = GeneralUtility::makeInstance(
-                BackendWorkspaceRestriction::class,
-                $this->context->getWorkspaceId(),
-                false
-            );
-        } else {
-            // in a real workspace include overlays
-            $workspaceRestriction = GeneralUtility::makeInstance(
-                BackendWorkspaceRestriction::class,
-                $this->context->getWorkspaceId(),
-                true
-            );
-        }
-        return $workspaceRestriction;
+        return GeneralUtility::makeInstance(
+            BackendWorkspaceRestriction::class,
+            $this->context->getWorkspaceId(),
+            false
+        );
     }
 
     /**
@@ -472,7 +509,7 @@ class EventInitializationService
      */
     private function determineContext(string $tableName, array $data)
     {
-        $isWorkspaceAspect = $this->isWorkspaceAspect($tableName);
+        $isWorkspaceAspect = $this->isWorkspaceAspect($tableName, $data);
         $isTranslationAspect = $this->isTranslationAspect($tableName, $data);
         $languageField = MetaModelService::instance()->getLanguageFieldName($tableName);
 

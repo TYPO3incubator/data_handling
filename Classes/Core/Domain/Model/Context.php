@@ -63,6 +63,15 @@ class Context
         ];
     }
 
+    /**
+     * @return string
+     * @todo Extend for language as well
+     */
+    public function toLocalStorageName()
+    {
+        return sprintf('workspace-%d', $this->workspaceId);
+    }
+
     public function getWorkspaceId(): int
     {
         return $this->workspaceId;

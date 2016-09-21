@@ -228,7 +228,7 @@ class CommandResolver
                 $this->commandBuilder->addCommand(
                     Command\OrderRelationsCommand::create(
                         $targetState->getContext(),
-                        $relationPropertyReference,
+                        $aggregateReference,
                         $relationSequence
                     )
                 );

@@ -20,6 +20,7 @@ use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
 /**
  * @todo This is currently out-dated
+ * @deprecated
  */
 class EventManager implements Providable, Manageable, Listenable
 {

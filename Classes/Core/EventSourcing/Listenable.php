@@ -14,6 +14,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  * The TYPO3 project - inspiring people to share!
  */
 
+/**
+ * @deprecated
+ */
 interface Listenable
 {
     public function on(string $type, callable $listener);

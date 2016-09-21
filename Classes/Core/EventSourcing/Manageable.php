@@ -16,6 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
 
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 
+/**
+ * @deprecated
+ */
 interface Manageable
 {
     public function manage(BaseEvent $event);

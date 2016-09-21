@@ -31,7 +31,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
                 Event\CreatedEntityEvent::create($reference)
             );
             $this->emitRecordEvent(
-                Event\ChangedEntityEvent::create($reference, $fields_values)
+                Event\ModifiedEntityEvent::create($reference, $fields_values)
             );
             $fields_values[Common::FIELD_UUID] = $reference->getUuid();
         }
@@ -49,7 +49,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
                     Event\CreatedEntityEvent::create($reference)
                 );
                 $this->emitRecordEvent(
-                    Event\ChangedEntityEvent::create($reference, $fieldValues)
+                    Event\ModifiedEntityEvent::create($reference, $fieldValues)
                 );
                 $rows[$index][] = $reference->getUuid();
             }
@@ -65,7 +65,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
             foreach ($this->determineReferences($table, $where) as $reference) {
                 if (!GenericService::instance()->isDeleteCommand($table, $fields_values)) {
                     $this->emitRecordEvent(
-                        Event\ChangedEntityEvent::create($reference, $fields_values)
+                        Event\ModifiedEntityEvent::create($reference, $fields_values)
                     );
                 } else {
                     $this->emitRecordEvent(

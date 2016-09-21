@@ -17,17 +17,11 @@ namespace TYPO3\CMS\DataHandling;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider\TcaCommandModifier;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\OriginatedEntityEvent;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\GetEventStoreDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\CommandBus;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionPool;
-use TYPO3\CMS\DataHandling\Core\Process\Projection\GenericEntityProjectionProvider;
-use TYPO3\CMS\DataHandling\Core\Process\Projection\GenericEntityStreamProjection;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
@@ -94,11 +88,6 @@ class Common
         // provides ProjectionContext, once workspace information is available
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class]['className']
             = \TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication::class;
-
-        static::getObjectContainer()->registerImplementation(
-            \TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface::class,
-            \TYPO3\CMS\DataHandling\Extbase\Persistence\Generic\PersistenceManager::class
-        );
     }
 
     public static function registerUpdates()
@@ -166,40 +155,6 @@ class Common
 //                    GetEventStoreDriver::create('http://127.0.0.1:2113', 'admin', 'changeit', true)
 //                )
 //            );
-
-        ProjectionPool::provide()
-            ->enrolProjection(
-                '$' . static::STREAM_PREFIX_META_ORIGIN
-            )
-            ->setProviderName(GenericEntityProjectionProvider::class)
-            ->onStream(
-                OriginatedEntityEvent::class,
-                function(OriginatedEntityEvent $event, GenericEntityStreamProjection $projection) {
-                    $projection->triggerProjection(
-                        static::STREAM_PREFIX_META
-                            . '/' . $event->getAggregateReference()->getName()
-                            . '/' . $event->getAggregateReference()->getUuid()
-                    );
-                }
-            );
-
-        ProjectionPool::provide()
-            ->enrolProjection(
-                '$' . static::STREAM_PREFIX_META . '/*'
-            )
-            ->setProviderName(GenericEntityProjectionProvider::class);
-
-        ProjectionPool::provide()
-            ->enrolProjection(
-                '[' . AbstractEvent::class . ']'
-            )
-            ->setProviderName(GenericEntityProjectionProvider::class)
-            ->onEvent(
-                OriginatedEntityEvent::class,
-                function(OriginatedEntityEvent $event) {
-                    $event->cancel();
-                }
-            );
     }
 
     /**

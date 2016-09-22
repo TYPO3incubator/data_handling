@@ -100,7 +100,7 @@ class EventInitializationUpdate extends AbstractUpdate
         $recordTableNames = array_diff($tableNames, ['pages']);
 
         foreach ($allTableNames as $tableName) {
-            $this->assignUuid($tableName);
+            $this->assignEventSourcingValues($tableName);
         }
 
         $contextService = ContextService::instance();
@@ -144,15 +144,20 @@ class EventInitializationUpdate extends AbstractUpdate
 
     /**
      * @param string $tableName
+     * @param bool $force
      */
-    protected function assignUuid(string $tableName)
+    protected function assignEventSourcingValues(string $tableName, bool $force = false)
     {
-        if ($this->countEmptyUuidColumns($tableName) === 0) {
+        if (!$force && $this->countEmptyUuidColumns($tableName) === 0) {
             return;
         }
 
-        while ($uid = $this->getEmptyUuidColumnsStatement($tableName)->fetchColumn(0)) {
-            $data[Common::FIELD_UUID] = Uuid::uuid4()->toString();
+        $statement = $this->getEmptyUuidColumnsStatement($tableName, $force);
+        while ($uid = $statement->fetchColumn(0)) {
+            $data = [
+                Common::FIELD_UUID => Uuid::uuid4()->toString(),
+                Common::FIELD_REVISION => null,
+            ];
             ConnectionPool::instance()->getOriginConnection()
                 ->update($tableName, $data, ['uid' => $uid]);
         }
@@ -160,16 +165,24 @@ class EventInitializationUpdate extends AbstractUpdate
 
     /**
      * @param string $tableName
+     * @param bool $force
      * @return Statement
      */
-    protected function getEmptyUuidColumnsStatement(string $tableName)
+    protected function getEmptyUuidColumnsStatement(string $tableName, bool $force = false)
     {
         $queryBuilder = $this->getQueryBuilder();
+
+        if (!$force) {
+            $queryBuilder->where(
+                $queryBuilder->expr()->isNull(Common::FIELD_UUID)
+            );
+        }
+
         $statement = $queryBuilder
             ->select('uid')
             ->from($tableName)
-            ->where($queryBuilder->expr()->isNull(Common::FIELD_UUID))
             ->execute();
+
         return $statement;
     }
 

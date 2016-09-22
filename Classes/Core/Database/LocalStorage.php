@@ -48,11 +48,12 @@ class LocalStorage
             if ($tableName === 'sys_event_store') {
                 continue;
             }
-
+            // create new table
             if (!$targetSchema->hasTable($tableName)) {
                 $targetSchema->createTable($tableName);
             }
             $targetTable = $targetSchema->getTable($tableName);
+            // process fields
             foreach ($tableParts['fields'] as $fieldName => $fieldDefinition) {
                 if (!$targetTable->hasColumn($fieldName)) {
                     $targetTable->addColumn($fieldName, $fieldDefinition['type'], $fieldDefinition['options']);
@@ -60,6 +61,18 @@ class LocalStorage
                     $targetColumn = $targetTable->getColumn($fieldName);
                     $targetColumn->setType(Type::getType($fieldDefinition['type']));
                     $targetColumn->setOptions($fieldDefinition['options']);
+                }
+            }
+            // assign primary key
+            if (!empty($tableParts['keys']['primary'])) {
+                $targetTable->setPrimaryKey($tableParts['keys']['primary']);
+            }
+            // assign index keys
+            if (!empty($tableParts['keys']['index'])) {
+                $indexDefinitions = $tableParts['keys']['index'];
+                foreach ($indexDefinitions as $indexName => $indexColumns) {
+                    // @todo For whatever reason, index-names issue duplicates
+                    $targetTable->addIndex($indexColumns);
                 }
             }
         }
@@ -82,7 +95,7 @@ class LocalStorage
                 $normalizedFieldDefinition = [
                     'options' => []
                 ];
-                if (preg_match('#^(?P<type>[a-z]+)(?:\s*\((?P<length>\d+)\))?(?:\s+(?P<unsigned>unsigned))?(?:\s+(?P<notNull>NOT\s+NULL))?(?:\s+default\s+(?P<default>(?:\'[^\']*\'|"[^"]*"|\d+|NULL)))?(?:\s+(?P<autoincrement>auto_increment))?#i', $fieldDefinition, $matches)) {
+                if (preg_match('#^(?P<type>[a-z]+)(?:\s*\((?P<length>\d+)\))?(?:\s+(?P<unsigned>unsigned))?(?:\s+(?P<notNull>NOT\s+NULL))?(?:\s+default\s+(?P<default>(?:\'[^\']*\'|"[^"]*"|\d+|NULL)))?(?:\s+(?P<autoIncrement>auto_increment))?#i', $fieldDefinition, $matches)) {
                     $normalizedFieldDefinition['type'] = $this->normalizeType($matches['type']);
 
                     if (!empty($matches['length'])) {
@@ -97,7 +110,7 @@ class LocalStorage
                     if (!empty($matches['notNull'])) {
                         $normalizedFieldDefinition['options']['notnull'] = true;
                     }
-                    if (!empty($matches['autoincrement'])) {
+                    if (!empty($matches['autoIncrement'])) {
                         $normalizedFieldDefinition['options']['autoincrement'] = true;
                     }
 
@@ -107,6 +120,31 @@ class LocalStorage
                 }
                 $schema[$tableName]['fields'][$fieldName] = $normalizedFieldDefinition;
             }
+
+            if (empty($tableParts['keys'])) {
+                continue;
+            }
+            $keys = [];
+            foreach ($tableParts['keys'] as $keyName => $keyDefinitions) {
+                if (strtoupper($keyName) === 'PRIMARY') {
+                    if (preg_match('#PRIMARY\s+KEY\s+\((?P<columns>[^)]+)\)#i', $keyDefinitions, $matches)) {
+                        $columns = GeneralUtility::trimExplode(',', $matches['columns']);
+                        if (!empty($columns)) {
+                            $keys['primary'] = $columns;
+                        }
+                    }
+                } else {
+                    if (preg_match('#KEY\s+(?P<indexName>[^(]+)\s+\((?P<columnList>.+)\)\s*$#i', $keyDefinitions, $matches)) {
+                        $indexName = trim($matches['indexName']);
+                        $columnList = preg_replace('#\([^)]*\)#', '', $matches['columnList']);
+                        $columns = GeneralUtility::trimExplode(',', $columnList);
+                        if (!empty($indexName) && !empty($columns)) {
+                            $keys['index'][$indexName] = $columns;
+                        }
+                    }
+                }
+            }
+            $schema[$tableName]['keys'] = $keys;
         }
 
         return $schema;

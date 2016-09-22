@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider\TcaCommandModifier;
+use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\GetEventStoreDriver;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
@@ -61,8 +62,8 @@ class Common
             ]
         ];
 
-        $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Origin'] =
-            $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections']['Default'];
+        $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][ConnectionPool::ORIGIN_CONNECTION_NAME] =
+            $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][ConnectionPool::DEFAULT_CONNECTION_NAME];
 
         if (!static::$enable) {
             return;
@@ -83,7 +84,10 @@ class Common
             return;
         }
 
-        // intercepts TYPO3_DB
+        // provides alternative ConnectionPool to switch to LocalStorage
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\ConnectionPool::class]['className']
+            = ConnectionPool::class;
+        // intercepts $GLOBALS['TYPO3_DB']
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\DatabaseConnection::class]['className']
             = \TYPO3\CMS\DataHandling\Core\Compatibility\Database\DatabaseConnectionInterceptor::class;
         // provides ProjectionContext, once workspace information is available
@@ -112,10 +116,13 @@ class Common
         }
 
         // intercepts DataHandler
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ac3c06f089776446875c4957a7f35a56'] =
-            \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ac3c06f089776446875c4957a7f35a56'] =
-            \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ac3c06f089776446875c4957a7f35a56']
+            = \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ac3c06f089776446875c4957a7f35a56']
+            = \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
+        // frontend enforcement on LocalStorage
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/index_ts.php']['postBeUser']['ac3c06f089776446875c4957a7f35a56']
+            = \TYPO3\CMS\DataHandling\DataHandling\Interceptor\Hook\Frontend\PostBackendUserAuthenticationHook::class . '->execute';
     }
 
     public static function registerSlots()

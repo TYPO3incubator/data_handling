@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Context;
 
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsLocalStorageName;
@@ -62,7 +63,13 @@ class ProjectionContext implements Instantiable, Providable, RepresentableAsLoca
             }
         }
         return $stringRepresentation;
+    }
 
+    public function enforceLocalStorage()
+    {
+        ConnectionPool::instance()->setLocalStorageAsDefault(
+            $this->asLocalStorageName()
+        );
     }
 
     /**

@@ -17,6 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\Database;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Compatibility\Database\ConnectionInterceptor;
 use TYPO3\CMS\DataHandling\Core\Context\ProjectionContext;
 use TYPO3\CMS\DataHandling\Core\Service\FileSystemService;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
@@ -30,22 +31,7 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ConnectionPool::class);
-    }
-
-    /**
-     * @param string $connectionName
-     * @return Connection
-     */
-    public function getConnectionByName(string $connectionName): Connection
-    {
-        if ($connectionName !== static::DEFAULT_CONNECTION_NAME) {
-            return parent::getConnectionByName($connectionName);
-        }
-
-        return $this->provideLocalStorageConnection(
-            ProjectionContext::provide()->asLocalStorageName()
-        );
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**
@@ -81,7 +67,7 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
      * @param string $name
      * @return Connection
      */
-    public function provideLocalStorageConnection(string $name): Connection
+    public function provideLocalStorageConnection(string $name)
     {
         $connectionName = 'LocalStorage::' . $name;
 
@@ -93,21 +79,39 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
                 dirname($filePath)
             );
 
+            if (!file_exists($filePath)) {
+                LocalStorage::instance()->initialize(
+                    $this->getConnectionByName($connectionName)
+                );
+                GeneralUtility::fixPermissions(dirname($filePath));
+                GeneralUtility::fixPermissions($filePath);
+            }
+
             $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][$connectionName] = [
                 'driver' => 'pdo_sqlite',
                 'path' => $filePath,
                 'memory' => false,
+                // 'wrapperClass' => ConnectionInterceptor::class
             ];
-
-            LocalStorage::instance()->initialize(
-                $this->getConnectionByName($connectionName)
-            );
-
-            GeneralUtility::fixPermissions(dirname($filePath));
-            GeneralUtility::fixPermissions($filePath);
         }
 
         return $this->getConnectionByName($connectionName);
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setLocalStorageAsDefault(string $name)
+    {
+        $connectionName = 'LocalStorage::' . $name;
+        $this->provideLocalStorageConnection($name);
+
+        $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][static::DEFAULT_CONNECTION_NAME]
+            = $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][$connectionName];
+
+        if (isset(static::$connections[static::DEFAULT_CONNECTION_NAME])) {
+            unset(static::$connections[static::DEFAULT_CONNECTION_NAME]);
+        }
     }
 
     /**

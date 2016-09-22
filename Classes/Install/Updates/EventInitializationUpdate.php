@@ -105,19 +105,17 @@ class EventInitializationUpdate extends AbstractUpdate
 
         $contextService = ContextService::instance();
 
-        // remove existing local storages
+        // remove existing local storage for workspaces
         foreach ($contextService->getWorkspaceIds() as $workspaceId) {
             ConnectionPool::instance()->purgeLocalStorage(
-                Context::instance()
-                    ->setWorkspaceId($workspaceId)
-                    ->toLocalStorageName()
+                Context::create($workspaceId)->asLocalStorageName()
             );
         }
 
         foreach ($contextService->getWorkspaceIds() as $workspaceId) {
             foreach ($contextService->getLanguageIds() as $languageId) {
-                $context = Context::instance()->setWorkspaceId($workspaceId)->setLanguageId($languageId);
-                $service = EventInitializationService::instance()->setContext($context);
+                $context = Context::create($workspaceId, $languageId);
+                $service = EventInitializationService::create($context);
 
                 // first process all pages (nodes)
                 $service

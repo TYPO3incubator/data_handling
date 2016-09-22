@@ -66,7 +66,7 @@ class State
     {
         $this->node = EntityReference::instance();
         $this->subject = EntityReference::instance();
-        $this->context = Context::instance();
+        $this->context = Context::create();
     }
 
     public function getContext()

@@ -69,7 +69,7 @@ abstract class AbstractEvent extends BaseEvent implements StorableEvent, Context
         $data = [];
 
         if ($this instanceof Contextual) {
-            $data['context'] = $this->context->__toArray();
+            $data['context'] = $this->context->toArray();
         }
         if ($this instanceof AggregateReference) {
             $data['aggregateReference'] = $this->getAggregateReference()->__toArray();

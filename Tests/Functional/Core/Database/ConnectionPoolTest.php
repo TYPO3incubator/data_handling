@@ -58,7 +58,7 @@ class ConnectionPoolTest extends FunctionalTestCase
     public function localStorageIsCreated()
     {
         $projectionContext = ProjectionContext::instance();
-        $this->subject->provideLocalStorageConnection($projectionContext->__toString());
+        $this->subject->provideLocalStorageConnection($projectionContext->asLocalStorageName());
 
         $basePath = rtrim($this->instancePath, '/') . '/typo3temp/var/LocalStorage';
 

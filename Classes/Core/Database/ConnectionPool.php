@@ -44,7 +44,7 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
         }
 
         return $this->provideLocalStorageConnection(
-            ProjectionContext::provide()->__toString()
+            ProjectionContext::provide()->asLocalStorageName()
         );
     }
 

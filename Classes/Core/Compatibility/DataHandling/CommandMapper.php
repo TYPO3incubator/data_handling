@@ -194,7 +194,7 @@ class CommandMapper
             $languageFieldName = MetaModelService::instance()->getLanguageFieldName($tableName);
 
             foreach ($uidValues as $uid => $values) {
-                $context = Context::instance()->setWorkspaceId($this->getWorkspaceId());
+                $context = Context::create($this->getWorkspaceId());
                 // @todo validate against proper languages
                 if (!empty($values[$languageFieldName])) {
                     $context->setLanguageId($values[$languageFieldName]);

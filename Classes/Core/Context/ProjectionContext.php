@@ -18,8 +18,9 @@ namespace TYPO3\CMS\DataHandling\Core\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsLocalStorageName;
 
-class ProjectionContext implements Instantiable, Providable
+class ProjectionContext implements Instantiable, Providable, RepresentableAsLocalStorageName
 {
     /**
      * @var ProjectionContext
@@ -51,7 +52,7 @@ class ProjectionContext implements Instantiable, Providable
      * @param array $languageChain
      * @return string
      */
-    public static function asString(int $workspaceId, array $languageChain = null): string
+    public static function asString(int $workspaceId, array $languageChain = null)
     {
         $stringRepresentation = 'workspace-' . $workspaceId;
         if (!empty($languageChain)) {
@@ -67,30 +68,33 @@ class ProjectionContext implements Instantiable, Providable
     /**
      * @var int
      */
-    protected $workspaceId = 0;
+    private $workspaceId = 0;
 
     /**
      * @var int[]
      */
-    protected $languageChain = null;
+    private $languageChain = null;
 
     /**
      * @var mixed
      * @todo Add meaning and handling
      */
-    protected $permissions;
+    private $permissions;
 
     /**
      * @var bool
      */
-    protected $locked = false;
+    private $locked = false;
 
     /**
      * @return string
      */
-    public function __toString()
+    public function asLocalStorageName()
     {
-        return static::asString($this->workspaceId, $this->languageChain);
+        return static::asString(
+            $this->workspaceId,
+            $this->languageChain
+        );
     }
 
     public function lock()

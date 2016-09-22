@@ -321,8 +321,8 @@ class GenericEntity extends State implements EventApplicable
         $this->setRelations(
             $fromEntity->getRelations()
         );
-        $this->getContext()->setWorkspaceId(
-            $event->getContext()->getWorkspaceId()
+        $this->setContext(
+            Context::create($event->getContext()->getWorkspaceId())
         );
     }
 
@@ -351,8 +351,11 @@ class GenericEntity extends State implements EventApplicable
         $this->setRelations(
             $fromEntity->getRelations()
         );
-        $this->getContext()->setLanguageId(
-            $event->getContext()->getLanguageId()
+        $this->setContext(
+            Context::create(
+                $this->getContext()->getWorkspaceId(),
+                $event->getContext()->getLanguageId()
+            )
         );
     }
 

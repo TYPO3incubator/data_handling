@@ -15,9 +15,16 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsArray;
+use TYPO3\CMS\DataHandling\Core\Framework\Object\RepresentableAsLocalStorageName;
 
-class Context
+class Context implements RepresentableAsLocalStorageName, RepresentableAsArray
 {
+    public static function create(int $workspaceId = 0, int $languageId = 0)
+    {
+        return new static($workspaceId, $languageId);
+    }
+
     /**
      * @return Context
      */
@@ -32,9 +39,20 @@ class Context
      */
     public static function fromArray(array $properties)
     {
-        return static::instance()
-            ->setWorkspaceId($properties['workspace'])
-            ->setLanguageId($properties['language']);
+        return static::create(
+            $properties['workspace'],
+            $properties['language']
+        );
+    }
+
+    /**
+     * @param int $workspaceId
+     * @param int $languageId
+     */
+    private function __construct(int $workspaceId, int $languageId)
+    {
+        $this->workspaceId = $workspaceId;
+        $this->languageId = $languageId;
     }
 
     /**
@@ -48,14 +66,9 @@ class Context
     protected $languageId = 0;
 
     /**
-     * @return string
+     * @return array
      */
-    public function __toString()
-    {
-        return sprintf('workspace-%d-language-%d', $this->workspaceId, $this->languageId);
-    }
-
-    public function __toArray()
+    public function toArray()
     {
         return [
             'workspace' => $this->workspaceId,
@@ -67,30 +80,24 @@ class Context
      * @return string
      * @todo Extend for language as well
      */
-    public function toLocalStorageName()
+    public function asLocalStorageName()
     {
         return sprintf('workspace-%d', $this->workspaceId);
     }
 
-    public function getWorkspaceId(): int
+    /**
+     * @return int
+     */
+    public function getWorkspaceId()
     {
         return $this->workspaceId;
     }
 
-    public function setWorkspaceId(int $workspaceId): Context
-    {
-        $this->workspaceId = $workspaceId;
-        return $this;
-    }
-
-    public function getLanguageId(): int
+    /**
+     * @return int
+     */
+    public function getLanguageId()
     {
         return $this->languageId;
-    }
-
-    public function setLanguageId(int $languageId): Context
-    {
-        $this->languageId = $languageId;
-        return $this;
     }
 }

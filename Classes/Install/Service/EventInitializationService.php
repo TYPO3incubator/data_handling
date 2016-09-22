@@ -46,11 +46,12 @@ class EventInitializationService
     const KEY_TRIGGER = 'trigger';
 
     /**
+     * @param Context $context
      * @return EventInitializationService
      */
-    public static function instance()
+    public static function create(Context $context)
     {
-        return GeneralUtility::makeInstance(EventInitializationService::class);
+        return GeneralUtility::makeInstance(static::class, $context);
     }
 
     /**
@@ -65,12 +66,10 @@ class EventInitializationService
 
     /**
      * @param Context $context
-     * @return EventInitializationService
      */
-    public function setContext(Context $context): EventInitializationService
+    public function __construct(Context $context)
     {
-        $this->context = $context;
-        return $this;
+        $this->context= $context;
     }
 
     /**
@@ -513,8 +512,9 @@ class EventInitializationService
         $isTranslationAspect = $this->isTranslationAspect($tableName, $data);
         $languageField = MetaModelService::instance()->getLanguageFieldName($tableName);
 
-        return Context::instance()
-            ->setWorkspaceId($isWorkspaceAspect ? $data['t3ver_wsid'] : 0)
-            ->setLanguageId($isTranslationAspect ? $data[$languageField] : 0);
+        return Context::create(
+            ($isWorkspaceAspect ? $data['t3ver_wsid'] : 0),
+            ($isTranslationAspect ? $data[$languageField] : 0)
+        );
     }
 }

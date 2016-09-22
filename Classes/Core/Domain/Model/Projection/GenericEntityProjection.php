@@ -98,12 +98,10 @@ class GenericEntityProjection implements Projection
 
     private function projectCreatedEntityEvent(Event\CreatedEntityEvent $event)
     {
-        $addOrigin = $this->isOriginRequired($event);
-
         if ($event->getContext()->getWorkspaceId() !== 0) {
-            $this->addSpecificProjectionRepositories($event, $addOrigin);
+            $this->addSpecificProjectionRepositories($event);
         } else {
-            $this->addAllProjectionRepositories($event, $addOrigin);
+            $this->addAllProjectionRepositories($event);
         }
 
         $data = $this->getCreationData($event);
@@ -112,8 +110,7 @@ class GenericEntityProjection implements Projection
 
     private function projectBranchedEntityFromEvent(Event\BranchedEntityFromEvent $event)
     {
-        $addOrigin = $this->isOriginRequired($event);
-        $this->addSpecificProjectionRepositories($event, $addOrigin);
+        $this->addSpecificProjectionRepositories($event);
 
         $sourceEntity = GenericEntityEventRepository::instance()
             ->findByAggregateReference(
@@ -131,14 +128,12 @@ class GenericEntityProjection implements Projection
 
     private function projectTranslatedEntityFromEvent(Event\TranslatedEntityFromEvent $event)
     {
-        $addOrigin = $this->isOriginRequired($event);
-
         if ($event->getContext()->getWorkspaceId() !== 0) {
-            $this->addSpecificProjectionRepositories($event, $addOrigin);
+            $this->addSpecificProjectionRepositories($event);
         } elseif ($this->isBranchedToWorkspace($event)) {
-            $this->addSpecificProjectionRepositories($event, $addOrigin);
+            $this->addSpecificProjectionRepositories($event);
         } else {
-            $this->addAllProjectionRepositories($event, $addOrigin);
+            $this->addAllProjectionRepositories($event);
         }
 
         $sourceEntity = GenericEntityEventRepository::instance()
@@ -356,16 +351,15 @@ class GenericEntityProjection implements Projection
         $this->handler->addRepository($repository);
     }
 
-    private function addAllProjectionRepositories(Event\AbstractEvent $event, bool $addOrigin = true)
+    private function addAllProjectionRepositories(Event\AbstractEvent $event)
     {
-        if ($addOrigin) {
+        if ($this->isOriginRequired($event)) {
             $this->addOriginProjectionRepository($event);
         }
 
         $workspaceIds = ContextService::instance()->getWorkspaceIds();
         foreach ($workspaceIds as $workspaceId) {
-            $context = Context::instance()
-                ->setWorkspaceId($workspaceId);
+            $context = Context::create($workspaceId);
             $repository = LocalStorageProjectionRepository::create(
                 $this->createLocalStorageConnection($context),
                 $event->getAggregateType()
@@ -375,9 +369,9 @@ class GenericEntityProjection implements Projection
         }
     }
 
-    private function addSpecificProjectionRepositories(Event\AbstractEvent $event, bool $addOrigin = true)
+    private function addSpecificProjectionRepositories(Event\AbstractEvent $event)
     {
-        if ($addOrigin) {
+        if ($this->isOriginRequired($event)) {
             $this->addOriginProjectionRepository($event);
         }
 
@@ -391,7 +385,7 @@ class GenericEntityProjection implements Projection
     private function createLocalStorageConnection(Context $context)
     {
         return ConnectionPool::instance()->provideLocalStorageConnection(
-            $context->toLocalStorageName()
+            $context->asLocalStorageName()
         );
     }
 }

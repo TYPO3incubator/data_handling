@@ -27,6 +27,34 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     const ORIGIN_CONNECTION_NAME = 'Origin';
 
     /**
+     * @var array
+     */
+    private static $mapping = [];
+
+    /**
+     * @var bool
+     */
+    private static $originAsDefault = false;
+
+    /**
+     * @param string $sourceName
+     * @param string|null $targetName
+     */
+    public static function map(string $sourceName, string $targetName = null)
+    {
+        if ($targetName === null) {
+            unset(static::$mapping[$sourceName]);
+        } else {
+            static::$mapping[$sourceName] = $targetName;
+        }
+    }
+
+    public static function originAsDefault(bool $originAsDefault)
+    {
+        static::$originAsDefault = $originAsDefault;
+    }
+
+    /**
      * @return ConnectionPool
      */
     public static function instance()
@@ -45,6 +73,24 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
         }
 
         return parent::getConnectionForTable($tableName);
+    }
+
+    /**
+     * @param string $connectionName
+     * @return Connection
+     */
+    public function getConnectionByName(string $connectionName): Connection
+    {
+        if (
+            static::$originAsDefault
+            && $connectionName === static::DEFAULT_CONNECTION_NAME
+        ) {
+            $connectionName = static::ORIGIN_CONNECTION_NAME;
+        } elseif (isset(static::$mapping[$connectionName])) {
+            $connectionName = static::$mapping[$connectionName];
+        }
+
+        return parent::getConnectionByName($connectionName);
     }
 
     /**
@@ -79,20 +125,20 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
                 dirname($filePath)
             );
 
-            if (!file_exists($filePath)) {
-                LocalStorage::instance()->initialize(
-                    $this->getConnectionByName($connectionName)
-                );
-                GeneralUtility::fixPermissions(dirname($filePath));
-                GeneralUtility::fixPermissions($filePath);
-            }
-
             $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][$connectionName] = [
                 'driver' => 'pdo_sqlite',
                 'path' => $filePath,
                 'memory' => false,
                 // 'wrapperClass' => ConnectionInterceptor::class
             ];
+
+            if (!file_exists($filePath)) {
+                LocalStorage::instance()->initialize($connectionName);
+                GeneralUtility::fixPermissions(dirname($filePath));
+                GeneralUtility::fixPermissions($filePath);
+                var_dump(file_exists($filePath));
+                var_dump($filePath);
+            }
         }
 
         return $this->getConnectionByName($connectionName);
@@ -106,26 +152,18 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
         $connectionName = 'LocalStorage::' . $name;
         $this->provideLocalStorageConnection($name);
 
-        $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][static::DEFAULT_CONNECTION_NAME]
-            = $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][$connectionName];
-
-        if (isset(static::$connections[static::DEFAULT_CONNECTION_NAME])) {
-            unset(static::$connections[static::DEFAULT_CONNECTION_NAME]);
-        }
+        static::map(static::DEFAULT_CONNECTION_NAME, $connectionName);
     }
 
     /**
      * @param string $name
      */
-    public function purgeLocalStorage(string $name)
+    public function reinitializeLocalStorage(string $name)
     {
-        $filePath = GeneralUtility::getFileAbsFileName(
-            'typo3temp/var/LocalStorage/' . $name . '.sqlite'
-        );
+        $connectionName = 'LocalStorage::' . $name;
+        $this->provideLocalStorageConnection($name);
 
-        if (file_exists($filePath)) {
-            unlink($filePath);
-            clearstatcache();
-        }
+        LocalStorage::instance()->purge($connectionName);
+        LocalStorage::instance()->initialize($connectionName);
     }
 }

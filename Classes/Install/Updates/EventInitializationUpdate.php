@@ -17,7 +17,6 @@ namespace TYPO3\CMS\DataHandling\Install\Updates;
 use Doctrine\DBAL\Driver\Statement;
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
@@ -100,14 +99,14 @@ class EventInitializationUpdate extends AbstractUpdate
         $recordTableNames = array_diff($tableNames, ['pages']);
 
         foreach ($allTableNames as $tableName) {
-            $this->assignEventSourcingValues($tableName);
+            $this->assignEventSourcingValues($tableName, true);
         }
 
         $contextService = ContextService::instance();
 
         // remove existing local storage for workspaces
         foreach ($contextService->getWorkspaceIds() as $workspaceId) {
-            ConnectionPool::instance()->purgeLocalStorage(
+            ConnectionPool::instance()->reinitializeLocalStorage(
                 Context::create($workspaceId)->asLocalStorageName()
             );
         }

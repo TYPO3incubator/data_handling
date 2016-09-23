@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Install\Updates;
  */
 
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\AbstractDataHandlerActionTestCase;
+use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 
@@ -50,10 +51,13 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
 
     protected function setUp()
     {
-        parent::setUp();
+        ConnectionPool::originAsDefault(true);
 
+        parent::setUp();
         $this->importScenarioDataSet('LiveDefaultPages');
         $this->importScenarioDataSet('LiveDefaultElements');
+
+        ConnectionPool::originAsDefault(false);
 
         $this->streamName = uniqid('test');
         $this->update = EventInitializationUpdate::instance();

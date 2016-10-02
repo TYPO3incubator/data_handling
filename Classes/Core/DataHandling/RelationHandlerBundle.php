@@ -20,6 +20,11 @@ use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
 
 class RelationHandlerBundle
 {
+    /**
+     * @param RelationHandler $relationHandler
+     * @param \Closure $commitClosure
+     * @return RelationHandlerBundle
+     */
     public static function create(RelationHandler $relationHandler, \Closure $commitClosure)
     {
         return new static($relationHandler, $commitClosure);
@@ -35,6 +40,10 @@ class RelationHandlerBundle
      */
     private $commitClosure;
 
+    /**
+     * @param RelationHandler $relationHandler
+     * @param \Closure $commitClosure
+     */
     private function __construct(RelationHandler $relationHandler, \Closure $commitClosure)
     {
         $this->relationHandler = $relationHandler;
@@ -101,7 +110,7 @@ class RelationHandlerBundle
      */
     public function commit()
     {
-        return $this->commitClosure->call(null, $this->relationHandler);
+        return $this->commitClosure->call($this, $this->relationHandler);
     }
 
     /**

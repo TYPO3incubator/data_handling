@@ -136,8 +136,6 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
                 LocalStorage::instance()->initialize($connectionName);
                 GeneralUtility::fixPermissions(dirname($filePath));
                 GeneralUtility::fixPermissions($filePath);
-                var_dump(file_exists($filePath));
-                var_dump($filePath);
             }
         }
 

@@ -40,6 +40,7 @@ class Common
      * @internal
      */
     protected static $enable = true;
+    protected static $local = false;
 
     /**
      * @return Dispatcher
@@ -90,12 +91,17 @@ class Common
         // intercepts $GLOBALS['TYPO3_DB']
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\DatabaseConnection::class]['className']
             = \TYPO3\CMS\DataHandling\Core\Compatibility\Database\DatabaseConnectionInterceptor::class;
-        // provides ProjectionContext, once workspace information is available
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class]['className']
-            = \TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication::class;
         // provides information whether pages have workspace changes
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Workspaces\Service\WorkspaceService::class]['className']
             = \TYPO3\CMS\DataHandling\Workspaces\Service\WorkspaceService::class;
+
+        if (!static::$local) {
+            return;
+        }
+
+        // provides ProjectionContext, once workspace information is available
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class]['className']
+            = \TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication::class;
     }
 
     public static function registerUpdates()
@@ -120,6 +126,11 @@ class Common
             = \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ac3c06f089776446875c4957a7f35a56']
             = \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
+
+        if (!static::$local) {
+            return;
+        }
+
         // frontend enforcement on LocalStorage
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/index_ts.php']['postBeUser']['ac3c06f089776446875c4957a7f35a56']
             = \TYPO3\CMS\DataHandling\DataHandling\Interceptor\Hook\Frontend\PostBackendUserAuthenticationHook::class . '->execute';

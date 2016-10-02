@@ -25,7 +25,7 @@ class MicroDateTime
     static public function create($time = 'now', \DateTimeZone $timeZone = null)
     {
         if ($time === 'now') {
-            $microTime = microtime(true);
+            $microTime = sprintf('%.6f', microtime(true));
             $dateTime = new \DateTime($time);
             $targetDateTime = \DateTime::createFromFormat('U.u', $microTime);
             $targetDateTime->setTimezone($dateTime->getTimezone());

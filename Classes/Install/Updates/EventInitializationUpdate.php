@@ -145,7 +145,7 @@ class EventInitializationUpdate extends AbstractUpdate
      * @param string $tableName
      * @param bool $force
      */
-    protected function assignEventSourcingValues(string $tableName, bool $force = false)
+    private function assignEventSourcingValues(string $tableName, bool $force = false)
     {
         if (!$force && $this->countEmptyUuidColumns($tableName) === 0) {
             return;
@@ -167,7 +167,7 @@ class EventInitializationUpdate extends AbstractUpdate
      * @param bool $force
      * @return Statement
      */
-    protected function getEmptyUuidColumnsStatement(string $tableName, bool $force = false)
+    private function getEmptyUuidColumnsStatement(string $tableName, bool $force = false)
     {
         $queryBuilder = $this->getQueryBuilder();
 
@@ -185,7 +185,7 @@ class EventInitializationUpdate extends AbstractUpdate
         return $statement;
     }
 
-    protected function countEmptyUuidColumns(string $tableName): int
+    private function countEmptyUuidColumns(string $tableName): int
     {
         $queryBuilder = $this->getQueryBuilder();
         $statement = $queryBuilder
@@ -197,7 +197,7 @@ class EventInitializationUpdate extends AbstractUpdate
         return $count;
     }
 
-    protected function countEmptyRevisionColumns(string $tableName): int
+    private function countEmptyRevisionColumns(string $tableName): int
     {
         $queryBuilder = $this->getQueryBuilder();
         $statement = $queryBuilder
@@ -209,7 +209,7 @@ class EventInitializationUpdate extends AbstractUpdate
         return $count;
     }
 
-    protected function getQueryBuilder()
+    private function getQueryBuilder()
     {
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $queryBuilder->getRestrictions()

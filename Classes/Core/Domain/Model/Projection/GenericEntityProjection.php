@@ -20,6 +20,7 @@ use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\FromReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\Projection;
 use TYPO3\CMS\DataHandling\Core\Service\ContextService;
@@ -104,7 +105,10 @@ class GenericEntityProjection implements Projection
             $this->addAllProjectionRepositories($event);
         }
 
-        $data = $this->getCreationData($event);
+        $data = array_merge(
+            $this->getCreationData($event),
+            $this->getNodeReferenceData($event->getNodeReference())
+        );
         $this->handler->add($data);
     }
 
@@ -120,7 +124,8 @@ class GenericEntityProjection implements Projection
 
         $data = array_merge(
             $sourceEntity->getValues(),
-            $this->getCreationData($event)
+            $this->getCreationData($event),
+            $this->getNodeReferenceData($sourceEntity->getNode())
         );
 
         $this->handler->add($data);
@@ -144,7 +149,8 @@ class GenericEntityProjection implements Projection
 
         $data = array_merge(
             $sourceEntity->getValues(),
-            $this->getCreationData($event)
+            $this->getCreationData($event),
+            $this->getNodeReferenceData($sourceEntity->getNode())
         );
 
         $this->handler->add($data);
@@ -253,17 +259,18 @@ class GenericEntityProjection implements Projection
         $metadata = $event->getMetadata();
         $uidValue = $event->getAggregateReference()->getUid();
 
+        $data = [];
+        $data[Common::FIELD_UUID] = $event->getAggregateId()->toString();
+
         if (
             $uidValue === null
             && isset($metadata[EventInitializationService::KEY_UPGRADE]['uid'])
         ) {
             $uidValue = $metadata[EventInitializationService::KEY_UPGRADE]['uid'];
         }
-
-        $data = [
-            'uid' => $uidValue,
-            Common::FIELD_UUID => $event->getAggregateId()->toString(),
-        ];
+        if ($uidValue !== null) {
+            $data['uid'] = $uidValue;
+        }
 
         if ($isWorkspaceAware) {
             $data['t3ver_wsid'] = $event->getContext()->getWorkspaceId();
@@ -271,6 +278,26 @@ class GenericEntityProjection implements Projection
         if ($languageField !== null)
         {
             $data[$languageField] = $event->getContext()->getLanguageId();
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param EntityReference $nodeReference
+     * @return array
+     */
+    private function getNodeReferenceData(EntityReference $nodeReference)
+    {
+        $data = [];
+
+        $aggregateType = $nodeReference->getName();
+        $aggregateId = $nodeReference->getUuid();
+        $rawValues = OriginProjectionRepository::create($aggregateType)
+            ->findRawByUuid($aggregateId);
+
+        if (isset($rawValues['uid'])) {
+            $data['pid'] = (int)$rawValues['uid'];
         }
 
         return $data;

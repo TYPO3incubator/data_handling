@@ -87,7 +87,8 @@ class SqlDriver implements PersistableDriver
                 ->setMaxResults(1)
                 ->execute();
             // first version starts with zero
-            $eventVersion = ($statement->rowCount() ? $statement->fetchColumn(0) + 1 : 0);
+            $eventVersion = $statement->fetchColumn(0);
+            $eventVersion = ($eventVersion !== false ? $eventVersion + 1 : 0);
             $rawEvent['event_version'] = $eventVersion;
             $connection->insert('sys_event_store', $rawEvent);
             $connection->commit();

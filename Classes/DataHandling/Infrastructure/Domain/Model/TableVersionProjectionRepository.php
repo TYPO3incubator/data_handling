@@ -64,11 +64,8 @@ class TableVersionProjectionRepository implements ProjectionRepository
             ->where(...$predicates)
             ->execute();
 
-        if ($statement->rowCount() === 0) {
-            return null;
-        }
-
-        return (int)$statement->fetchColumn(0);
+        $versionCount = $statement->fetchColumn(0);
+        return ($versionCount !== false ? (int)$versionCount : null);
     }
 
     /**
@@ -102,11 +99,8 @@ class TableVersionProjectionRepository implements ProjectionRepository
             ->where(...$predicates)
             ->execute();
 
-        if ($statement->rowCount() === 0) {
-            return null;
-        }
-
-        return (int)$statement->fetchColumn(0);
+        $versionCount = $statement->fetchColumn(0);
+        return ($versionCount !== false ? (int)$versionCount : null);
     }
 
     public function increment(int $workspaceId, int $pageId, string $tableName)

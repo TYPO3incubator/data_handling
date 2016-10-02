@@ -14,16 +14,14 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
-class SourceManager implements Providable, Instantiable
+class SourceManager implements Providable
 {
     /**
      * @var SourceManager
      */
-    static protected $sourceManager;
+    static protected $instance;
 
     /**
      * @param bool $force
@@ -31,21 +29,10 @@ class SourceManager implements Providable, Instantiable
      */
     public static function provide(bool $force = false)
     {
-        if (!isset(static::$sourceManager)) {
-            static::$sourceManager = static::instance();
+        if (!isset(static::$instance)) {
+            static::$instance = new static();
         }
-        return static::$sourceManager;
-    }
-    public function handle() {
-
-    }
-
-    /**
-     * @return SourceManager
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(SourceManager::class);
+        return static::$instance;
     }
 
     /**
@@ -81,6 +68,4 @@ class SourceManager implements Providable, Instantiable
     {
         return $this->sourcedTableNames;
     }
-
-    // @todo Map DataHandler CRUD command to domain events
 }

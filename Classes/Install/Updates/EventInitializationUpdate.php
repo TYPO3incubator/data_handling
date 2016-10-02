@@ -64,10 +64,7 @@ class EventInitializationUpdate extends AbstractUpdate
     {
         $description = 'Initializes events for existing records';
 
-        foreach (array_keys($GLOBALS['TCA']) as $tableName) {
-            if (SourceManager::provide()->hasSourcedTableName($tableName)) {
-                continue;
-            }
+        foreach ($this->getTableNames() as $tableName) {
             if (
                 $this->countEmptyUuidColumns($tableName) > 0
                 || $this->countEmptyRevisionColumns($tableName) > 0
@@ -88,17 +85,10 @@ class EventInitializationUpdate extends AbstractUpdate
      */
     public function performUpdate(array &$databaseQueries, &$customMessages)
     {
-        $allTableNames = array_filter(
-            array_keys($GLOBALS['TCA']),
-            function(string $tableName) {
-                return (!GenericService::instance()->isSystemInternal($tableName));
-            }
-        );
-        // filter out tables that are registered as source tables already
-        $tableNames = array_diff($allTableNames, SourceManager::provide()->getSourcedTableNames());
+        $tableNames = $this->getTableNames();
         $recordTableNames = array_diff($tableNames, ['pages']);
 
-        foreach ($allTableNames as $tableName) {
+        foreach ($tableNames as $tableName) {
             $this->assignEventSourcingValues($tableName, true);
         }
 
@@ -217,5 +207,22 @@ class EventInitializationUpdate extends AbstractUpdate
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
         return $queryBuilder;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTableNames()
+    {
+        $tableNames = array_filter(
+            array_keys($GLOBALS['TCA']),
+            function(string $tableName) {
+                return (
+                    !GenericService::instance()->isSystemInternal($tableName)
+                    && !SourceManager::provide()->hasSourcedTableName($tableName)
+                );
+            }
+        );
+        return $tableNames;
     }
 }

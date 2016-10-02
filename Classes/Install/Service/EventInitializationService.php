@@ -116,6 +116,7 @@ class EventInitializationService
 
         while ($row = $fetchStatement->fetch()) {
             $this->createEventsFor($tableName, $row);
+            $this->defineInitialRevision($tableName, $row);
         }
     }
 
@@ -438,6 +439,19 @@ class EventInitializationService
             ->where($fetchQueryBuilder->expr()->eq('t3ver_oid', $uid))
             ->execute()
             ->fetch();
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $data
+     */
+    private function defineInitialRevision(string $tableName, array $data)
+    {
+        ConnectionPool::instance()->getOriginConnection()->update(
+            $tableName,
+            [Common::FIELD_REVISION => 0],
+            [Common::FIELD_UUID => $data[Common::FIELD_UUID]]
+        );
     }
 
     /**

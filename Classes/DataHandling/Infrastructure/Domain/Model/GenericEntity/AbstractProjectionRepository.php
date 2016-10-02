@@ -89,7 +89,7 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
     {
         $this->connection->insert(
             $this->tableName,
-            $this->sanitizeData($data)
+            $this->sanitizeAddData($data)
         );
     }
 
@@ -99,11 +99,20 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
      */
     public function update(string $identifier, array $data)
     {
+        $this->connection->beginTransaction();
+
         $this->connection->update(
             $this->tableName,
-            $this->sanitizeData($data),
+            $this->sanitizeUpdateData($data, $identifier),
             [Common::FIELD_UUID => $identifier]
         );
+
+        try {
+            $this->connection->commit();
+        } catch (\RuntimeException $exception) {
+            $this->connection->rollBack();
+            throw $exception;
+        }
     }
 
     /**
@@ -237,6 +246,35 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
 
     /**
      * @param array $data
+     * @return array
+     */
+    protected function sanitizeAddData(array $data)
+    {
+        $data = $this->sanitizeData($data);
+        $data[Common::FIELD_REVISION] = 0;
+        return $data;
+    }
+
+    /**
+     * @param array $data
+     * @param string $identifier
+     * @return array
+     */
+    protected function sanitizeUpdateData(array $data, string $identifier)
+    {
+        $data = $this->sanitizeData($data);
+        $revision = $this->fetchRevisionForIdentifier($identifier);
+        $data[Common::FIELD_REVISION] = ($revision ?? -1) + 1;
+
+        if (isset($data[Common::FIELD_UUID])) {
+            unset($data[Common::FIELD_UUID]);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array $data
      * @return GenericEntity
      */
     private function buildOne(array $data)
@@ -269,9 +307,38 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
      */
     private function findRawByIdentifiers(array $identifiers)
     {
-        $predicates = [];
         $queryBuilder = $this->createQueryBuilder();
+        $this->applyQueryBuildPredicates($queryBuilder, $identifiers);
+        return $queryBuilder->setMaxResults(1)->execute()->fetch();
+    }
 
+    /**
+     * @param string $identifier
+     * @return bool|string
+     */
+    private function fetchRevisionForIdentifier(string $identifier)
+    {
+        $identifiers = [Common::FIELD_UUID => $identifier];
+        $queryBuilder = $this->createQueryBuilder(Common::FIELD_REVISION);
+        $this->applyQueryBuildPredicates($queryBuilder, $identifiers);
+        return $queryBuilder->setMaxResults(1)->execute()->fetchColumn(0);
+    }
+
+    /**
+     * @return RelationSerializer
+     */
+    private function createRelationSerializer()
+    {
+        return RelationSerializer::create($this->connection);
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param array $identifiers
+     */
+    private function applyQueryBuildPredicates(QueryBuilder $queryBuilder, array $identifiers)
+    {
+        $predicates = [];
         foreach ($identifiers as $propertyName => $propertyValue) {
             if (is_integer($propertyValue)) {
                 $predicates[] = $queryBuilder->expr()->eq(
@@ -285,28 +352,23 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
                 );
             }
         }
-
         $queryBuilder->where(...$predicates);
-        return $queryBuilder->setMaxResults(1)->execute()->fetch();
     }
 
     /**
-     * @return RelationSerializer
-     */
-    private function createRelationSerializer()
-    {
-        return RelationSerializer::create($this->connection);
-    }
-
-    /**
+     * @param string[] $fieldNames
      * @return QueryBuilder
      */
-    private function createQueryBuilder()
+    private function createQueryBuilder(string ...$fieldNames)
     {
+        if (empty($fieldNames)) {
+            $fieldNames = ['*'];
+        }
+
         $queryBuilder = $this->connection->createQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
         return $queryBuilder
-            ->select('*')
+            ->select(...$fieldNames)
             ->from($this->tableName);
     }
 }

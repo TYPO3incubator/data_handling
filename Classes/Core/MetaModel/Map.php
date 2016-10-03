@@ -18,12 +18,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
-class Map implements Providable, Instantiable
+class Map implements Providable
 {
     /**
      * @var Map
      */
-    static protected $map;
+    static private $instance;
 
     /**
      * @param bool $force
@@ -31,18 +31,10 @@ class Map implements Providable, Instantiable
      */
     public static function provide(bool $force = false)
     {
-        if ($force || !isset(static::$map) || !static::$map->isCurrent()) {
-            static::$map = Map::instance();
+        if ($force || !isset(static::$instance) || !static::$instance->isCurrent()) {
+            static::$instance = new static();
         }
-        return static::$map;
-    }
-
-    /**
-     * @return Map
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(Map::class);
+        return static::$instance;
     }
 
     /**
@@ -58,14 +50,14 @@ class Map implements Providable, Instantiable
     /**
      * @var string
      */
-    protected $hash;
+    private $hash;
 
     /**
      * @var Schema[]
      */
-    protected $schemas = [];
+    private $schemas = [];
 
-    public function __construct()
+    private function __construct()
     {
         $this->build();
     }
@@ -86,7 +78,7 @@ class Map implements Providable, Instantiable
         return ($this->schemas[$name] ?? null);
     }
 
-    protected function build()
+    private function build()
     {
         // store hash of current configuration
         $this->hash = static::calculateHash();
@@ -109,7 +101,7 @@ class Map implements Providable, Instantiable
         }
     }
 
-    protected function buildRelations(Property $property)
+    private function buildRelations(Property $property)
     {
         if (!$property->isRelationProperty()) {
             return;

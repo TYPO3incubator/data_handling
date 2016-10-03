@@ -122,7 +122,7 @@ class AggregateResolver
         /** @var Aggregate[] $activeAggregates */
         $activeAggregates = [];
 
-        $metaModelProperties = Map::instance()->getSchema($aggregate->getState()->getSubject()->getName());
+        $metaModelProperties = Map::provide()->getSchema($aggregate->getState()->getSubject()->getName());
 
         foreach ($metaModelProperties->getProperties() as $metaModelProperty) {
             $passiveRelations = $metaModelProperty->getPassiveRelations();

@@ -292,7 +292,7 @@ class EventInitializationService
             )
         );
 
-        $metaModelSchema = Map::instance()->getSchema($migrationEntity->getSubject()->getName());
+        $metaModelSchema = Map::provide()->getSchema($migrationEntity->getSubject()->getName());
         foreach ($temporaryState->getRelations() as $relation) {
             $metaModelProperty = $metaModelSchema->getProperty($relation->getName());
             if ($metaModelProperty->hasActiveRelationTo($relation->getEntityReference()->getName())) {

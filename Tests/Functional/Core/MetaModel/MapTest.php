@@ -39,7 +39,7 @@ class MapTest extends FunctionalTestCase
     protected function setup()
     {
         parent::setUp();
-        $this->subject = Map::instance();
+        $this->subject = Map::provide(true);
     }
 
     protected function tearDown()

@@ -69,11 +69,6 @@ class CommandMapper
     private $scope;
 
     /**
-     * @var AbstractCommand[]
-     */
-    private $commands = [];
-
-    /**
      * @param array $dataCollection
      * @param array $actionCollection
      * @return CommandMapper
@@ -110,19 +105,10 @@ class CommandMapper
         $this->mapActionCollectionCommands();
     }
 
-    /**
-     * @return AbstractCommand[]
-     */
-    public function getCommands(): array
-    {
-        return $this->commands;
-    }
-
     private function initialize()
     {
         $this->scope = CommandMapperScope::instance();
         $this->dataCollectionChanges = [];
-        $this->commands = [];
     }
 
     private function sanitizeCollections()

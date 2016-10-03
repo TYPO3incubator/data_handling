@@ -91,6 +91,10 @@ class RelationMap implements Providable
         $this->hash = static::calculateHash();
         // first build all available schemas and properties
         foreach ($GLOBALS['TCA'] as $tableName => $tableConfiguration) {
+            if (empty($tableConfiguration['columns'])) {
+                continue;
+            }
+
             $schema = Schema::instance()->setName($tableName);
             $this->schemas[$tableName] = $schema;
 

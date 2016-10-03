@@ -19,7 +19,6 @@ use TYPO3\CMS\Core\Database\Schema\SchemaMigrator;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\Schema\ConnectionMigrator;
-use TYPO3\CMS\Install\Service\SqlExpectedSchemaService;
 
 class LocalStorage
 {
@@ -128,13 +127,5 @@ class LocalStorage
     private function getSchemaMigrator()
     {
         return GeneralUtility::makeInstance(SchemaMigrator::class);
-    }
-
-    /**
-     * @return SqlExpectedSchemaService
-     */
-    private function getSqlExpectedSchemaService()
-    {
-        return GeneralUtility::makeInstance(SqlExpectedSchemaService::class);
     }
 }

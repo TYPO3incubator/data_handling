@@ -49,6 +49,9 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
         }
     }
 
+    /**
+     * @param bool $originAsDefault
+     */
     public static function originAsDefault(bool $originAsDefault)
     {
         static::$originAsDefault = $originAsDefault;

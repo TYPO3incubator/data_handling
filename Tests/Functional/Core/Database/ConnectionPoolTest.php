@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Context\ProjectionContext;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\MetaModel\ActiveRelation;
-use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
+use TYPO3\CMS\DataHandling\Core\MetaModel\RelationMap;
 use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Relational;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;

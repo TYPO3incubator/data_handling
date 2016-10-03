@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Aggregate;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
-use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
+use TYPO3\CMS\DataHandling\Core\MetaModel\RelationMap;
 use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
 
 class AggregateResolver
@@ -122,7 +122,7 @@ class AggregateResolver
         /** @var Aggregate[] $activeAggregates */
         $activeAggregates = [];
 
-        $metaModelProperties = Map::provide()->getSchema($aggregate->getState()->getSubject()->getName());
+        $metaModelProperties = RelationMap::provide()->getSchema($aggregate->getState()->getSubject()->getName());
 
         foreach ($metaModelProperties->getProperties() as $metaModelProperty) {
             $passiveRelations = $metaModelProperty->getPassiveRelations();

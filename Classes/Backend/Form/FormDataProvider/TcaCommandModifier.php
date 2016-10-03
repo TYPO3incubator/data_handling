@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommand;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandEntityBehavior;
 use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandManager;
 use TYPO3\CMS\DataHandling\Core\MetaModel\ActiveRelation;
-use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
+use TYPO3\CMS\DataHandling\Core\MetaModel\RelationMap;
 
 /**
  * Modifies TCA settings depending on current state
@@ -107,7 +107,7 @@ class TcaCommandModifier implements FormDataProviderInterface
             }
         }
 
-        $properties = Map::provide()->getSchema($this->tableName)->getProperties();
+        $properties = RelationMap::provide()->getSchema($this->tableName)->getProperties();
         foreach ($properties as $property) {
             foreach ($property->getActiveRelations() as $relation) {
                 $this->handleRelation($relation, $behavior);

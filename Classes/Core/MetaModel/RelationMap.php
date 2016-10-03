@@ -15,19 +15,18 @@ namespace TYPO3\CMS\DataHandling\Core\MetaModel;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
-class Map implements Providable
+class RelationMap implements Providable
 {
     /**
-     * @var Map
+     * @var RelationMap
      */
     static private $instance;
 
     /**
      * @param bool $force
-     * @return Map
+     * @return RelationMap
      */
     public static function provide(bool $force = false)
     {

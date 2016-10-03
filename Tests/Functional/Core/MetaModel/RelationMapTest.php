@@ -16,13 +16,13 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\MetaModel;
 
 use TYPO3\CMS\Core\Tests\FunctionalTestCase;
 use TYPO3\CMS\DataHandling\Core\MetaModel\ActiveRelation;
-use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
+use TYPO3\CMS\DataHandling\Core\MetaModel\RelationMap;
 use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
 use TYPO3\CMS\DataHandling\Core\MetaModel\Relational;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
-class MapTest extends FunctionalTestCase
+class RelationMapTest extends FunctionalTestCase
 {
     /**
      * @var string[]
@@ -32,14 +32,14 @@ class MapTest extends FunctionalTestCase
     ];
 
     /**
-     * @var Map
+     * @var RelationMap
      */
     protected $subject;
 
     protected function setup()
     {
         parent::setUp();
-        $this->subject = Map::provide(true);
+        $this->subject = RelationMap::provide(true);
     }
 
     protected function tearDown()
@@ -53,8 +53,8 @@ class MapTest extends FunctionalTestCase
      */
     public function sameMapInstanceIsReturned()
     {
-        $expectedMap = Map::provide();
-        $actualMap = Map::provide();
+        $expectedMap = RelationMap::provide();
+        $actualMap = RelationMap::provide();
 
         $this->assertSame($expectedMap, $actualMap);
     }
@@ -64,8 +64,8 @@ class MapTest extends FunctionalTestCase
      */
     public function differentMapInstanceIsReturnedOnForceCommand()
     {
-        $expectedMap = Map::provide();
-        $actualMap = Map::provide(true);
+        $expectedMap = RelationMap::provide();
+        $actualMap = RelationMap::provide(true);
 
         $this->assertNotSame($expectedMap, $actualMap);
     }
@@ -75,11 +75,11 @@ class MapTest extends FunctionalTestCase
      */
     public function differentMapInstanceIsReturnedOnConfigurationChanges()
     {
-        $expectedMap = Map::provide();
+        $expectedMap = RelationMap::provide();
 
         $propertyName = uniqid('property');
         $GLOBALS['TCA']['tt_content']['columns'][$propertyName]['config']['type'] = 'none';
-        $actualMap = Map::provide();
+        $actualMap = RelationMap::provide();
 
         $this->assertNotSame($expectedMap, $actualMap);
         $this->assertNotNull($actualMap->getSchema('tt_content')->getProperty($propertyName));

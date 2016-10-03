@@ -30,7 +30,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\State;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
-use TYPO3\CMS\DataHandling\Core\MetaModel\Map;
+use TYPO3\CMS\DataHandling\Core\MetaModel\RelationMap;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 use TYPO3\CMS\DataHandling\Install\Domain\Model\MigrationEntity;
@@ -292,7 +292,7 @@ class EventInitializationService
             )
         );
 
-        $metaModelSchema = Map::provide()->getSchema($migrationEntity->getSubject()->getName());
+        $metaModelSchema = RelationMap::provide()->getSchema($migrationEntity->getSubject()->getName());
         foreach ($temporaryState->getRelations() as $relation) {
             $metaModelProperty = $metaModelSchema->getProperty($relation->getName());
             if ($metaModelProperty->hasActiveRelationTo($relation->getEntityReference()->getName())) {

@@ -18,14 +18,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 
-class CommandMapperScope
+class DataHandlerScope
 {
     /**
-     * @return CommandMapperScope
+     * @return DataHandlerScope
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(CommandMapperScope::class);
+        return GeneralUtility::makeInstance(DataHandlerScope::class);
     }
 
     /**

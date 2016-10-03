@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapperScope;
+use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\DataHandlerScope;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\ValueConverter;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;

@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Integration\Hook;
  */
 
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\CommandMapper;
+use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\DataHandlerTranslator;
 
 /**
  * Fills generated uuid columns in schema
@@ -38,7 +38,7 @@ class DataHandlerHook
             return;
         }
         // create command mapper for incoming data
-        $commandMapper = CommandMapper::create(
+        $commandMapper = DataHandlerTranslator::create(
             $dataHandler->datamap,
             $dataHandler->cmdmap
         );

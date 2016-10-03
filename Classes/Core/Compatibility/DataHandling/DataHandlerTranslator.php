@@ -46,7 +46,7 @@ use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
  * - fetch source state (generic entity)
  */
 
-class CommandMapper
+class DataHandlerTranslator
 {
     /**
      * @var array
@@ -64,19 +64,19 @@ class CommandMapper
     private $dataCollectionChanges = [];
 
     /**
-     * @var CommandMapperScope
+     * @var DataHandlerScope
      */
     private $scope;
 
     /**
      * @param array $dataCollection
      * @param array $actionCollection
-     * @return CommandMapper
+     * @return DataHandlerTranslator
      */
     public static function create(array $dataCollection, array $actionCollection)
     {
         return GeneralUtility::makeInstance(
-            CommandMapper::class,
+            DataHandlerTranslator::class,
             $dataCollection,
             $actionCollection
         );
@@ -123,7 +123,7 @@ class CommandMapper
 
     private function initialize()
     {
-        $this->scope = CommandMapperScope::instance();
+        $this->scope = DataHandlerScope::instance();
         $this->dataCollectionChanges = [];
     }
 

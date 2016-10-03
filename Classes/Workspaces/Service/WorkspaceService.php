@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Workspaces\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Infrastructure\Domain\Model\TableVersionProjectionRepository;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\TableVersionProjectionRepository;
 
 class WorkspaceService extends \TYPO3\CMS\Workspaces\Service\WorkspaceService
 {

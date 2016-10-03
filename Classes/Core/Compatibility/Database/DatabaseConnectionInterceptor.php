@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\MetaModel\EventSourcingMap;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
@@ -26,15 +25,11 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 {
     public function exec_INSERTquery($table, $fields_values, $no_quote_fields = false)
     {
-        if (EventSourcingMap::provide()->shallRecord($table)) {
-            $reference = EntityReference::create($table);
-            $this->emitRecordEvent(
-                Event\CreatedEntityEvent::create($reference)
+        if (EventSourcingMap::provide()->shallListen($table)) {
+            ConnectionTranslator::instance()->createEntity(
+                EntityReference::create($table),
+                $fields_values
             );
-            $this->emitRecordEvent(
-                Event\ModifiedEntityEvent::create($reference, $fields_values)
-            );
-            $fields_values[Common::FIELD_UUID] = $reference->getUuid();
         }
 
         return parent::exec_INSERTquery($table, $fields_values, $no_quote_fields);
@@ -42,19 +37,14 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_INSERTmultipleRows($table, array $fields, array $rows, $no_quote_fields = false)
     {
-        if (EventSourcingMap::provide()->shallRecord($table)) {
+        if (EventSourcingMap::provide()->shallListen($table)) {
             foreach ($rows as $index => $row) {
-                $reference = EntityReference::create($table);
                 $fieldValues = array_combine($fields, $row);
-                $this->emitRecordEvent(
-                    Event\CreatedEntityEvent::create($reference)
+                ConnectionTranslator::instance()->createEntity(
+                    EntityReference::create($table),
+                    $fieldValues
                 );
-                $this->emitRecordEvent(
-                    Event\ModifiedEntityEvent::create($reference, $fieldValues)
-                );
-                $rows[$index][] = $reference->getUuid();
             }
-            $fields[] = Common::FIELD_UUID;
         }
 
         return parent::exec_INSERTmultipleRows($table, $fields, $rows, $no_quote_fields);
@@ -62,15 +52,16 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields = false)
     {
-        if (EventSourcingMap::provide()->shallRecord($table)) {
+        if (EventSourcingMap::provide()->shallListen($table)) {
             foreach ($this->determineReferences($table, $where) as $reference) {
                 if (!GenericService::instance()->isDeleteCommand($table, $fields_values)) {
-                    $this->emitRecordEvent(
-                        Event\ModifiedEntityEvent::create($reference, $fields_values)
+                    ConnectionTranslator::instance()->modifyEntity(
+                        $reference,
+                        $fields_values
                     );
                 } else {
-                    $this->emitRecordEvent(
-                        Event\DeletedEntityEvent::create($reference)
+                    ConnectionTranslator::instance()->purgeEntity(
+                        $reference
                     );
                 }
             }
@@ -81,10 +72,10 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_DELETEquery($table, $where)
     {
-        if (EventSourcingMap::provide()->shallRecord($table)) {
+        if (EventSourcingMap::provide()->shallListen($table)) {
             foreach ($this->determineReferences($table, $where) as $reference) {
-                $this->emitRecordEvent(
-                    Event\PurgedEntityEvent::create($reference)
+                ConnectionTranslator::instance()->purgeEntity(
+                    $reference
                 );
             }
         }
@@ -92,27 +83,12 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
         return parent::exec_DELETEquery($table, $where);
     }
 
-    protected function emitRecordEvent(Event\AbstractEvent $event)
-    {
-        $metadata = ['trigger' => DatabaseConnectionInterceptor::class];
-
-        if ($event->getMetadata() === null) {
-            $event->setMetadata($metadata);
-        } else {
-            $event->setMetadata(
-                array_merge($event->getMetadata(), $metadata)
-            );
-        }
-
-        EventManager::provide()->manage($event);
-    }
-
     /**
      * @param string $tableName
      * @param string $whereClause
      * @return EntityReference[]
      */
-    protected function determineReferences($tableName, $whereClause): array
+    private function determineReferences($tableName, $whereClause): array
     {
         $references = [];
         $fieldNames = ['uid', Common::FIELD_UUID, Common::FIELD_REVISION];

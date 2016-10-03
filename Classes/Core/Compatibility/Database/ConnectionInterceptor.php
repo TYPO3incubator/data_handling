@@ -17,6 +17,8 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\Database;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Common;
+use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 
 class ConnectionInterceptor extends Connection
 {
@@ -37,6 +39,10 @@ class ConnectionInterceptor extends Connection
      */
     public function insert($tableName, array $data, array $types = []): int
     {
+        ConnectionTranslator::instance()->createEntity(
+            EntityReference::create($tableName),
+            $data
+        );
         return parent::insert($tableName, $data, $types);
     }
 
@@ -49,6 +55,13 @@ class ConnectionInterceptor extends Connection
      */
     public function bulkInsert(string $tableName, array $data, array $columns = [], array $types = []): int
     {
+        foreach ($data as $singleData) {
+            $entityData = array_combine($columns, $singleData);
+            ConnectionTranslator::instance()->createEntity(
+                EntityReference::create($tableName),
+                $entityData
+            );
+        }
         return parent::bulkInsert($tableName, $data, $columns, $types);
     }
 
@@ -61,6 +74,12 @@ class ConnectionInterceptor extends Connection
      */
     public function update($tableName, array $data, array $identifier, array $types = []): int
     {
+        foreach ($this->determineReferences($tableName, $identifier) as $reference) {
+            ConnectionTranslator::instance()->modifyEntity(
+                $reference,
+                $data
+            );
+        }
         return parent::update($tableName, $data, $identifier, $types);
     }
 
@@ -72,6 +91,11 @@ class ConnectionInterceptor extends Connection
      */
     public function delete($tableName, array $identifier, array $types = []): int
     {
+        foreach ($this->determineReferences($tableName, $identifier) as $reference) {
+            ConnectionTranslator::instance()->purgeEntity(
+                $reference
+            );
+        }
         return parent::delete($tableName, $identifier, $types);
     }
 
@@ -82,8 +106,48 @@ class ConnectionInterceptor extends Connection
      */
     public function truncate(string $tableName, bool $cascade = false): int
     {
+        foreach ($this->determineReferences($tableName, []) as $reference) {
+            ConnectionTranslator::instance()->purgeEntity(
+                $reference
+            );
+        }
         return parent::truncate($tableName, $cascade);
     }
 
+    /**
+     * @param string $tableName
+     * @param array $identifier
+     * @return EntityReference[]
+     */
+    private function determineReferences(string $tableName, array $identifier)
+    {
+        $references = [];
 
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder->getRestrictions()->removeAll();
+
+        foreach ($identifier as $propertyName => $propertyName) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq(
+                    $propertyName,
+                    $queryBuilder->createNamedParameter($propertyName)
+                )
+            );
+        }
+
+        $statement = $queryBuilder
+            ->select('uid', Common::FIELD_UUID, Common::FIELD_REVISION)
+            ->from($tableName)
+            ->execute();
+
+        if ($statement === false) {
+            return $references;
+        }
+
+        foreach ($statement as $row) {
+            $references[] = EntityReference::fromArray($row);
+        }
+
+        return $references;
+    }
 }

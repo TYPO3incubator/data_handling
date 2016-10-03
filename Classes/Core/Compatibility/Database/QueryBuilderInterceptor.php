@@ -14,15 +14,11 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\Database;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
 use TYPO3\CMS\DataHandling\Core\MetaModel\EventSourcingMap;
-use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class QueryBuilderInterceptor extends QueryBuilder
 {
@@ -31,41 +27,30 @@ class QueryBuilderInterceptor extends QueryBuilder
         $tableName = $this->determineTableName();
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
-            if (EventSourcingMap::provide()->shallRecord($tableName)) {
-                $reference = EntityReference::create($tableName);
-                $values = $this->determineValues();
-                $this->emitRecordEvent(
-                    Event\CreatedEntityEvent::create($reference)
+            if (EventSourcingMap::provide()->shallListen($tableName)) {
+                ConnectionTranslator::instance()->createEntity(
+                    EntityReference::create($tableName),
+                    $this->determineValues()
                 );
-                $this->emitRecordEvent(
-                    Event\ModifiedEntityEvent::create($reference, $values)
-                );
-                $this->set(Common::FIELD_UUID, $reference->getUuid());
             }
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
-            if (EventSourcingMap::provide()->shallRecord($tableName)) {
+            if (EventSourcingMap::provide()->shallListen($tableName)) {
                 foreach ($this->determineReferences() as $reference) {
-                    $values = $this->determineValues();
-                    if (!GenericService::instance()->isDeleteCommand($tableName, $values)) {
-                        $this->emitRecordEvent(
-                            Event\ModifiedEntityEvent::create($reference, $values)
-                        );
-                    } else {
-                        $this->emitRecordEvent(
-                            Event\DeletedEntityEvent::create($reference)
-                        );
-                    }
+                    ConnectionTranslator::instance()->modifyEntity(
+                        $reference,
+                        $this->determineValues()
+                    );
                 }
             }
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::DELETE) {
-            if (EventSourcingMap::provide()->shallRecord($tableName)) {
+            if (EventSourcingMap::provide()->shallListen($tableName)) {
                 foreach ($this->determineReferences() as $reference) {
-                    $this->emitRecordEvent(
-                        Event\PurgedEntityEvent::create($reference)
+                    ConnectionTranslator::instance()->purgeEntity(
+                        $reference
                     );
                 }
             }
@@ -74,31 +59,16 @@ class QueryBuilderInterceptor extends QueryBuilder
         return parent::execute();
     }
 
-    protected function emitRecordEvent(Event\AbstractEvent $event)
-    {
-        $metadata = ['trigger' => QueryBuilderInterceptor::class];
-
-        if ($event->getMetadata() === null) {
-            $event->setMetadata($metadata);
-        } else {
-            $event->setMetadata(
-                array_merge($event->getMetadata(), $metadata)
-            );
-        }
-
-        EventManager::provide()->manage($event);
-    }
-
     /**
      * @param string $tableName
      * @return string
      */
-    protected function sanitizeReference(string $tableName): string
+    private function sanitizeReference(string $tableName): string
     {
         return preg_replace('#^(`|\'|")([^`\'"]+)(\1)$#', '$2', $tableName);
     }
 
-    protected function determineTableName(): string
+    private function determineTableName(): string
     {
         $from = $this->concreteQueryBuilder->getQueryPart('from');
         if (isset($from[0]['table'])) {
@@ -113,24 +83,27 @@ class QueryBuilderInterceptor extends QueryBuilder
     /**
      * @return EntityReference[]
      */
-    protected function determineReferences(): array
+    private function determineReferences(): array
     {
         $references = [];
+
         $tableName = $this->determineTableName();
         $where = $this->concreteQueryBuilder->getQueryPart('where');
 
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable($tableName);
-        $queryBuilder->getRestrictions()
-            ->removeAll();
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder->getRestrictions()->removeAll();
+
         $statement = $queryBuilder
             ->select('uid', Common::FIELD_UUID, Common::FIELD_REVISION)
             ->from($tableName)
             ->where($where)
             ->execute();
 
-        while ($row = $statement->fetch()) {
+        if ($statement === false) {
+            return $references;
+        }
+
+        foreach ($statement as $row) {
             $references[] = EntityReference::fromRecord($tableName, $row);
         }
 
@@ -140,7 +113,7 @@ class QueryBuilderInterceptor extends QueryBuilder
     /**
      * @return array|null
      */
-    protected function determineValues()
+    private function determineValues()
     {
         $values = $this->concreteQueryBuilder->getQueryPart('values');
 

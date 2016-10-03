@@ -92,6 +92,22 @@ class CommandMapper
         $this->actionCollection = $actionCollection;
     }
 
+    /**
+     * @return array
+     */
+    public function getDataCollection()
+    {
+        return $this->dataCollection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActionCollection()
+    {
+        return $this->actionCollection;
+    }
+
     public function process()
     {
         $this->initialize();
@@ -177,6 +193,7 @@ class CommandMapper
             if (
                 !empty($onlyTableNames) && !in_array($tableName, $onlyTableNames)
                 || in_array($tableName, $excludeTableNames)
+                || !MetaModelService::instance()->shallListenEvents($tableName)
             ) {
                 continue;
             }
@@ -206,6 +223,8 @@ class CommandMapper
                 $changes[] = Change::instance()
                     ->setTargetState($targetState);
             }
+
+            unset($this->dataCollection[$tableName]);
         }
 
         return $changes;
@@ -258,6 +277,9 @@ class CommandMapper
     private function unsetDataCollectionsToBeDeleted()
     {
         foreach ($this->actionCollection as $tableName => $idCommands) {
+            if (!MetaModelService::instance()->shallListenEvents($tableName)) {
+                continue;
+            }
             foreach ($idCommands as $id => $commands) {
                 if (!isset($this->dataCollection[$tableName][$id])) {
                     continue;

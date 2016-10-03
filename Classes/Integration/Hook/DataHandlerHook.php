@@ -45,7 +45,7 @@ class DataHandlerHook
         // processes incoming data and emits commands
         $commandMapper->process();
         // reset DataHandler maps
-        $dataHandler->datamap = [];
-        $dataHandler->cmdmap = [];
+        $dataHandler->datamap = $commandMapper->getDataCollection();
+        $dataHandler->cmdmap = $commandMapper->getActionCollection();
     }
 }

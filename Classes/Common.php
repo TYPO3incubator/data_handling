@@ -38,8 +38,15 @@ class Common
     /**
      * @var bool
      * @internal
+     * @todo Remove this development flag
      */
     protected static $enable = true;
+
+    /**
+     * @var bool
+     * @internal
+     * @todo Remove this development flag
+     */
     protected static $local = true;
 
     /**

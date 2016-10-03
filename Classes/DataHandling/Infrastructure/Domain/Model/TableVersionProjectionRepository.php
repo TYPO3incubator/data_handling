@@ -59,7 +59,7 @@ class TableVersionProjectionRepository implements ProjectionRepository
         ];
 
         $statement = $queryBuilder
-            ->select('SUM(version_count)')
+            ->selectLiteral('SUM(version_count)')
             ->from(static::TABLE_NAME)
             ->where(...$predicates)
             ->execute();

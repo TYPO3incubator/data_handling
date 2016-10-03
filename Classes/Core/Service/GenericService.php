@@ -43,6 +43,11 @@ class GenericService implements SingletonInterface
         );
     }
 
+    /**
+     * @param string $tableName
+     * @return bool
+     * @deprecated Use EventSourcingMap instead
+     */
     public function isSystemInternal(string $tableName): bool
     {
         $systemInternalTables = [

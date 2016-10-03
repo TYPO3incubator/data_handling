@@ -23,9 +23,8 @@ use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\SourceManager;
+use TYPO3\CMS\DataHandling\Core\MetaModel\EventSourcingMap;
 use TYPO3\CMS\DataHandling\Core\Service\ContextService;
-use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
 use TYPO3\CMS\Install\Updates\AbstractUpdate;
 
@@ -217,10 +216,7 @@ class EventInitializationUpdate extends AbstractUpdate
         $tableNames = array_filter(
             array_keys($GLOBALS['TCA']),
             function(string $tableName) {
-                return (
-                    !GenericService::instance()->isSystemInternal($tableName)
-                    && !SourceManager::provide()->hasSourcedTableName($tableName)
-                );
+                return EventSourcingMap::provide()->shallRecord($tableName);
             }
         );
         return $tableNames;

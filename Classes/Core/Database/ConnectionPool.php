@@ -17,10 +17,8 @@ namespace TYPO3\CMS\DataHandling\Core\Database;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Compatibility\Database\ConnectionInterceptor;
-use TYPO3\CMS\DataHandling\Core\Context\ProjectionContext;
+use TYPO3\CMS\DataHandling\Core\MetaModel\EventSourcingMap;
 use TYPO3\CMS\DataHandling\Core\Service\FileSystemService;
-use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
 {
@@ -71,7 +69,7 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
      */
     public function getConnectionForTable(string $tableName): Connection
     {
-        if (GenericService::instance()->isSystemInternal($tableName)) {
+        if (!EventSourcingMap::provide()->shallProject($tableName)) {
             return $this->getOriginConnection();
         }
 

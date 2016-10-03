@@ -27,6 +27,21 @@ class MetaModelService implements SingletonInterface
         return GeneralUtility::makeInstance(MetaModelService::class);
     }
 
+    public function shallListenEvents(string $tableName)
+    {
+        return (bool)($GLOBALS['TCA'][$tableName]['ctrl']['eventSourcing']['listenEvents'] ?? false);
+    }
+
+    public function shallRecordEvents(string $tableName)
+    {
+        return (bool)($GLOBALS['TCA'][$tableName]['ctrl']['eventSourcing']['recordEvents'] ?? false);
+    }
+
+    public function shallProjectEvents(string $tableName)
+    {
+        return (bool)($GLOBALS['TCA'][$tableName]['ctrl']['eventSourcing']['projectEvents'] ?? false);
+    }
+
     public function isWorkspaceAware(string $tableName)
     {
         return (bool)($GLOBALS['TCA'][$tableName]['ctrl']['versioningWS'] ?? false);

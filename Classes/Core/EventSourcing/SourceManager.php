@@ -16,6 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\EventSourcing;
 
 use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
 
+/**
+ * @deprecated Use EventSourcingMap instead
+ */
 class SourceManager implements Providable
 {
     /**

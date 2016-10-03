@@ -19,13 +19,14 @@ use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
+use TYPO3\CMS\DataHandling\Core\MetaModel\EventSourcingMap;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class DatabaseConnectionInterceptor extends DatabaseConnection
 {
     public function exec_INSERTquery($table, $fields_values, $no_quote_fields = false)
     {
-        if (!GenericService::instance()->isSystemInternal($table)) {
+        if (EventSourcingMap::provide()->shallRecord($table)) {
             $reference = EntityReference::create($table);
             $this->emitRecordEvent(
                 Event\CreatedEntityEvent::create($reference)
@@ -41,7 +42,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_INSERTmultipleRows($table, array $fields, array $rows, $no_quote_fields = false)
     {
-        if (!GenericService::instance()->isSystemInternal($table)) {
+        if (EventSourcingMap::provide()->shallRecord($table)) {
             foreach ($rows as $index => $row) {
                 $reference = EntityReference::create($table);
                 $fieldValues = array_combine($fields, $row);
@@ -61,7 +62,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_UPDATEquery($table, $where, $fields_values, $no_quote_fields = false)
     {
-        if (!GenericService::instance()->isSystemInternal($table)) {
+        if (EventSourcingMap::provide()->shallRecord($table)) {
             foreach ($this->determineReferences($table, $where) as $reference) {
                 if (!GenericService::instance()->isDeleteCommand($table, $fields_values)) {
                     $this->emitRecordEvent(
@@ -80,7 +81,7 @@ class DatabaseConnectionInterceptor extends DatabaseConnection
 
     public function exec_DELETEquery($table, $where)
     {
-        if (!GenericService::instance()->isSystemInternal($table)) {
+        if (EventSourcingMap::provide()->shallRecord($table)) {
             foreach ($this->determineReferences($table, $where) as $reference) {
                 $this->emitRecordEvent(
                     Event\PurgedEntityEvent::create($reference)

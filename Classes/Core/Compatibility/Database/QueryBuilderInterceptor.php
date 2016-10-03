@@ -21,6 +21,7 @@ use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\EventSourcing\EventManager;
+use TYPO3\CMS\DataHandling\Core\MetaModel\EventSourcingMap;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class QueryBuilderInterceptor extends QueryBuilder
@@ -30,7 +31,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         $tableName = $this->determineTableName();
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::INSERT) {
-            if (!GenericService::instance()->isSystemInternal($tableName)) {
+            if (EventSourcingMap::provide()->shallRecord($tableName)) {
                 $reference = EntityReference::create($tableName);
                 $values = $this->determineValues();
                 $this->emitRecordEvent(
@@ -44,7 +45,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::UPDATE) {
-            if (!GenericService::instance()->isSystemInternal($tableName)) {
+            if (EventSourcingMap::provide()->shallRecord($tableName)) {
                 foreach ($this->determineReferences() as $reference) {
                     $values = $this->determineValues();
                     if (!GenericService::instance()->isDeleteCommand($tableName, $values)) {
@@ -61,7 +62,7 @@ class QueryBuilderInterceptor extends QueryBuilder
         }
 
         if ($this->getType() === \Doctrine\DBAL\Query\QueryBuilder::DELETE) {
-            if (!GenericService::instance()->isSystemInternal($tableName)) {
+            if (EventSourcingMap::provide()->shallRecord($tableName)) {
                 foreach ($this->determineReferences() as $reference) {
                     $this->emitRecordEvent(
                         Event\PurgedEntityEvent::create($reference)

@@ -77,6 +77,14 @@ class RelationMap implements Providable
         return ($this->schemas[$name] ?? null);
     }
 
+    /**
+     * @return Schema[]
+     */
+    public function getSchemas()
+    {
+        return $this->schemas;
+    }
+
     private function build()
     {
         // store hash of current configuration

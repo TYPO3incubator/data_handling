@@ -40,7 +40,7 @@ class Common
      * @internal
      */
     protected static $enable = true;
-    protected static $local = false;
+    protected static $local = true;
 
     /**
      * @return Dispatcher

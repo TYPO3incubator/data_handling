@@ -99,6 +99,9 @@ class Common
             return;
         }
 
+        // provides SchemaMigrator for origin connection (instead of any LocalStorage)
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\Schema\SchemaMigrator::class]['className']
+            = \TYPO3\CMS\DataHandling\Core\Database\Schema\SchemaMigrator::class;
         // provides ProjectionContext, once workspace information is available
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class]['className']
             = \TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication::class;

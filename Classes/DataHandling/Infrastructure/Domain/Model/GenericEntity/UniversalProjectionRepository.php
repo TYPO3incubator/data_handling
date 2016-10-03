@@ -208,7 +208,8 @@ class UniversalProjectionRepository implements ProjectionRepository
     {
         $localStorage = ConnectionPool::instance()
             ->provideLocalStorageConnection(
-                $context->asLocalStorageName()
+                $context->asLocalStorageName(),
+                true
             );
         $repository = LocalStorageProjectionRepository::create(
             $localStorage,

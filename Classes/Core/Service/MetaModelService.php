@@ -87,6 +87,18 @@ class MetaModelService implements SingletonInterface
         return ($GLOBALS['TCA'][$tableName]['ctrl']['transForeignTable'] ?? $tableName);
     }
 
+    public function getSortingField(string $tableName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['sortby'] ?? null);
+
+    }
+
+    public function getOrderByExpression(string $tableName)
+    {
+        return ($GLOBALS['TCA'][$tableName]['ctrl']['default_sortby'] ?? null);
+
+    }
+
     public function getColumnConfiguration(string $tableName, string $propertyName)
     {
         return ($GLOBALS['TCA'][$tableName]['columns'][$propertyName] ?? null);

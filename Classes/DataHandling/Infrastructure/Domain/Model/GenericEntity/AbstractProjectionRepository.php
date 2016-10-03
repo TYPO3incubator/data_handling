@@ -87,10 +87,19 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
      */
     public function add(array $data)
     {
+        $this->connection->beginTransaction();
+
         $this->connection->insert(
             $this->tableName,
             $this->sanitizeAddData($data)
         );
+
+        try {
+            $this->connection->commit();
+        } catch (\RuntimeException $exception) {
+            $this->connection->rollBack();
+            throw $exception;
+        }
     }
 
     /**
@@ -252,6 +261,22 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
     {
         $data = $this->sanitizeData($data);
         $data[Common::FIELD_REVISION] = 0;
+
+        $sortingField = MetaModelService::instance()
+            ->getSortingField($this->tableName);
+        if ($sortingField !== null && isset($data['pid'])) {
+            $queryBuilder = $this->createQueryBuilder()->setMaxResults(1);
+            $queryBuilder->selectLiteral(
+                'MAX(' . $queryBuilder->quoteIdentifier($sortingField) . ')'
+            );
+            $this->applyQueryBuildPredicates(
+                $queryBuilder,
+                ['pid' => (int)$data['pid']]
+            );
+            $sortingValue = $queryBuilder->execute()->fetchColumn(0);
+            $data[$sortingField] = (int)$sortingValue + 1;
+        }
+
         return $data;
     }
 
@@ -307,7 +332,8 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
      */
     private function findRawByIdentifiers(array $identifiers)
     {
-        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder = $this->createQueryBuilder()
+            ->select('*');
         $this->applyQueryBuildPredicates($queryBuilder, $identifiers);
         return $queryBuilder->setMaxResults(1)->execute()->fetch();
     }
@@ -318,8 +344,9 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
      */
     private function fetchRevisionForIdentifier(string $identifier)
     {
+        $queryBuilder = $this->createQueryBuilder()
+            ->select(Common::FIELD_REVISION);
         $identifiers = [Common::FIELD_UUID => $identifier];
-        $queryBuilder = $this->createQueryBuilder(Common::FIELD_REVISION);
         $this->applyQueryBuildPredicates($queryBuilder, $identifiers);
         return $queryBuilder->setMaxResults(1)->execute()->fetchColumn(0);
     }
@@ -356,19 +383,12 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
     }
 
     /**
-     * @param string[] $fieldNames
      * @return QueryBuilder
      */
-    private function createQueryBuilder(string ...$fieldNames)
+    private function createQueryBuilder()
     {
-        if (empty($fieldNames)) {
-            $fieldNames = ['*'];
-        }
-
         $queryBuilder = $this->connection->createQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll();
-        return $queryBuilder
-            ->select(...$fieldNames)
-            ->from($this->tableName);
+        return $queryBuilder->from($this->tableName);
     }
 }

@@ -14,7 +14,9 @@ namespace TYPO3\CMS\DataHandling\Install\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Doctrine\DBAL\Driver\Statement;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Database\Query\Restriction\BackendWorkspaceRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -87,9 +89,6 @@ class EventInitializationService
      */
     public function process(string $tableName)
     {
-        $predicates = [];
-        $fetchQueryBuilder = $this->getQueryBuilder();
-
         if (
             $this->isNotWorkspaceAware($tableName)
             || $this->isNotLanguageAware($tableName)
@@ -102,17 +101,7 @@ class EventInitializationService
                 ->getLanguageTableName($tableName);
         }
 
-        if ($this->instruction & static::INSTRUCTION_ENTITY) {
-            $predicates[] = $fetchQueryBuilder->expr()->isNull(Common::FIELD_REVISION);
-        } else {
-            $predicates[] = $fetchQueryBuilder->expr()->isNotNull(Common::FIELD_REVISION);
-        }
-
-        $fetchStatement = $fetchQueryBuilder
-            ->select('*')
-            ->from($tableName)
-            ->where(...$predicates)
-            ->execute();
+        $fetchStatement = $this->createFetchStatement($tableName);
 
         while ($row = $fetchStatement->fetch()) {
             $this->createEventsFor($tableName, $row);
@@ -452,6 +441,41 @@ class EventInitializationService
             [Common::FIELD_REVISION => 0],
             [Common::FIELD_UUID => $data[Common::FIELD_UUID]]
         );
+    }
+
+    /**
+     * @param string $tableName
+     * @return Statement
+     */
+    private function createFetchStatement(string $tableName)
+    {
+        $fetchQueryBuilder = $this->getQueryBuilder();
+        $metaModelService = MetaModelService::instance();
+
+        $predicates = [];
+        if ($this->instruction & static::INSTRUCTION_ENTITY) {
+            $predicates[] = $fetchQueryBuilder->expr()->isNull(Common::FIELD_REVISION);
+        } else {
+            $predicates[] = $fetchQueryBuilder->expr()->isNotNull(Common::FIELD_REVISION);
+        }
+
+        $orderBy = $metaModelService->getOrderByExpression($tableName);
+        if ($orderBy === null) {
+            $orderBy = $metaModelService->getSortingField($tableName);
+        }
+        if ($orderBy !== null) {
+            foreach (QueryHelper::parseOrderBy($orderBy) as $fieldAndDirection) {
+                $fetchQueryBuilder->addOrderBy(...$fieldAndDirection);
+            }
+        }
+
+        $fetchStatement = $fetchQueryBuilder
+            ->select('*')
+            ->from($tableName)
+            ->where(...$predicates)
+            ->execute();
+
+        return $fetchStatement;
     }
 
     /**

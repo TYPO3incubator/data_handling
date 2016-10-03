@@ -22,7 +22,7 @@ class LegacyRelationHandler extends RelationHandler
 {
     /**
      * @param Connection $connection
-     * @return static
+     * @return LegacyRelationHandler
      */
     public static function create(Connection $connection)
     {
@@ -40,6 +40,19 @@ class LegacyRelationHandler extends RelationHandler
     private function __construct(Connection $connection)
     {
         $this->connection = $connection;
+    }
+
+    /**
+     * Disables generation of reference index.
+     *
+     * @param string $table
+     * @param int $id
+     * @return array
+     * @todo Create dedicated projection
+     */
+    public function updateRefIndex($table, $id)
+    {
+        return [];
     }
 
     /**

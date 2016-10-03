@@ -87,6 +87,10 @@ class CommandMapper
         );
     }
 
+    /**
+     * @param array $dataCollection
+     * @param array $actionCollection
+     */
     public function __construct(array $dataCollection, array $actionCollection)
     {
         $this->dataCollection = $dataCollection;
@@ -194,10 +198,16 @@ class CommandMapper
             $languageFieldName = MetaModelService::instance()->getLanguageFieldName($tableName);
 
             foreach ($uidValues as $uid => $values) {
-                $context = Context::create($this->getWorkspaceId());
                 // @todo validate against proper languages
                 if (!empty($values[$languageFieldName])) {
-                    $context->setLanguageId($values[$languageFieldName]);
+                    $context = Context::create(
+                        $this->getWorkspaceId(),
+                        (int)$values[$languageFieldName]
+                    );
+                } else {
+                    $context = Context::create(
+                        $this->getWorkspaceId()
+                    );
                 }
 
                 $subject = EntityReference::instance()

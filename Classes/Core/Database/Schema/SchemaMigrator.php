@@ -32,33 +32,33 @@ class SchemaMigrator extends \TYPO3\CMS\Core\Database\Schema\SchemaMigrator
 
     public function getSchemaDiffs(array $statements): array
     {
-        ConnectionPool::originAsDefault(true);
+        $currentValue = ConnectionPool::originAsDefault(true);
         $result = parent::getSchemaDiffs($statements);
-        ConnectionPool::originAsDefault(false);
+        ConnectionPool::originAsDefault($currentValue);
         return $result;
     }
 
     public function migrate(array $statements, array $selectedStatements): array
     {
-        ConnectionPool::originAsDefault(true);
+        $currentValue = ConnectionPool::originAsDefault(true);
         $result = parent::migrate($statements, $selectedStatements);
-        ConnectionPool::originAsDefault(false);
+        ConnectionPool::originAsDefault($currentValue);
         return $result;
     }
 
     public function install(array $statements, bool $createOnly = false): array
     {
-        ConnectionPool::originAsDefault(true);
+        $currentValue = ConnectionPool::originAsDefault(true);
         $result = parent::install($statements, $createOnly);
-        ConnectionPool::originAsDefault(false);
+        ConnectionPool::originAsDefault($currentValue);
         return $result;
     }
 
     public function importStaticData(array $statements, bool $truncate = false): array
     {
-        ConnectionPool::originAsDefault(true);
+        $currentValue = ConnectionPool::originAsDefault(true);
         $result = parent::importStaticData($statements, $truncate);
-        ConnectionPool::originAsDefault(false);
+        ConnectionPool::originAsDefault($currentValue);
         return $result;
     }
 }

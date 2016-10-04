@@ -15,11 +15,12 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\DataHandling\CommandPublisher;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command as GenericCommand;
+use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandBus;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
-use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandPublisherFixture;
+use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandHandlerFixture;
 
 class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase
 {
@@ -31,28 +32,41 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
     ];
 
     /**
-     * @var CommandPublisherFixture
+     * @var CommandHandlerFixture
      */
-    protected $commandPublisher;
+    private $commandHandler;
 
     protected function setup()
     {
+        ConnectionPool::originAsDefault(true);
         parent::setUp();
+        ConnectionPool::originAsDefault(false);
 
-        EventInitializationUpdate::instance()->performUpdate($queriesReference = [], $messagesReference = []);
+        EventInitializationUpdate::instance()->performUpdate(
+            $queriesReference = [],
+            $messagesReference = []
+        );
 
-        $this->commandPublisher = new CommandPublisherFixture();
+        $this->commandHandler = new CommandHandlerFixture();
 
-        GeneralUtility::setSingletonInstance(
-            CommandPublisher::class,
-            $this->commandPublisher
+        CommandBus::provide(true)->addHandlerBundle(
+            $this->commandHandler,
+            [
+                Command\CreateEntityBundleCommand::class,
+                Command\BranchEntityBundleCommand::class,
+                Command\BranchAndTranslateEntityBundleCommand::class,
+                Command\TranslateEntityBundleCommand::class,
+                Command\ModifyEntityBundleCommand::class,
+                Command\DeleteEntityCommand::class,
+            ]
         );
     }
 
     protected function tearDown()
     {
         GeneralUtility::purgeInstances();
-        unset($this->commandPublisher);
+        unset($this->commandHandler);
+        CommandBus::provide(true);
     }
 
     /**
@@ -64,16 +78,42 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
 
         $this->assertHasCommands(
             [
-                GenericCommand\CreateEntityBundleCommand::class => [
-                    [ 'identity.name' => static::TABLE_Content, 'identity.uuid' => '@@UUID@@' ],
-                    [ 'identity.name' => static::TABLE_Content, 'identity.uuid' => '@@UUID@@' ],
-                ],
-                GenericCommand\ModifyEntityCommand::class => [
-                    [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #1' ],
-                    [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #2' ],
+                Command\CreateEntityBundleCommand::class => [
+                    [
+                        'aggregateReference.name' => static::TABLE_Content,
+                        'aggregateReference.uuid' => '@@UUID@@',
+                        'nodeReference.name' => static::TABLE_Page,
+                        'nodeReference.uuid' => '@@UUID@@',
+                    ],
+                    [
+                        'aggregateReference.name' => static::TABLE_Content,
+                        'aggregateReference.uuid' => '@@UUID@@',
+                        'nodeReference.name' => static::TABLE_Page,
+                        'nodeReference.uuid' => '@@UUID@@',
+                    ],
                 ],
             ],
-            $this->commandPublisher->getCommands()
+            $this->commandHandler->getCommands()
+        );
+
+        $this->assertHasCommands(
+            [
+                Command\ModifyEntityCommand::class => [
+                    [
+                        'aggregateReference.name' => static::TABLE_Content,
+                        'aggregateReference.uuid' => '@@UUID@@',
+                        'data.header' => 'Testing #1',
+                    ],
+                    [
+                        'aggregateReference.name' => static::TABLE_Content,
+                        'aggregateReference.uuid' => '@@UUID@@',
+                        'data.header' => 'Testing #2',
+                    ],
+                ],
+            ],
+            $this->commandHandler->getBundleCommands(
+                Command\CreateEntityBundleCommand::class
+            )
         );
     }
 
@@ -86,11 +126,29 @@ class CommandMapperTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Re
 
         $this->assertHasCommands(
             [
-                GenericCommand\ModifyEntityCommand::class => [
-                    [ 'subject.name' => static::TABLE_Content, 'subject.uuid' => '@@UUID@@', 'data.header' => 'Testing #1' ],
+                Command\ModifyEntityBundleCommand::class => [
+                    [
+                        'aggregateReference.name' => static::TABLE_Content,
+                        'aggregateReference.uuid' => '@@UUID@@',
+                    ]
                 ],
             ],
-            $this->commandPublisher->getCommands()
+            $this->commandHandler->getCommands()
+        );
+
+        $this->assertHasCommands(
+            [
+                Command\ModifyEntityCommand::class => [
+                    [
+                        'aggregateReference.name' => static::TABLE_Content,
+                        'aggregateReference.uuid' => '@@UUID@@',
+                        'data.header' => 'Testing #1',
+                    ],
+                ],
+            ],
+            $this->commandHandler->getBundleCommands(
+                Command\ModifyEntityBundleCommand::class
+            )
         );
     }
 

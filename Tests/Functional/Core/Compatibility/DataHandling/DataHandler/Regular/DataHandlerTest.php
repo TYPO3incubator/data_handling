@@ -14,12 +14,10 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\DataHandling\CommandPublisher;
+use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command as GenericCommand;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
-use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandPublisherFixture;
 
 class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase
 {
@@ -30,16 +28,16 @@ class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regu
         'typo3conf/ext/data_handling'
     ];
 
-    /**
-     * @var CommandPublisherFixture
-     */
-    protected $commandPublisher;
-
     protected function setup()
     {
+        ConnectionPool::originAsDefault(true);
         parent::setUp();
+        ConnectionPool::originAsDefault(true);
 
-        EventInitializationUpdate::instance()->performUpdate($queriesReference = [], $messagesReference = []);
+        EventInitializationUpdate::instance()->performUpdate(
+            $queriesReference = [],
+            $messagesReference = []
+        );
     }
 
     protected function tearDown()

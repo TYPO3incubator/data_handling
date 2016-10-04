@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EventSourcingMap;
 
 class ConnectionInterceptor extends Connection
 {
@@ -39,10 +40,13 @@ class ConnectionInterceptor extends Connection
      */
     public function insert($tableName, array $data, array $types = []): int
     {
-        ConnectionTranslator::instance()->createEntity(
-            EntityReference::create($tableName),
-            $data
-        );
+        if (EventSourcingMap::provide()->shallListen($tableName)) {
+            ConnectionTranslator::instance()->createEntity(
+                EntityReference::create($tableName),
+                $data
+            );
+        }
+
         return parent::insert($tableName, $data, $types);
     }
 
@@ -55,13 +59,16 @@ class ConnectionInterceptor extends Connection
      */
     public function bulkInsert(string $tableName, array $data, array $columns = [], array $types = []): int
     {
-        foreach ($data as $singleData) {
-            $entityData = array_combine($columns, $singleData);
-            ConnectionTranslator::instance()->createEntity(
-                EntityReference::create($tableName),
-                $entityData
-            );
+        if (EventSourcingMap::provide()->shallListen($tableName)) {
+            foreach ($data as $singleData) {
+                $entityData = array_combine($columns, $singleData);
+                ConnectionTranslator::instance()->createEntity(
+                    EntityReference::create($tableName),
+                    $entityData
+                );
+            }
         }
+
         return parent::bulkInsert($tableName, $data, $columns, $types);
     }
 
@@ -74,12 +81,15 @@ class ConnectionInterceptor extends Connection
      */
     public function update($tableName, array $data, array $identifier, array $types = []): int
     {
-        foreach ($this->determineReferences($tableName, $identifier) as $reference) {
-            ConnectionTranslator::instance()->modifyEntity(
-                $reference,
-                $data
-            );
+        if (EventSourcingMap::provide()->shallListen($tableName)) {
+            foreach ($this->determineReferences($tableName, $identifier) as $reference) {
+                ConnectionTranslator::instance()->modifyEntity(
+                    $reference,
+                    $data
+                );
+            }
         }
+
         return parent::update($tableName, $data, $identifier, $types);
     }
 
@@ -91,11 +101,14 @@ class ConnectionInterceptor extends Connection
      */
     public function delete($tableName, array $identifier, array $types = []): int
     {
-        foreach ($this->determineReferences($tableName, $identifier) as $reference) {
-            ConnectionTranslator::instance()->purgeEntity(
-                $reference
-            );
+        if (EventSourcingMap::provide()->shallListen($tableName)) {
+            foreach ($this->determineReferences($tableName, $identifier) as $reference) {
+                ConnectionTranslator::instance()->purgeEntity(
+                    $reference
+                );
+            }
         }
+
         return parent::delete($tableName, $identifier, $types);
     }
 
@@ -106,11 +119,14 @@ class ConnectionInterceptor extends Connection
      */
     public function truncate(string $tableName, bool $cascade = false): int
     {
-        foreach ($this->determineReferences($tableName, []) as $reference) {
-            ConnectionTranslator::instance()->purgeEntity(
-                $reference
-            );
+        if (EventSourcingMap::provide()->shallListen($tableName)) {
+            foreach ($this->determineReferences($tableName, []) as $reference) {
+                ConnectionTranslator::instance()->purgeEntity(
+                    $reference
+                );
+            }
         }
+
         return parent::truncate($tableName, $cascade);
     }
 

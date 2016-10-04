@@ -10,7 +10,9 @@ CREATE TABLE sys_event_store (
 	event_date TIMESTAMP(6) NOT NULL,
 	aggregate_id varchar(36) DEFAULT NULL,
 	data mediumtext,
-	metadata text
+	metadata text,
+
+	PRIMARY KEY (event_stream, event_version)
 );
 
 #

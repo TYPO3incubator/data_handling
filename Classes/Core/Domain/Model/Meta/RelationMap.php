@@ -89,6 +89,11 @@ class RelationMap implements Providable
     {
         // store hash of current configuration
         $this->hash = static::calculateHash();
+
+        if (empty($GLOBALS['TCA'])) {
+            return;
+        }
+
         // first build all available schemas and properties
         foreach ($GLOBALS['TCA'] as $tableName => $tableConfiguration) {
             if (empty($tableConfiguration['columns'])) {

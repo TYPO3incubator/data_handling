@@ -16,9 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\Database;
 
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\MetaModel\EventSourcingMap;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EventSourcingMap;
 
 class QueryBuilderInterceptor extends QueryBuilder
 {

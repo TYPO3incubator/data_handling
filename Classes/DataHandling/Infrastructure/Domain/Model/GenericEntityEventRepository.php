@@ -16,17 +16,17 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\AbstractEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event\OriginatedEntityEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\GenericEntity;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Saga;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Event\BaseEvent;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\EventRepository;
-use TYPO3\CMS\DataHandling\Core\Framework\Object\Instantiable;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionManager;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event\AbstractEvent;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event\OriginatedEntityEvent;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Saga;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventSelector;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStorePool;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\BaseEvent;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\Base\EventRepository;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Projection\ProjectionManager;
 
 class GenericEntityEventRepository implements Instantiable, EventRepository
 {

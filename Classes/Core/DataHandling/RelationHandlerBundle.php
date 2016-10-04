@@ -15,8 +15,8 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling;
  */
 
 use TYPO3\CMS\Core\Database\RelationHandler;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
 
 class RelationHandlerBundle
 {

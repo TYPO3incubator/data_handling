@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\Database;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 
 class ConnectionTranslator
 {

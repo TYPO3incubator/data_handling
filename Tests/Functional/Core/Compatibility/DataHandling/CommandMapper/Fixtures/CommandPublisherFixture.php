@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\DataHandling\Core\DataHandling\CommandPublisher;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\DomainCommand;
 
 class CommandPublisherFixture extends CommandPublisher implements SingletonInterface
 {

@@ -17,9 +17,9 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Serializer;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\DataHandling\Core\Compatibility\Database\LegacyRelationHandler;
 use TYPO3\CMS\DataHandling\Core\DataHandling\RelationHandlerBundle;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 
 class RelationSerializer

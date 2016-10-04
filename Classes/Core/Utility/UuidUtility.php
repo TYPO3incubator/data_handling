@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Utility;
 
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 
 class UuidUtility
 {

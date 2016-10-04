@@ -17,13 +17,13 @@ namespace TYPO3\CMS\DataHandling;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider\TcaCommandModifier;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Command;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\GetEventStoreDriver;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\Driver\SqlDriver;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStore;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\CommandBus;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionManager;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Driver\GetEventStoreDriver;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Driver\SqlDriver;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStore;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStorePool;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandBus;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Projection\ProjectionManager;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
@@ -133,9 +133,9 @@ class Common
 
         // intercepts DataHandler
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ac3c06f089776446875c4957a7f35a56']
-            = \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
+            = DataHandling\Interceptor\Hook\Backend\DataHandlerHook::class;
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ac3c06f089776446875c4957a7f35a56']
-            = \TYPO3\CMS\DataHandling\Integration\Hook\DataHandlerHook::class;
+            = DataHandling\Interceptor\Hook\Backend\DataHandlerHook::class;
 
         if (!static::$local) {
             return;
@@ -151,7 +151,7 @@ class Common
         // provides new database fields
         \TYPO3\CMS\DataHandling\Common::getSignalSlotDispatcher()->connect(
             \TYPO3\CMS\Install\Service\SqlExpectedSchemaService::class, 'tablesDefinitionIsBeingBuilt',
-            \TYPO3\CMS\DataHandling\Core\Slot\EventSourcingSchemaModificationSlot::class, 'generate'
+            \TYPO3\CMS\DataHandling\DataHandling\Interceptor\Slot\Infrastructure\SchemaModificationSlot::class, 'generate'
         );
 
         if (!static::$enable) {
@@ -174,8 +174,8 @@ class Common
         );
 
         ProjectionManager::provide()->registerProjections([
-            new \TYPO3\CMS\DataHandling\Core\Domain\Model\Projection\GenericEntityProjection(),
-            new \TYPO3\CMS\DataHandling\Core\Domain\Model\Projection\TableVersionProjection(),
+            new \TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Projection\GenericEntityProjection(),
+            new \TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Projection\TableVersionProjection(),
         ]);
 
         // initialize default EventStore using SqlDriver

@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\Generi
  */
 
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 
 class OriginProjectionRepository extends AbstractProjectionRepository
 {

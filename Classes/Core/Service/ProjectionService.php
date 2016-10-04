@@ -15,9 +15,9 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventStorePool;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\Projection\ProjectionPool;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventSelector;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStorePool;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Projection\ProjectionPool;
 
 class ProjectionService
 {

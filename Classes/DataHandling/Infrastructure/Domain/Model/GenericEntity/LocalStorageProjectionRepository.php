@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\Generi
  */
 
 use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 
 class LocalStorageProjectionRepository extends AbstractProjectionRepository
 {

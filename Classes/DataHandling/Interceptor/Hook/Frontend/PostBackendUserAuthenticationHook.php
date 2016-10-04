@@ -15,8 +15,8 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Interceptor\Hook\Frontend;
  */
 
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\DataHandling\Core\Context\ProjectionContext;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\ProjectionContext;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 
 class PostBackendUserAuthenticationHook
 {

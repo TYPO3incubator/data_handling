@@ -15,13 +15,13 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\MetaModel;
  */
 
 use TYPO3\CMS\Core\Tests\FunctionalTestCase;
-use TYPO3\CMS\DataHandling\Core\Context\ProjectionContext;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\ProjectionContext;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
-use TYPO3\CMS\DataHandling\Core\MetaModel\ActiveRelation;
-use TYPO3\CMS\DataHandling\Core\MetaModel\RelationMap;
-use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
-use TYPO3\CMS\DataHandling\Core\MetaModel\Relational;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\ActiveRelation;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PassiveRelation;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Relational;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 

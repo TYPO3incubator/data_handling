@@ -15,10 +15,10 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Aggregate;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\Change;
-use TYPO3\CMS\DataHandling\Core\MetaModel\RelationMap;
-use TYPO3\CMS\DataHandling\Core\MetaModel\PassiveRelation;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Aggregate;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Change;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PassiveRelation;
 
 class AggregateResolver
 {

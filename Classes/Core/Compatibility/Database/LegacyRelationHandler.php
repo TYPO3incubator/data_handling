@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\Database;
 
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\RelationHandler;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 
 class LegacyRelationHandler extends RelationHandler
 {

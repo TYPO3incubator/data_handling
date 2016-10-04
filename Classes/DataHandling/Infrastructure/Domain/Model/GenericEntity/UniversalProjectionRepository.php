@@ -15,10 +15,10 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\Generi
  */
 
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Context;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Service\ContextService;
 
 class UniversalProjectionRepository implements ProjectionRepository

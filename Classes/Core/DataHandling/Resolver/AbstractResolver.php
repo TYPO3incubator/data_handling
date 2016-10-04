@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\DataHandlerScope;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
 abstract class AbstractResolver

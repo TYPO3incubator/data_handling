@@ -15,11 +15,11 @@ namespace TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider;
  */
 
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommand;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandEntityBehavior;
-use TYPO3\CMS\DataHandling\Core\Framework\Process\Tca\TcaCommandManager;
-use TYPO3\CMS\DataHandling\Core\MetaModel\ActiveRelation;
-use TYPO3\CMS\DataHandling\Core\MetaModel\RelationMap;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommandEntityBehavior;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommandManager;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\ActiveRelation;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
 
 /**
  * Modifies TCA settings depending on current state

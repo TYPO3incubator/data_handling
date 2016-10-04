@@ -14,12 +14,12 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\Generi
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Event;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Sequence\RelationSequence;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
 
 interface ProjectionRepository
-extends \TYPO3\CMS\DataHandling\Core\Framework\Domain\Repository\ProjectionRepository
+extends \TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\Base\ProjectionRepository
 {
     /**
      * @param string $identifier

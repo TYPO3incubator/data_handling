@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Authentication;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Context\ProjectionContext;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\ProjectionContext;
 
 class BackendUserAuthentication extends \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
 {

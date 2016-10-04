@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Object\Meta\PropertyReference;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 
 class PassThroughConverter extends AbstractConverter
 {

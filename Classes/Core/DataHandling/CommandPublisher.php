@@ -15,10 +15,10 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Command\AbstractCommand;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Command\CommandHandlerBundle;
-use TYPO3\CMS\DataHandling\Core\Framework\Domain\Command\DomainCommand;
-use TYPO3\CMS\DataHandling\Core\Framework\Object\Providable;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command\AbstractCommand;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command\CommandHandlerBundle;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\DomainCommand;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Providable;
 
 /**
  * @deprecated

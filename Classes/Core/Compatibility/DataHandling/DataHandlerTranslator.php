@@ -257,7 +257,9 @@ class DataHandlerTranslator
             // negative page-id, fetch record and retrieve pid value
             } elseif ($pageIdValue < 0) {
                 // @todo Add "MoveAfterRecordCommand"
-                $recordReference = EntityReference::instance()->import($targetStateReference)->setUid(abs($pageIdValue));
+                $recordReference = EntityReference::instance()
+                    ->import($targetStateReference)
+                    ->setUid(abs($pageIdValue));
                 $nodeReference = EntityReference::instance()
                     ->setName('pages')
                     ->setUid($this->fetchPageId($recordReference));

@@ -152,16 +152,6 @@ abstract class BaseEvent implements DomainEvent
     }
 
     /**
-     * @param array|null $data
-     * @return $this
-     */
-    public function setData(array $data = null)
-    {
-        $this->data = $data;
-        return $this;
-    }
-
-    /**
      * @return array|null
      */
     public function getData()

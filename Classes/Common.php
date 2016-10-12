@@ -183,7 +183,9 @@ class Common
             ->enrolStore('sql')
             ->concerning('*')
             ->setStore(
-                EventStore::create(SqlDriver::instance())
+                EventStore::create(
+                    SqlDriver::instance()
+                )
             );
 //        EventStorePool::provide()
 //            ->enrolStore('geteventstore.com')

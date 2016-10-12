@@ -25,7 +25,7 @@ class EventStore implements AttachableStore
     /**
      * @var PersistableDriver
      */
-    protected $driver;
+    private $driver;
 
     /**
      * @param PersistableDriver $driver
@@ -38,17 +38,10 @@ class EventStore implements AttachableStore
 
     /**
      * @param PersistableDriver $driver
-     * @return EventStore
      */
-    public function setDriver(PersistableDriver $driver)
-    {
-        $this->driver = $driver;
-        return $this;
-    }
-
     public function __construct(PersistableDriver $driver)
     {
-        $this->setDriver($driver);
+        $this->driver = $driver;
     }
 
     /**

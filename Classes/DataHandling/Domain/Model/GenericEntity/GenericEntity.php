@@ -360,7 +360,7 @@ class GenericEntity extends State implements EventApplicable
         );
     }
 
-    protected function applyChangedEntityEvent(Event\ModifiedEntityEvent $event)
+    protected function applyModifiedEntityEvent(Event\ModifiedEntityEvent $event)
     {
         $this->values = $event->getValues();
     }

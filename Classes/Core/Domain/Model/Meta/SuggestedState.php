@@ -31,6 +31,10 @@ class SuggestedState extends State
      */
     private $suggestedValues = [];
 
+    /**
+     * @param string $propertyName
+     * @return int|string|null
+     */
     public function getSuggestedValue(string $propertyName)
     {
         return ($this->suggestedValues[$propertyName] ?? null);

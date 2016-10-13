@@ -27,12 +27,12 @@ class EntityReference implements RepresentableAsString
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(EntityReference::class);
+        return GeneralUtility::makeInstance(static::class);
     }
 
     /**
      * @param array $array
-     * @return EntityReference
+     * @return static
      */
     public static function fromArray(array $array)
     {
@@ -48,7 +48,7 @@ class EntityReference implements RepresentableAsString
     /**
      * @param string $name
      * @param array $record
-     * @return EntityReference
+     * @return static
      */
     public static function fromRecord(string $name, array $record)
     {
@@ -60,9 +60,9 @@ class EntityReference implements RepresentableAsString
 
     /**
      * @param string $name
-     * @return EntityReference
+     * @return static
      */
-    public static function create(string $name): EntityReference
+    public static function create(string $name)
     {
         return static::instance()->setName($name)->setUuid(Uuid::uuid4()->toString());
     }
@@ -104,13 +104,20 @@ class EntityReference implements RepresentableAsString
         return $this->uid;
     }
 
-    public function setUid(string $uid): EntityReference
+    /**
+     * @param string $uid
+     * @return static
+     */
+    public function setUid(string $uid)
     {
         $this->uid = $uid;
         return $this;
     }
 
-    public function unsetUid(): EntityReference
+    /**
+     * @return static
+     */
+    public function unsetUid()
     {
         unset($this->uid);
         return $this;
@@ -136,30 +143,48 @@ class EntityReference implements RepresentableAsString
         return Uuid::fromString($this->uuid);
     }
 
-    public function setUuid(string $uuid): EntityReference
+    /**
+     * @param string $uuid
+     * @return static
+     */
+    public function setUuid(string $uuid)
     {
         $this->uuid = $uuid;
         return $this;
     }
 
-    public function unsetUuid(): EntityReference
+    /**
+     * @return static
+     */
+    public function unsetUuid()
     {
         unset($this->uuid);
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName(string $name): EntityReference
+    /**
+     * @param string $name
+     * @return static
+     */
+    public function setName(string $name)
     {
         $this->name = $name;
         return $this;
     }
 
-    public function import(EntityReference $reference): EntityReference
+    /**
+     * @param EntityReference $reference
+     * @return static
+     */
+    public function import(EntityReference $reference)
     {
         $this->uid = $reference->getUid();
         $this->uuid = $reference->getUuid();

@@ -106,6 +106,27 @@ class GenericEntity extends State implements EventApplicable
 
     /**
      * @param Context $context
+     * @param EntityReference $aggregateReference
+     * @param EntityReference $nodeReference
+     * @return static
+     */
+    public static function createEntity(Context $context, EntityReference $aggregateReference, EntityReference $nodeReference)
+    {
+        $genericEntity = static::createNewEntity($context, $aggregateReference);
+
+        $event = Event\CreatedEntityEvent::create(
+            $context,
+            $genericEntity->getSubject(),
+            $nodeReference
+        );
+
+        $genericEntity->manageEvent($event);
+
+        return $genericEntity;
+    }
+
+    /**
+     * @param Context $context
      * @return static
      */
     public function branchEntityTo(Context $context)
@@ -128,27 +149,6 @@ class GenericEntity extends State implements EventApplicable
         $this->manageEvent($event);
 
         return $branchedEntity;
-    }
-
-    /**
-     * @param Context $context
-     * @param EntityReference $aggregateReference
-     * @param EntityReference $nodeReference
-     * @return static
-     */
-    public static function createEntity(Context $context, EntityReference $aggregateReference, EntityReference $nodeReference)
-    {
-        $genericEntity = static::createNewEntity($context, $aggregateReference);
-
-        $event = Event\CreatedEntityEvent::create(
-            $context,
-            $genericEntity->getSubject(),
-            $nodeReference
-        );
-
-        $genericEntity->manageEvent($event);
-
-        return $genericEntity;
     }
 
     /**

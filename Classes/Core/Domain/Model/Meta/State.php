@@ -48,16 +48,6 @@ class State
     protected $values = [];
 
     /**
-     * @var EventReference
-     */
-    protected $branchedFrom;
-
-    /**
-     * @var EventReference
-     */
-    protected $translatedFrom;
-
-    /**
      * @var PropertyReference[]
      */
     protected $relations = [];
@@ -69,6 +59,9 @@ class State
         $this->context = Context::create();
     }
 
+    /**
+     * @return Context
+     */
     public function getContext()
     {
         return $this->context;
@@ -114,6 +107,9 @@ class State
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getValues(): array
     {
         return $this->values;
@@ -129,12 +125,20 @@ class State
         return $this;
     }
 
+    /**
+     * @param string $propertyName
+     * @return bool
+     */
     public function hasValue(string $propertyName): bool
     {
         // consider null values
         return array_key_exists($propertyName, $this->values);
     }
 
+    /**
+     * @param string $propertyName
+     * @return int|string|null
+     */
     public function getValue(string $propertyName)
     {
         return ($this->values[$propertyName] ?? null);

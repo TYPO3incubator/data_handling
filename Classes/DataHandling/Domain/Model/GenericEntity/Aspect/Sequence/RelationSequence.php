@@ -57,7 +57,7 @@ class RelationSequence extends AbstractSequence
     {
         $array = [];
         foreach ($this->sequence as $item) {
-            $array[] = $item->__toArray();
+            $array[] = $item->toArray();
         }
         return $array;
     }

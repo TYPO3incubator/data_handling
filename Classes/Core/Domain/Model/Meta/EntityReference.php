@@ -18,9 +18,10 @@ use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsArray;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsString;
 
-class EntityReference implements RepresentableAsString
+class EntityReference implements RepresentableAsString, RepresentableAsArray
 {
     /**
      * @return EntityReference
@@ -70,24 +71,24 @@ class EntityReference implements RepresentableAsString
     /**
      * @var string
      */
-    protected $uid;
+    private $uid;
 
     /**
      * @var string
      */
-    protected $uuid;
+    private $uuid;
 
     /**
      * @var string
      */
-    protected $name;
+    private $name;
 
     public function __toString(): string
     {
         return $this->name . '/' . ($this->uuid ?? $this->uid ?? uniqid('none'));
     }
 
-    public function __toArray(): array
+    public function toArray(): array
     {
         return [
             'name' => $this->name,

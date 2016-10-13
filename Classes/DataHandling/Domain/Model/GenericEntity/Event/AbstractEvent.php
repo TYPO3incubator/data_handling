@@ -72,19 +72,19 @@ abstract class AbstractEvent extends BaseEvent implements StorableEvent, Context
             $data['context'] = $this->context->toArray();
         }
         if ($this instanceof AggregateReference) {
-            $data['aggregateReference'] = $this->getAggregateReference()->__toArray();
+            $data['aggregateReference'] = $this->getAggregateReference()->toArray();
         }
         if ($this instanceof NodeReference) {
-            $data['nodeReference'] = $this->getNodeReference()->__toArray();
+            $data['nodeReference'] = $this->getNodeReference()->toArray();
         }
         if ($this instanceof TargetReference) {
-            $data['targetReference'] = $this->getTargetReference()->__toArray();
+            $data['targetReference'] = $this->getTargetReference()->toArray();
         }
         if ($this instanceof FromReference) {
             $data['fromReference'] = $this->getFromReference()->__toArray();
         }
         if ($this instanceof RelationReference) {
-            $data['relationReference'] = $this->getRelationReference()->__toArray();
+            $data['relationReference'] = $this->getRelationReference()->toArray();
         }
         if ($this instanceof Sequence) {
             $data['sequence'] = $this->getSequence()->__toArray();

@@ -56,7 +56,7 @@ class EventReference implements RepresentableAsString
     public function __toArray(): array
     {
         return [
-            'entity' => $this->entityReference->__toArray(),
+            'entity' => $this->entityReference->toArray(),
             'eventId' => $this->eventId,
         ];
     }

@@ -15,9 +15,10 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsArray;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsString;
 
-class PropertyReference implements RepresentableAsString
+class PropertyReference implements RepresentableAsString, RepresentableAsArray
 {
     /**
      * @return PropertyReference
@@ -41,49 +42,70 @@ class PropertyReference implements RepresentableAsString
     /**
      * @var EntityReference
      */
-    protected $entityReference;
+    private $entityReference;
 
     /**
      * @var string
      */
-    protected $name;
+    private $name;
 
     public function __toString(): string
     {
         return $this->entityReference->__toString() . '->' . $this->name;
     }
 
-    public function __toArray(): array
+    /**
+     * @return array
+     */
+    public function toArray(): array
     {
         return [
-            'entity' => $this->entityReference->__toArray(),
+            'entity' => $this->entityReference->toArray(),
             'name' => $this->name
         ];
     }
 
+    /**
+     * @return EntityReference
+     */
     public function getEntityReference(): EntityReference
     {
         return $this->entityReference;
     }
 
-    public function setEntityReference(EntityReference $entityReference): PropertyReference
+    /**
+     * @param EntityReference $entityReference
+     * @return static
+     */
+    public function setEntityReference(EntityReference $entityReference)
     {
         $this->entityReference = $entityReference;
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName(string $name): PropertyReference
+    /**
+     * @param string $name
+     * @return static
+     */
+    public function setName(string $name)
     {
         $this->name = $name;
         return $this;
     }
 
-    public function import(PropertyReference $reference): PropertyReference
+    /**
+     * @param PropertyReference $reference
+     * @return static
+     */
+    public function import(PropertyReference $reference)
     {
         if ($this->entityReference === null) {
             $this->entityReference = EntityReference::instance();
@@ -93,5 +115,16 @@ class PropertyReference implements RepresentableAsString
         $this->name = $reference->getName();
 
         return $this;
+    }
+
+    /**
+     * @param PropertyReference $reference
+     * @return bool
+     */
+    public function equals(PropertyReference $reference): bool {
+        return (
+            $this->name === $reference->getName()
+            && $this->entityReference->equals($reference->getEntityReference())
+        );
     }
 }

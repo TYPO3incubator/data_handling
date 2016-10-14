@@ -22,11 +22,16 @@ class PostBackendUserAuthenticationHook
 {
     public function execute(array $parameters)
     {
+        $workspaceId = 0;
+
         /** @var BackendUserAuthentication $backendUser */
         $backendUser = $parameters['BE_USER'];
+        if (isset($backendUser->workspace)) {
+            $workspaceId = $backendUser->workspace;
+        }
 
         $projectionContext = ProjectionContext::provide();
-        $projectionContext->setWorkspaceId($backendUser->workspace);
+        $projectionContext->setWorkspaceId($workspaceId);
         $projectionContext->lock();
 
         $projectionContext->enforceLocalStorage();

@@ -118,7 +118,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
      * @param ModifyEntityCommand $command
      * @return GenericEntity
      */
-    protected function handleChangeEntityCommand(ModifyEntityCommand $command)
+    protected function handleModifyEntityCommand(ModifyEntityCommand $command)
     {
         $genericEntity = $this->fetchGenericEntity($command);
         $genericEntity->modifyEntity(

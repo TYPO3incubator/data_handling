@@ -370,12 +370,12 @@ class GenericEntity extends State implements EventApplicable
         // @todo Create and apply meta-state for entity
     }
 
-    protected function handleAttachedRelationEvent(Event\AttachedRelationEvent $event)
+    protected function applyAttachedRelationEvent(Event\AttachedRelationEvent $event)
     {
         $this->relations[] = $event->getRelationReference();
     }
 
-    protected function handleRemovedRelationEvent(Event\RemovedRelationEvent $event)
+    protected function applyRemovedRelationEvent(Event\RemovedRelationEvent $event)
     {
         $relationIndex = array_search(
             $event->getRelationReference(),
@@ -387,7 +387,7 @@ class GenericEntity extends State implements EventApplicable
         }
     }
 
-    protected function handleOrderedRelationsEvent(Event\OrderedRelationsEvent $event)
+    protected function applyOrderedRelationsEvent(Event\OrderedRelationsEvent $event)
     {
         $relations = [];
 

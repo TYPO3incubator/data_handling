@@ -26,6 +26,13 @@ class UuidUtility
      */
     public static function fetchUuid(EntityReference $reference): string
     {
+        // @todo Handle the special scenarios differently
+        if ((string)$reference->getUid() === '0') {
+            if ($reference->getName() === 'sys_language') {
+                return EntityReference::DEFAULT_UUID;
+            }
+        }
+
         $queryBuilder = ConnectionPool::instance()->getOriginQueryBuilder();
         $statement = $queryBuilder
             ->select(Common::FIELD_UUID)

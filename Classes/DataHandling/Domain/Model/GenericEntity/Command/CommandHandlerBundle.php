@@ -116,11 +116,12 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
     /**
      * @param ModifyEntityCommand $command
+     * @param GenericEntity $genericEntity
      * @return GenericEntity
      */
-    protected function handleModifyEntityCommand(ModifyEntityCommand $command)
+    protected function handleModifyEntityCommand(ModifyEntityCommand $command, GenericEntity $genericEntity = null)
     {
-        $genericEntity = $this->fetchGenericEntity($command);
+        $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
         $genericEntity->modifyEntity(
             $command->getContext(),
             $command->getData()
@@ -130,11 +131,12 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
     /**
      * @param DeleteEntityCommand $command
+     * @param GenericEntity $genericEntity
      * @return GenericEntity
      */
-    protected function handleDeleteEntityCommand(DeleteEntityCommand $command)
+    protected function handleDeleteEntityCommand(DeleteEntityCommand $command, GenericEntity $genericEntity = null)
     {
-        $genericEntity = $this->fetchGenericEntity($command);
+        $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
         $genericEntity->deleteEntity(
             $command->getContext()
         );
@@ -143,11 +145,12 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
     /**
      * @param AttachRelationCommand $command
+     * @param GenericEntity $genericEntity
      * @return GenericEntity
      */
-    protected function handleAttachRelationCommand(AttachRelationCommand $command)
+    protected function handleAttachRelationCommand(AttachRelationCommand $command, GenericEntity $genericEntity = null)
     {
-        $genericEntity = $this->fetchGenericEntity($command);
+        $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
         $genericEntity->attachRelation(
             $command->getContext(),
             $command->getRelationReference()
@@ -157,10 +160,11 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
     /**
      * @param RemoveRelationCommand $command
+     * @param GenericEntity $genericEntity
      */
-    protected function handleRemoveRelationCommand(RemoveRelationCommand $command)
+    protected function handleRemoveRelationCommand(RemoveRelationCommand $command, GenericEntity $genericEntity = null)
     {
-        $genericEntity = $this->fetchGenericEntity($command);
+        $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
         $genericEntity->removeRelation(
             $command->getContext(),
             $command->getRelationReference()
@@ -170,10 +174,11 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
     /**
      * @param OrderRelationsCommand $command
+     * @param GenericEntity $genericEntity
      */
-    protected function handleOrderRelationsCommand(OrderRelationsCommand $command)
+    protected function handleOrderRelationsCommand(OrderRelationsCommand $command, GenericEntity $genericEntity = null)
     {
-        $genericEntity = $this->fetchGenericEntity($command);
+        $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
         $genericEntity->orderRelations(
             $command->getContext(),
             $command->getSequence()

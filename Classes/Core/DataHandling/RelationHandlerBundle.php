@@ -16,6 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling;
 
 use TYPO3\CMS\Core\Database\RelationHandler;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
 
 class RelationHandlerBundle
@@ -60,39 +61,67 @@ class RelationHandlerBundle
 
     public function attach(EntityReference $reference)
     {
+        if ($reference->getUuid() === EntityReference::DEFAULT_UUID) {
+            $uid = 0;
+        } else {
+            $uid = $reference->getUid();
+        }
+
         $this->relationHandler->itemArray[] = [
             'table' => $reference->getName(),
-            'id' => $reference->getUuid(),
+            'id' => $uid,
         ];
+
+        $this->relationHandler->tableArray[$reference->getName()][] = $uid;
     }
 
     public function remove(EntityReference $reference)
     {
-        $index = $this->searchItem($reference);
-        if ($index !== false) {
-            unset($this->relationHandler->itemArray[$index]);
+        $tableName = $reference->getName();
+        $itemArrayIndex = $this->searchInItemArray($reference);
+        $tableArrayIndex = $this->searchInTableArray($reference);
+
+        if ($itemArrayIndex !== false && $tableArrayIndex !== false) {
+            unset(
+                $this->relationHandler->itemArray[$itemArrayIndex]
+            );
+            unset(
+                $this->relationHandler->tableArray[$tableName][$itemArrayIndex]
+            );
         }
     }
 
     public function order(RelationSequence $sequence)
     {
         $items = [];
+        $tableArray = [];
+        $tableName = $sequence->getName();
+
         foreach ($sequence->get() as $relationReference) {
             $reference = $relationReference->getEntityReference();
 
-            $index = $this->searchItem($reference);
-            if ($index === false) {
+            $itemArrayIndex = $this->searchInItemArray($reference);
+            $tableArrayIndex = $this->searchInTableArray($reference);
+
+            if ($itemArrayIndex === false || $tableArrayIndex === false) {
                 throw new \RuntimeException(
                     'Item ' . $reference->__toString() . ' not found',
                     1474479332
                 );
             }
-            unset($this->relationHandler->itemArray[$index]);
+
+            unset(
+                $this->relationHandler->itemArray[$itemArrayIndex]
+            );
+            unset(
+                $this->relationHandler->tableArray[$tableName][$tableArrayIndex]
+            );
 
             $items[] = [
                 'table' => $reference->getName(),
                 'id' => $reference->getUid(),
             ];
+            $tableArray[] = $reference->getUid();
         }
 
         if (count($this->relationHandler->itemArray)) {
@@ -103,6 +132,7 @@ class RelationHandlerBundle
         }
 
         $this->relationHandler->itemArray = $items;
+        $this->relationHandler->tableArray[$tableName] = $tableArray;
     }
 
     /**
@@ -117,12 +147,30 @@ class RelationHandlerBundle
      * @param EntityReference $reference
      * @return bool|int|string
      */
-    private function searchItem(EntityReference $reference)
+    private function searchInItemArray(EntityReference $reference)
     {
+        $tableName = $reference->getName();
         foreach ($this->relationHandler->itemArray as $index => $item) {
             if (
-                $item['table'] === $reference->getName()
+                $item['table'] === $tableName
                 && (string)$item['id'] === (string)$reference->getUid()
+            ) {
+                return $index;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param EntityReference $reference
+     * @return bool|int|string
+     */
+    private function searchInTableArray(EntityReference $reference)
+    {
+        $tableName = $reference->getName();
+        foreach ($this->relationHandler->tableArray[$tableName] as $index => $itemId) {
+            if (
+                (string)$itemId === (string)$reference->getUid()
             ) {
                 return $index;
             }

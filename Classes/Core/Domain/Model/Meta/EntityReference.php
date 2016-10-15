@@ -23,6 +23,8 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsString;
 
 class EntityReference implements RepresentableAsString, RepresentableAsArray
 {
+    const DEFAULT_UUID = '00000000-0000-0000-0000-000000000000';
+
     /**
      * @return EntityReference
      */

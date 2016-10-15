@@ -80,9 +80,14 @@ class GenericEntity extends State implements EventApplicable
      */
     protected static function createNewReference(EntityReference $subject)
     {
-        return EntityReference::instance()
-            ->setName($subject->getName())
-            ->setUuid(Uuid::uuid4());
+        // @todo Analyse whether it's good to re-use a given UUID
+        $reference = EntityReference::create($subject->getName());
+        if ($subject->getUuid() !== null) {
+            $reference->setUuid($subject->getUuid());
+        } else {
+            $reference->setUuid(Uuid::uuid4());
+        }
+        return $reference;
     }
 
     /**

@@ -64,6 +64,11 @@ class DataHandlerTranslator
     private $dataCollectionChanges = [];
 
     /**
+     * @var EntityReference[]
+     */
+    private $newSubjects = [];
+
+    /**
      * @var DataHandlerScope
      */
     private $scope;
@@ -108,6 +113,14 @@ class DataHandlerTranslator
         return $this->actionCollection;
     }
 
+    /**
+     * @return EntityReference[]
+     */
+    public function getNewSubjects()
+    {
+        return $this->newSubjects;
+    }
+
     public function process()
     {
         $this->initialize();
@@ -119,6 +132,8 @@ class DataHandlerTranslator
 
         $this->mapDataCollectionCommands();
         $this->mapActionCollectionCommands();
+
+        $this->provideNewSubjects();
     }
 
     private function initialize()
@@ -324,6 +339,19 @@ class DataHandlerTranslator
     private function mapActionCollectionCommands()
     {
 
+    }
+
+    private function provideNewSubjects()
+    {
+        foreach ($this->scope->newEntityReferences as $placeholder => $newEntityReference) {
+            $uid = UuidUtility::fetchUid($newEntityReference);
+            if (empty($uid)) {
+                continue;
+            }
+            $this->newSubjects[$placeholder] = EntityReference::instance()
+                ->import($newEntityReference)
+                ->setUid($uid);
+        }
     }
 
     private function isValidUid($uid): bool

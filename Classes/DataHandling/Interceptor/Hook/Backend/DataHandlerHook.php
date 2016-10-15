@@ -38,14 +38,19 @@ class DataHandlerHook
             return;
         }
         // create command mapper for incoming data
-        $commandMapper = DataHandlerTranslator::create(
+        $commandTranslator = DataHandlerTranslator::create(
             $dataHandler->datamap,
             $dataHandler->cmdmap
         );
         // processes incoming data and emits commands
-        $commandMapper->process();
+        $commandTranslator->process();
         // reset DataHandler maps
-        $dataHandler->datamap = $commandMapper->getDataCollection();
-        $dataHandler->cmdmap = $commandMapper->getActionCollection();
+        $dataHandler->datamap = $commandTranslator->getDataCollection();
+        $dataHandler->cmdmap = $commandTranslator->getActionCollection();
+        // apply new subjects
+        foreach ($commandTranslator->getNewSubjects() as $placeholder => $newSubject) {
+            $dataHandler->substNEWwithIDs[$placeholder] = $newSubject->getUid();
+            $dataHandler->substNEWwithIDs_table[$placeholder] = $newSubject->getName();
+        }
     }
 }

@@ -115,10 +115,18 @@ class MetaModelService implements SingletonInterface
     public function isInvalidChangeProperty(string $tableName, string $propertyName): bool
     {
         return (
-            $this->isSystemProperty($tableName, $propertyName)
+            !$this->isConfiguredProperty($tableName, $propertyName)
+            || $this->isSystemProperty($tableName, $propertyName)
             || $this->isActionProperty($tableName, $propertyName)
             || $this->isVisibilityProperty($tableName, $propertyName)
             || $this->isRestrictionProperty($tableName, $propertyName)
+        );
+    }
+
+    public function isConfiguredProperty(string $tableName, string $propertyName): bool
+    {
+        return (
+            $this->getColumnConfiguration($tableName, $propertyName) !== null
         );
     }
 

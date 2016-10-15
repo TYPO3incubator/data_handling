@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\Database\ConnectionInterceptor;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EventSourcingMap;
+use TYPO3\CMS\DataHandling\Core\Service\DatabaseService;
 use TYPO3\CMS\DataHandling\Core\Service\FileSystemService;
 
 class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
@@ -73,7 +74,15 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
      */
     public function getConnectionForTable(string $tableName): Connection
     {
-        if (!EventSourcingMap::provide()->shallProject($tableName)) {
+        // use local stroage for
+        // + tables that shall be projected
+        // + tables that belong to caching framework
+        $useLocalStorage = (
+            EventSourcingMap::provide()->shallProject($tableName)
+            || DatabaseService::instance()->isCacheTable($tableName)
+        );
+
+        if (!$useLocalStorage) {
             return $this->getOriginConnection();
         }
 

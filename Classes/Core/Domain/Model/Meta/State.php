@@ -14,19 +14,10 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 
-class State
+abstract class State
 {
-    /**
-     * @return State
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(State::class);
-    }
-
     /**
      * @var Context
      */
@@ -52,7 +43,7 @@ class State
      */
     protected $relations = [];
 
-    public function __construct()
+    protected function __construct()
     {
         $this->node = EntityReference::instance();
         $this->subject = EntityReference::instance();
@@ -92,6 +83,9 @@ class State
         return $this;
     }
 
+    /**
+     * @return EntityReference
+     */
     public function getSubject(): EntityReference
     {
         return $this->subject;

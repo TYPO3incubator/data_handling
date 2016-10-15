@@ -26,11 +26,11 @@ use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as Compatibi
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Database\Query\Restriction\LanguageRestriction;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\SuggestedState;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\State;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
@@ -250,7 +250,7 @@ class EventInitializationService
             return;
         }
 
-        $temporaryState = State::instance()->setValues(
+        $temporaryState = SuggestedState::instance()->setValues(
             CoreResolver\ValueResolver::instance()->resolve(
                 $migrationEntity->getSubject(), $data
             )
@@ -274,7 +274,7 @@ class EventInitializationService
         $relationResolver = CoreResolver\RelationResolver::create(
             ConnectionPool::instance()->getOriginConnection()
         );
-        $temporaryState = State::instance()->setRelations(
+        $temporaryState = SuggestedState::instance()->setRelations(
             $relationResolver->resolve(
                 $migrationEntity->getSubject(),
                 $data

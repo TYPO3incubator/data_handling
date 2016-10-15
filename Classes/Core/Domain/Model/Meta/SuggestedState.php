@@ -23,7 +23,7 @@ class SuggestedState extends State
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(static::class);
+        return new static();
     }
 
     /**

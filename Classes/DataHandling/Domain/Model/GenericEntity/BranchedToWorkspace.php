@@ -68,9 +68,12 @@ class BranchedToWorkspace implements EventApplicable
             $this->aggregateReference
         );
 
-        Saga::instance()->tell($this, $eventSelector);
+        Saga::create($eventSelector)->tell($this);
     }
 
+    /**
+     * @param Event\BranchedEntityToEvent $event
+     */
     protected function applyBranchedEntityToEvent(Event\BranchedEntityToEvent $event)
     {
         if ($event->getContext()->getWorkspaceId() !== $this->workspaceId) {

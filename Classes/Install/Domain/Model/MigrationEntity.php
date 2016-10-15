@@ -24,6 +24,14 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\BaseEvent;
 class MigrationEntity extends GenericEntity
 {
     /**
+     * @return MigrationEntity
+     */
+    public static function instance()
+    {
+        return new static();
+    }
+
+    /**
      * @param EntityReference $subject
      * @return EntityReference
      */

@@ -70,10 +70,8 @@ class GenericEntityEventRepository implements Instantiable, EventRepository
         string $type = Saga::EVENT_EXCLUDING
     ) {
         $eventSelector = static::createEventSelector($aggregateReference);
-
-        return Saga::instance()
-            ->constraint($eventId, $type)
-            ->tell(GenericEntity::instance(), $eventSelector);
+        $saga = Saga::create($eventSelector)->constraint($eventId, $type);
+        return GenericEntity::buildFromSaga($saga);
     }
 
     /**

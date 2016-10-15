@@ -16,7 +16,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity;
 
 use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\RelationResolver;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\ValueResolver;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
@@ -27,21 +26,23 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\State;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\AbstractSequence;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandHandlerTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\EventApplicable;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\EventHandlerTrait;
+use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Saga;
 
 class GenericEntity extends State implements EventApplicable
 {
-    use \TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandHandlerTrait;
     use EventHandlerTrait;
 
     /**
-     * @return static
+     * @param Saga $saga
+     * @return GenericEntity
      */
-    public static function instance()
+    public static function buildFromSaga(Saga $saga)
     {
-        return GeneralUtility::makeInstance(static::class);
+        $genericEntity = new static();
+        $saga->tell($genericEntity);
+        return $genericEntity;
     }
 
     /**
@@ -54,7 +55,7 @@ class GenericEntity extends State implements EventApplicable
     {
         $aggregateReference = EntityReference::fromRecord($aggregateType, $data);
 
-        $genericEntity = GenericEntity::instance();
+        $genericEntity = new static();
         $genericEntity->getSubject()->import($aggregateReference);
 
         $genericEntity->setValues(
@@ -97,7 +98,7 @@ class GenericEntity extends State implements EventApplicable
             $aggregateReference
         );
 
-        $genericEntity = static::instance();
+        $genericEntity = new static();
         $genericEntity->subject = $aggregateReference;
         $genericEntity->manageEvent($event);
 

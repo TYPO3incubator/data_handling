@@ -14,10 +14,7 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\EventApplicable;
-use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventSelector;
-use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStorePool;
 
 class Saga
 {
@@ -25,29 +22,60 @@ class Saga
     const EVENT_INCLUDING = 'including';
 
     /**
+     * @param string|EventSelector $concerning
      * @return Saga
      */
-    public static function instance()
+    public static function create($concerning)
     {
-        return GeneralUtility::makeInstance(Saga::class);
+        if (!($concerning instanceof EventSelector)) {
+            $concerning = EventSelector::create($concerning);
+        }
+
+        if (empty($concerning->getStreamName())) {
+            throw new \RuntimeException('No stream name defined', 1472124767);
+        }
+
+        $saga = new static();
+        $saga->concerning = $concerning;
+        return $saga;
     }
 
     /**
-     * @var string
+     * @var EventSelector
      */
-    protected $excluding;
+    private $concerning;
 
     /**
      * @var string
      */
-    protected $including;
+    private $excluding;
 
+    /**
+     * @var string
+     */
+    private $including;
+
+    /**
+     * Disable public instantiation.
+     */
+    private function __construct()
+    {
+    }
+
+    /**
+     * @param string $excluding
+     * @return $this
+     */
     public function excluding(string $excluding)
     {
         $this->excluding = $excluding;
         return $this;
     }
 
+    /**
+     * @param string $including
+     * @return $this
+     */
     public function including(string $including)
     {
         $this->including = $including;
@@ -79,22 +107,13 @@ class Saga
 
     /**
      * @param EventApplicable $state
-     * @param string|EventSelector $concerning
      * @return EventApplicable
      */
-    public function tell(EventApplicable $state, $concerning)
+    public function tell(EventApplicable $state)
     {
-        if (!($concerning instanceof EventSelector)) {
-            $concerning = EventSelector::create($concerning);
-        }
-
-        if (empty($concerning->getStreamName())) {
-            throw new \RuntimeException('No stream name defined', 1472124767);
-        }
-
         $stream = EventStorePool::provide()
-            ->getBestFor($concerning)
-            ->stream($concerning->getStreamName());
+            ->getBestFor($this->concerning)
+            ->stream($this->concerning->getStreamName());
 
         foreach ($stream as $event) {
             // stop telling events, before the event is applied

@@ -202,14 +202,8 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
      */
     private function fetchGenericEntity(AbstractCommand $command)
     {
-        if ($command instanceof RelationReference) {
-            $aggregateReference = $command
-                ->getRelationReference()
-                ->getEntityReference();
-        } else {
-            $aggregateReference = $command
-                ->getAggregateReference();
-        }
+        $aggregateReference = $command
+            ->getAggregateReference();
 
         return GenericEntityEventRepository::instance()
             ->findByAggregateReference($aggregateReference);

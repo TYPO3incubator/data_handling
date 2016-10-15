@@ -75,6 +75,13 @@ class RelationSerializer
             $propertyValue
         );
 
+        if ($bundle === null) {
+            throw new \RuntimeException(
+                'Could not determine relation handler',
+                1476535753
+            );
+        }
+
         $bundle->remove($relationReference->getEntityReference());
         return $bundle->commit();
     }

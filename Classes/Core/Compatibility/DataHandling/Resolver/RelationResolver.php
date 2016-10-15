@@ -61,7 +61,9 @@ class RelationResolver extends AbstractResolver
                     );
                 } elseif (MathUtility::canBeInterpretedAsInteger($pointer)) {
                     $configuration = $GLOBALS['TCA'][$reference->getName()]['columns'][$propertyName]['config'];
-                    if ($configuration['type'] === 'group') {
+                    if (($configuration['special'] ?? null) === 'languages') {
+                        $relationName = 'sys_language';
+                    } elseif ($configuration['type'] === 'group') {
                         $relationName = $configuration['allowed'];
                     } elseif ($configuration['type'] === 'select' || $configuration['type'] === 'inline') {
                         $relationName = $configuration['foreign_table'];

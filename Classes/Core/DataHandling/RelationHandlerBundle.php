@@ -15,6 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling;
  */
 
 use TYPO3\CMS\Core\Database\RelationHandler;
+use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
@@ -64,7 +65,7 @@ class RelationHandlerBundle
         if ($reference->getUuid() === EntityReference::DEFAULT_UUID) {
             $uid = 0;
         } else {
-            $uid = $reference->getUid();
+            $uid = $this->updateReference($reference)->getUid();
         }
 
         $this->relationHandler->itemArray[] = [
@@ -150,6 +151,9 @@ class RelationHandlerBundle
     private function searchInItemArray(EntityReference $reference)
     {
         $tableName = $reference->getName();
+        if (empty($this->relationHandler->itemArray)) {
+            return false;
+        }
         foreach ($this->relationHandler->itemArray as $index => $item) {
             if (
                 $item['table'] === $tableName
@@ -168,6 +172,9 @@ class RelationHandlerBundle
     private function searchInTableArray(EntityReference $reference)
     {
         $tableName = $reference->getName();
+        if (empty($this->relationHandler->tableArray[$tableName])) {
+            return false;
+        }
         foreach ($this->relationHandler->tableArray[$tableName] as $index => $itemId) {
             if (
                 (string)$itemId === (string)$reference->getUid()
@@ -176,5 +183,26 @@ class RelationHandlerBundle
             }
         }
         return false;
+    }
+
+    /**
+     * @param EntityReference $reference
+     * @return EntityReference
+     */
+    private function updateReference(EntityReference $reference)
+    {
+        if (MathUtility::canBeInterpretedAsInteger($reference->getUid())) {
+            return $reference;
+        }
+
+        $uid = UuidUtility::fetchUid($reference);
+        if (!MathUtility::canBeInterpretedAsInteger($uid)) {
+            throw new \RuntimeException('Cannot resolve UID', 1476700045);
+        }
+
+        $resolvedReference = EntityReference::instance()
+            ->import($reference)
+            ->setUid($uid);
+        return $resolvedReference;
     }
 }

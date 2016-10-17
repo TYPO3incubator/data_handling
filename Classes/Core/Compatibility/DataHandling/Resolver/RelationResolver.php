@@ -78,7 +78,13 @@ class RelationResolver extends AbstractResolver
                     );
                 } elseif (isset($this->scope->acceptedNewEntityReferences[$pointer])) {
                     $entityReference = $this->scope->acceptedNewEntityReferences[$pointer];
+                // @todo Remove work-around for a FormEngine bug
+                } elseif (!isset($this->scope->ignoredNewEntityReferences[$pointer])) {
+                    continue;
                 } else {
+                    // If this exception is thrown, most probably the entity is
+                    // not configured to be handled for event sourcing,
+                    // see $TCA[<table-name>]['ctrl']['eventSourcing']
                     throw new \UnexpectedValueException('EntityReference cannot be resolved', 1469968439);
                 }
 

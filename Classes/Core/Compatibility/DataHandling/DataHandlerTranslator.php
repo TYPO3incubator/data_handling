@@ -210,6 +210,13 @@ class DataHandlerTranslator
                 || in_array($tableName, $excludeTableNames)
                 || !MetaModelService::instance()->shallListenEvents($tableName)
             ) {
+                // @todo Remove work-around for a FormEngine bug
+                foreach(array_keys($uidValues) as $uid) {
+                    if (!MathUtility::canBeInterpretedAsInteger($uid)) {
+                        $this->scope->ignoredNewEntityReferences[$uid]
+                            = EntityReference::create($tableName)->setUid($uid);
+                    }
+                }
                 continue;
             }
 

@@ -34,6 +34,11 @@ class DataHandlerScope
     public $acceptedNewEntityReferences = [];
 
     /**
+     * @var EntityReference[]
+     */
+    public $ignoredNewEntityReferences = [];
+
+    /**
      * @var Change[]
      */
     public $relationChangesMap = [];

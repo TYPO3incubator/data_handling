@@ -76,8 +76,8 @@ class RelationResolver extends AbstractResolver
                     $entityReference->setUuid(
                         $this->fetchUuid($entityReference)
                     );
-                } elseif (isset($this->scope->newEntityReferences[$pointer])) {
-                    $entityReference = $this->scope->newEntityReferences[$pointer];
+                } elseif (isset($this->scope->acceptedNewEntityReferences[$pointer])) {
+                    $entityReference = $this->scope->acceptedNewEntityReferences[$pointer];
                 } else {
                     throw new \UnexpectedValueException('EntityReference cannot be resolved', 1469968439);
                 }

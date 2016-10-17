@@ -261,13 +261,13 @@ class DataHandlerTranslator
             $change->setNew(true);
             $targetStateReference->setUuid(Uuid::uuid4()->toString());
             // @todo Check whether NEW-id is defined already and throw exception
-            $this->scope->newEntityReferences[$targetStateReference->getUid()] = $targetStateReference;
+            $this->scope->acceptedNewEntityReferences[$targetStateReference->getUid()] = $targetStateReference;
 
             // @todo Check for nested new pages here
             $pageIdValue = $change->getTargetState()->getSuggestedValue('pid');
             // relating to a new page
-            if (!empty($this->scope->newEntityReferences[$pageIdValue])) {
-                $nodeReference = $this->scope->newEntityReferences[$pageIdValue];
+            if (!empty($this->scope->acceptedNewEntityReferences[$pageIdValue])) {
+                $nodeReference = $this->scope->acceptedNewEntityReferences[$pageIdValue];
                 $change->getTargetState()->getNode()->import($nodeReference);
             // negative page-id, fetch record and retrieve pid value
             } elseif ($pageIdValue < 0) {
@@ -343,7 +343,7 @@ class DataHandlerTranslator
 
     private function provideNewSubjects()
     {
-        foreach ($this->scope->newEntityReferences as $placeholder => $newEntityReference) {
+        foreach ($this->scope->acceptedNewEntityReferences as $placeholder => $newEntityReference) {
             $uid = UuidUtility::fetchUid($newEntityReference);
             if (empty($uid)) {
                 continue;

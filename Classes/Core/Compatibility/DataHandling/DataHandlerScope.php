@@ -31,7 +31,7 @@ class DataHandlerScope
     /**
      * @var EntityReference[]
      */
-    public $newEntityReferences = [];
+    public $acceptedNewEntityReferences = [];
 
     /**
      * @var Change[]

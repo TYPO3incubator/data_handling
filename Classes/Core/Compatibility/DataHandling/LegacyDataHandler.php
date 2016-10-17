@@ -39,15 +39,24 @@ class LegacyDataHandler extends DataHandler
      * @param $configuration
      * @return string
      */
-    private function modifyDateTimeValue(string $value, array $configuration)
+    private function modifyDateTimeValue($value, array $configuration)
     {
-        $dateTimeFormats = QueryHelper::getDateTimeFormats();
         $databaseType = ($configuration['dbType'] ?? null);
-        if ($databaseType === 'date' || $databaseType === 'datetime') {
-            $emptyValue = $dateTimeFormats[$databaseType]['empty'];
-            $format = $dateTimeFormats[$databaseType]['format'];
-            $value = (!empty($value) && $value !== $emptyValue ? gmdate($format, $value) : $emptyValue);
+
+        if ($databaseType !== 'date' && $databaseType !== 'datetime') {
+            return $value;
         }
+        if (!is_string($value)) {
+            throw new \RuntimeException(
+                'String expected for date values',
+                1476697266
+            );
+        }
+
+        $dateTimeFormats = QueryHelper::getDateTimeFormats();
+        $emptyValue = $dateTimeFormats[$databaseType]['empty'];
+        $format = $dateTimeFormats[$databaseType]['format'];
+        $value = (!empty($value) && $value !== $emptyValue ? gmdate($format, $value) : $emptyValue);
         return $value;
     }
 }

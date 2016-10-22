@@ -411,27 +411,6 @@ class EventInitializationService
 
     /**
      * @param string $tableName
-     * @param int $uid
-     * @return array
-     * @deprecated Not used anymore
-     */
-    private function fetchVersionRecordForUid(string $tableName, int $uid)
-    {
-        $fetchQueryBuilder = $this->getQueryBuilder();
-        $fetchQueryBuilder->getRestrictions()
-            ->removeAll()
-            ->add($this->getDeletedRestriction())
-            ->add($this->getWorkspaceRestriction());
-        return $fetchQueryBuilder
-            ->select('*')
-            ->from($tableName)
-            ->where($fetchQueryBuilder->expr()->eq('t3ver_oid', $uid))
-            ->execute()
-            ->fetch();
-    }
-
-    /**
-     * @param string $tableName
      * @param array $data
      */
     private function defineInitialRevision(string $tableName, array $data)

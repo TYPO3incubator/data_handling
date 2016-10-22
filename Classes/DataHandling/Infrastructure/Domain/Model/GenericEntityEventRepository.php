@@ -32,15 +32,6 @@ class GenericEntityEventRepository implements Instantiable, EventRepository
 {
     /**
      * @return GenericEntityEventRepository
-     * @deprecated
-     */
-    public static function create()
-    {
-        return static::instance();
-    }
-
-    /**
-     * @return GenericEntityEventRepository
      */
     public static function instance()
     {

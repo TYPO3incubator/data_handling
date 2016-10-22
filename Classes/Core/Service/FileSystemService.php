@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FileSystemService
 {
-    static $htAccessFileContent = [
+    private static $htAccessFileContent = [
         '# Apache < 2.3',
         '<IfModule !mod_authz_core.c>',
         '	Order allow,deny',
@@ -51,6 +51,6 @@ class FileSystemService
         if (!is_dir($path)) {
             GeneralUtility::mkdir_deep($path);
         }
-        GeneralUtility::writeFile($file, implode(PHP_EOL, static::$htAccessFileContent));
+        GeneralUtility::writeFile($file, implode(PHP_EOL, self::$htAccessFileContent));
     }
 }

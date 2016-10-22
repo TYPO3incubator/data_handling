@@ -26,7 +26,7 @@ class ProjectionContext implements Instantiable, Providable, RepresentableAsLoca
     /**
      * @var ProjectionContext
      */
-    static $projectionContext;
+    private static $projectionContext;
 
     /**
      * @param bool $force
@@ -34,10 +34,10 @@ class ProjectionContext implements Instantiable, Providable, RepresentableAsLoca
      */
     public static function provide(bool $force = false)
     {
-        if ($force || !isset(static::$projectionContext)) {
-            static::$projectionContext = static::instance();
+        if ($force || !isset(self::$projectionContext)) {
+            self::$projectionContext = static::instance();
         }
-        return static::$projectionContext;
+        return self::$projectionContext;
     }
 
     /**

@@ -40,14 +40,14 @@ class Common
      * @internal
      * @todo Remove this development flag
      */
-    protected static $enable = true;
+    private static $enable = true;
 
     /**
      * @var bool
      * @internal
      * @todo Remove this development flag
      */
-    protected static $local = true;
+    private static $local = true;
 
     /**
      * @return Dispatcher
@@ -73,7 +73,7 @@ class Common
         $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][ConnectionPool::ORIGIN_CONNECTION_NAME] =
             $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][ConnectionPool::DEFAULT_CONNECTION_NAME];
 
-        if (!static::$enable) {
+        if (!self::$enable) {
             return;
         }
 
@@ -88,7 +88,7 @@ class Common
      */
     public static function registerAlternativeImplementations()
     {
-        if (!static::$enable) {
+        if (!self::$enable) {
             return;
         }
 
@@ -102,7 +102,7 @@ class Common
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Workspaces\Service\WorkspaceService::class]['className']
             = \TYPO3\CMS\DataHandling\Workspaces\Service\WorkspaceService::class;
 
-        if (!static::$local) {
+        if (!self::$local) {
             return;
         }
 
@@ -116,7 +116,7 @@ class Common
 
     public static function registerUpdates()
     {
-        if (!static::$enable) {
+        if (!self::$enable) {
             return;
         }
 
@@ -127,7 +127,7 @@ class Common
 
     public static function registerHooks()
     {
-        if (!static::$enable) {
+        if (!self::$enable) {
             return;
         }
 
@@ -137,7 +137,7 @@ class Common
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ac3c06f089776446875c4957a7f35a56']
             = DataHandling\Interceptor\Hook\Backend\DataHandlerHook::class;
 
-        if (!static::$local) {
+        if (!self::$local) {
             return;
         }
 
@@ -154,7 +154,7 @@ class Common
             \TYPO3\CMS\DataHandling\DataHandling\Interceptor\Slot\Infrastructure\SchemaModificationSlot::class, 'generate'
         );
 
-        if (!static::$enable) {
+        if (!self::$enable) {
             return;
         }
     }

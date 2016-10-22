@@ -23,17 +23,17 @@ class ProjectionManager implements Providable
     /**
      * @var ProjectionManager
      */
-    protected static $instance;
+    private static $instance;
 
     /**
      * @param bool $force
      * @return ProjectionManager
      */
     public static function provide(bool $force = false) {
-        if ($force || !isset(static::$instance)) {
-            static::$instance = static::instance();
+        if ($force || !isset(self::$instance)) {
+            self::$instance = static::instance();
         }
-        return static::$instance;
+        return self::$instance;
     }
 
     /**

@@ -132,7 +132,7 @@ abstract class BaseEvent implements DomainEvent
 
     /**
      * @param int $eventVersion
-     * @return static;
+     * @return static
      */
     public function setEventVersion(int $eventVersion)
     {

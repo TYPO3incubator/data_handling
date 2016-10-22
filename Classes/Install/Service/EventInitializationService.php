@@ -152,7 +152,7 @@ class EventInitializationService
      */
     private function createEntityEvents(MigrationEntity $migrationEntity, array $data)
     {
-        /** @var MigrationEntity $entities */
+        /** @var MigrationEntity[] $entities */
         $entities = [];
         $metadata = $this->getUpgradeMetadata($data);
         $tableName = $migrationEntity->getSubject()->getName();

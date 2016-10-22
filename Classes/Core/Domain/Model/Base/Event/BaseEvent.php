@@ -31,7 +31,7 @@ abstract class BaseEvent implements DomainEvent
      * @param null|array $metadata
      * @return BaseEvent
      */
-    static function reconstitute(
+    public static function reconstitute(
         string $eventType,
         string $eventId,
         int $eventVersion,

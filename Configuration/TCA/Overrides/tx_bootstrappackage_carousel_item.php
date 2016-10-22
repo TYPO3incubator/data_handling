@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3_MODE') || die();
 
 $GLOBALS['TCA']['tx_bootstrappackage_carousel_item']['ctrl']['eventSourcing'] = [
     'listenEvents' => true,

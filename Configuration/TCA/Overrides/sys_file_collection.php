@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3_MODE') || die();
 
 $GLOBALS['TCA']['sys_file_collection']['ctrl']['eventSourcing'] = [
     'listenEvents' => true,

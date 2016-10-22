@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3_MODE') || die();
 
 \TYPO3\CMS\DataHandling\Common::overrideConfiguration();
 \TYPO3\CMS\DataHandling\Common::registerAlternativeImplementations();

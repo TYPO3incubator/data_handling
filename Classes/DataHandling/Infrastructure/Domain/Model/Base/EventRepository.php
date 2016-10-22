@@ -24,5 +24,5 @@ interface EventRepository
     /**
      * @param BaseEvent $event
      */
-    public function addEvent(BaseEvent $event);
+    public function commitEvent(BaseEvent $event);
 }

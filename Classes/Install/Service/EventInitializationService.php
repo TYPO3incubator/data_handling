@@ -223,7 +223,7 @@ class EventInitializationService
         }
 
         foreach ($entities as $entity) {
-            GenericEntityEventRepository::instance()->add($entity);
+            GenericEntityEventRepository::instance()->commit($entity);
         }
     }
 
@@ -257,7 +257,7 @@ class EventInitializationService
         );
 
         $migrationEntity->modifyEntity($context, $temporaryState->getValues());
-        GenericEntityEventRepository::instance()->add($migrationEntity);
+        GenericEntityEventRepository::instance()->commit($migrationEntity);
     }
 
     /**
@@ -289,7 +289,7 @@ class EventInitializationService
             }
         }
 
-        GenericEntityEventRepository::instance()->add($migrationEntity);
+        GenericEntityEventRepository::instance()->commit($migrationEntity);
     }
 
     /**
@@ -314,7 +314,7 @@ class EventInitializationService
             }
         }
 
-        GenericEntityEventRepository::instance()->add($migrationEntity);
+        GenericEntityEventRepository::instance()->commit($migrationEntity);
     }
 
     /**

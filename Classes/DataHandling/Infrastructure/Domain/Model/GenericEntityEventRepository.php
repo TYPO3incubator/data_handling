@@ -77,10 +77,10 @@ class GenericEntityEventRepository implements Instantiable, EventRepository
     /**
      * @param GenericEntity $genericEntity
      */
-    public function add(GenericEntity $genericEntity)
+    public function commit(GenericEntity $genericEntity)
     {
         foreach ($genericEntity->getRecordedEvents() as $event) {
-            $this->addEvent($event);
+            $this->commitEvent($event);
         }
 
         ProjectionManager::provide()->projectEvents(
@@ -92,7 +92,7 @@ class GenericEntityEventRepository implements Instantiable, EventRepository
     /**
      * @param BaseEvent|AbstractEvent $event
      */
-    public function addEvent(BaseEvent $event)
+    public function commitEvent(BaseEvent $event)
     {
         if ($event instanceof OriginatedEntityEvent) {
             $streamName = Common::STREAM_PREFIX_META_ORIGIN;

@@ -51,7 +51,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
         $this->handleBundle($command, $genericEntity);
 
-        GenericEntityEventRepository::instance()->add($genericEntity);
+        GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 
     /**
@@ -65,8 +65,8 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
         $this->handleBundle($command, $targetEntity);
 
-        GenericEntityEventRepository::instance()->add($sourceEntity);
-        GenericEntityEventRepository::instance()->add($targetEntity);
+        GenericEntityEventRepository::instance()->commit($sourceEntity);
+        GenericEntityEventRepository::instance()->commit($targetEntity);
     }
 
     /**
@@ -81,9 +81,9 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
         $this->handleBundle($command, $targetEntity);
 
-        GenericEntityEventRepository::instance()->add($sourceEntity);
-        GenericEntityEventRepository::instance()->add($branchedEntity);
-        GenericEntityEventRepository::instance()->add($targetEntity);
+        GenericEntityEventRepository::instance()->commit($sourceEntity);
+        GenericEntityEventRepository::instance()->commit($branchedEntity);
+        GenericEntityEventRepository::instance()->commit($targetEntity);
     }
 
     /**
@@ -97,8 +97,8 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
         $this->handleBundle($command, $targetEntity);
 
-        GenericEntityEventRepository::instance()->add($sourceEntity);
-        GenericEntityEventRepository::instance()->add($targetEntity);
+        GenericEntityEventRepository::instance()->commit($sourceEntity);
+        GenericEntityEventRepository::instance()->commit($targetEntity);
     }
 
     /**
@@ -111,7 +111,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
 
         $this->handleBundle($command, $genericEntity);
 
-        GenericEntityEventRepository::instance()->add($genericEntity);
+        GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 
     /**
@@ -126,7 +126,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
             $command->getContext(),
             $command->getData()
         );
-        GenericEntityEventRepository::instance()->add($genericEntity);
+        GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 
     /**
@@ -140,7 +140,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
         $genericEntity->deleteEntity(
             $command->getContext()
         );
-        GenericEntityEventRepository::instance()->add($genericEntity);
+        GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 
     /**
@@ -155,7 +155,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
             $command->getContext(),
             $command->getRelationReference()
         );
-        GenericEntityEventRepository::instance()->add($genericEntity);
+        GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 
     /**
@@ -169,7 +169,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
             $command->getContext(),
             $command->getRelationReference()
         );
-        GenericEntityEventRepository::instance()->add($genericEntity);
+        GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 
     /**
@@ -183,7 +183,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
             $command->getContext(),
             $command->getSequence()
         );
-        GenericEntityEventRepository::instance()->add($genericEntity);
+        GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 
     /**

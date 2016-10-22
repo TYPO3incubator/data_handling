@@ -20,7 +20,7 @@ use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 class EventSourcingMap implements Providable
 {
     /**
-     * @var RelationMap
+     * @var EventSourcingMap
      */
     static private $instance;
 

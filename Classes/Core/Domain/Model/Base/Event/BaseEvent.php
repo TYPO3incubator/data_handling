@@ -106,7 +106,7 @@ abstract class BaseEvent implements DomainEvent
     }
 
     /**
-     * @return $this
+     * @return static
      */
     public function cancel()
     {
@@ -132,7 +132,7 @@ abstract class BaseEvent implements DomainEvent
 
     /**
      * @param int $eventVersion
-     * @return $this;
+     * @return static;
      */
     public function setEventVersion(int $eventVersion)
     {
@@ -171,7 +171,7 @@ abstract class BaseEvent implements DomainEvent
 
     /**
      * @param array|null $metadata
-     * @return $this
+     * @return static
      */
     public function setMetadata(array $metadata = null)
     {

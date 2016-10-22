@@ -72,7 +72,7 @@ class RelationSequence extends AbstractSequence
 
     /**
      * @param PropertyReference $item
-     * @return $this
+     * @return static
      */
     public function attach($item)
     {

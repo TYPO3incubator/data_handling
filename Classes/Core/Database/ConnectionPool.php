@@ -48,9 +48,9 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     public static function map(string $sourceName, string $targetName = null)
     {
         if ($targetName === null) {
-            unset(static::$mapping[$sourceName]);
+            unset(self::$mapping[$sourceName]);
         } else {
-            static::$mapping[$sourceName] = $targetName;
+            self::$mapping[$sourceName] = $targetName;
         }
     }
 
@@ -65,8 +65,8 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
      */
     public static function originAsDefault(bool $originAsDefault)
     {
-        $currentValue = static::$originAsDefault;
-        static::$originAsDefault = $originAsDefault;
+        $currentValue = self::$originAsDefault;
+        self::$originAsDefault = $originAsDefault;
         return $currentValue;
     }
 
@@ -110,12 +110,12 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     public function getConnectionByName(string $connectionName): Connection
     {
         if (
-            static::$originAsDefault
+            self::$originAsDefault
             && $connectionName === static::DEFAULT_CONNECTION_NAME
         ) {
             $connectionName = static::ORIGIN_CONNECTION_NAME;
-        } elseif (isset(static::$mapping[$connectionName])) {
-            $connectionName = static::$mapping[$connectionName];
+        } elseif (isset(self::$mapping[$connectionName])) {
+            $connectionName = self::$mapping[$connectionName];
         }
 
         return parent::getConnectionByName($connectionName);

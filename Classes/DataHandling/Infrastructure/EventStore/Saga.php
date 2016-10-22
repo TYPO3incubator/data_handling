@@ -64,7 +64,7 @@ class Saga
 
     /**
      * @param string $excluding
-     * @return $this
+     * @return static
      */
     public function excluding(string $excluding)
     {
@@ -74,7 +74,7 @@ class Saga
 
     /**
      * @param string $including
-     * @return $this
+     * @return static
      */
     public function including(string $including)
     {
@@ -87,7 +87,7 @@ class Saga
      *
      * @param string $eventId
      * @param string $type
-     * @return $this
+     * @return static
      */
     public function constraint(string $eventId, string $type)
     {

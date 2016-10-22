@@ -20,6 +20,10 @@ use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\Schema\ConnectionMigrator;
 
+/**
+ * Representation of local storage object to keep specific projections
+ * for a particular context, a combination of workspace and language.
+ */
 class LocalStorage
 {
     /**
@@ -31,6 +35,8 @@ class LocalStorage
     }
 
     /**
+     * Initializes the local storage.
+     *
      * @param string $connectionName
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\DBAL\Schema\SchemaException
@@ -46,6 +52,8 @@ class LocalStorage
     }
 
     /**
+     * Purges a local storage by clearing all tables.
+     *
      * @param string $connectionName
      * @throws \Doctrine\DBAL\DBALException
      */
@@ -72,6 +80,9 @@ class LocalStorage
     }
 
     /**
+     * Adjust database schema to allow incomplete inserts
+     * (this removes aspect of being strict-mode-safe).
+     *
      * @param string $connectionName
      * @throws \Doctrine\DBAL\DBALException
      */

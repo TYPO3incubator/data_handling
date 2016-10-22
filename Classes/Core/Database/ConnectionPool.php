@@ -22,6 +22,11 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EventSourcingMap;
 use TYPO3\CMS\DataHandling\Core\Service\DatabaseService;
 use TYPO3\CMS\DataHandling\Core\Service\FileSystemService;
 
+/**
+ * Extends to regular connection pool by intercepting the default
+ * connection and providing a specific local storage instead. Besides
+ * that, origin connection (prior default connection) can be accessed.
+ */
 class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
 {
     const ORIGIN_CONNECTION_NAME = 'Origin';
@@ -50,6 +55,11 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Defines whether to use origin as default.
+     *
+     * This might be useful if setting up test-cases and install
+     * tool modifications - thus, local storage can be overruled.
+     *
      * @param bool $originAsDefault
      * @return bool
      */
@@ -69,6 +79,8 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Creates a connection object based on the specified table name.
+     *
      * @param string $tableName
      * @return Connection
      */
@@ -90,6 +102,8 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Creates a connection object based on the specified identifier.
+     *
      * @param string $connectionName
      * @return Connection
      */
@@ -108,6 +122,8 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Gets the origin connection, previously know as default connection.
+     *
      * @return Connection
      */
     public function getOriginConnection(): Connection
@@ -116,6 +132,8 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Gets a new query build instance for origin connection.
+     *
      * @return QueryBuilder
      */
     public function getOriginQueryBuilder(): QueryBuilder
@@ -124,6 +142,8 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Provides a local storage connection for context based projections.
+     *
      * @param string $name Name of the LocalStorage (e.g. 'workspace-0')
      * @param bool $write Whether to allow write access (e.g. for projection)
      * @return Connection
@@ -161,6 +181,8 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Defines a particular local storage as default connection.
+     *
      * @param string $name
      */
     public function setLocalStorageAsDefault(string $name)
@@ -172,6 +194,9 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Reinitialize a particular local storage.
+     * (clears all tables and provides local SQLite storage)
+     *
      * @param string $name
      */
     public function reinitializeLocalStorage(string $name)
@@ -184,6 +209,9 @@ class ConnectionPool extends \TYPO3\CMS\Core\Database\ConnectionPool
     }
 
     /**
+     * Unifies the generation of a local storage name.
+     * This identifier is used a connection name as well.
+     *
      * @param string $name
      * @param bool $write
      * @return string

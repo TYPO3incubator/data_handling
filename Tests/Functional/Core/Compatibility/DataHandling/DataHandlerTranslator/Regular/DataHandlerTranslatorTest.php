@@ -20,7 +20,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandBus;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
-use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures\CommandHandlerFixture;
+use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\DataHandlerTranslator\Fixtures\CommandHandlerFixture;
 
 class DataHandlerTranslatorTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase
 {

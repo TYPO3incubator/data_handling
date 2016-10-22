@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\CommandMapper\Fixtures;
+namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\DataHandlerTranslator\Fixtures;
 
 /*
  * This file is part of the TYPO3 CMS project.

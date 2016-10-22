@@ -16,5 +16,5 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Common;
 
 interface Providable
 {
-    static public function provide(bool $force = false);
+    public static function provide(bool $force = false);
 }

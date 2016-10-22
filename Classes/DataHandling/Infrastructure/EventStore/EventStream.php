@@ -24,7 +24,7 @@ class EventStream extends \IteratorIterator
      * @param string $streamName
      * @return EventStream
      */
-    static public function create(EventTraversable $traversable, string $streamName)
+    public static function create(EventTraversable $traversable, string $streamName)
     {
         return GeneralUtility::makeInstance(EventStream::class, $traversable, $streamName);
     }

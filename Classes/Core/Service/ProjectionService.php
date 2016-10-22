@@ -24,7 +24,7 @@ class ProjectionService
     /**
      * @return ProjectionService
      */
-    static public function instance()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(ProjectionService::class);
     }
@@ -41,9 +41,11 @@ class ProjectionService
                 $concerning->getCategories()
             );
 
-        ProjectionPool::provide()
-            ->getFor($concerning)
-            ->provide()->forStream()
-            ->project($stream);
+        /*
+            ProjectionPool::provide()
+                ->getFor($concerning)
+                ->provide()->forStream()
+                ->project($stream);
+         */
     }
 }

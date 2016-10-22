@@ -16,5 +16,5 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Common;
 
 interface Instantiable
 {
-    static public function instance();
+    public static function instance();
 }

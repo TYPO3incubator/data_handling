@@ -26,7 +26,7 @@ class ContextService implements SingletonInterface
     /**
      * @return ContextService
      */
-    static public function instance()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(ContextService::class);
     }

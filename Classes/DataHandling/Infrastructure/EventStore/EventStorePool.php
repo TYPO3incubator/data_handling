@@ -39,7 +39,7 @@ class EventStorePool implements Providable
     /**
      * @return EventStorePool
      */
-    static public function instance()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(EventStorePool::class);
     }

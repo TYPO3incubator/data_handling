@@ -22,7 +22,7 @@ class MicroDateTime
      * @param \DateTimeZone $timeZone
      * @return \DateTime
      */
-    static public function create($time = 'now', \DateTimeZone $timeZone = null)
+    public static function create($time = 'now', \DateTimeZone $timeZone = null)
     {
         if ($time === 'now') {
             $microTime = sprintf('%.6f', microtime(true));

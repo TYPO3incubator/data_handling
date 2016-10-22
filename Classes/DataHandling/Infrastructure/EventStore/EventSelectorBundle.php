@@ -28,7 +28,7 @@ class EventSelectorBundle extends \ArrayObject implements Instantiable
     }
 
     /**
-     * @param array|object $input The input parameter accepts an array or an Object.
+     * @param string[]|EventSelector[] $input The input parameter accepts an array or an Object.
      * @param int $flags Flags to control the behaviour of the ArrayObject object.
      * @param string $iterator_class Specify the class that will be used for iteration of the ArrayObject object.
      */

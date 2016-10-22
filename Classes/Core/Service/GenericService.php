@@ -22,7 +22,7 @@ class GenericService implements SingletonInterface
     /**
      * @return GenericService
      */
-    static public function instance()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(GenericService::class);
     }

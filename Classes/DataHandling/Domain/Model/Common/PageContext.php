@@ -21,7 +21,7 @@ class PageContext implements Providable
     /**
      * @var PageContext
      */
-    static $instance;
+    private static $instance;
 
     /**
      * @param bool $force
@@ -29,10 +29,10 @@ class PageContext implements Providable
      */
     public static function provide(bool $force = false)
     {
-        if ($force || !isset(static::$instance)) {
-            static::$instance = new static();
+        if ($force || !isset(self::$instance)) {
+            self::$instance = new static();
         }
-        return static::$instance;
+        return self::$instance;
     }
 
     private function __construct()

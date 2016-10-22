@@ -22,7 +22,7 @@ class MetaModelService implements SingletonInterface
     /**
      * @return MetaModelService
      */
-    static public function instance()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(MetaModelService::class);
     }

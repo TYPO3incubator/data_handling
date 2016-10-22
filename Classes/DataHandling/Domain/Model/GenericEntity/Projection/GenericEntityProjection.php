@@ -351,7 +351,7 @@ class GenericEntityProjection implements Projection
 
         $aggregateType = $event->getAggregateType();
         $rawValues = OriginProjectionRepository::create($aggregateType)
-            ->findRawByUuid($event->getAggregateId());
+            ->findRawByUuid($event->getAggregateId()->toString());
 
         return empty($rawValues);
     }

@@ -84,7 +84,7 @@ class AggregateResolver
      */
     public function getTopDownChanges(Aggregate $rootAggregate)
     {
-        $sequence[] = $this->resolveSubject($rootAggregate);
+        $sequence = [$this->resolveSubject($rootAggregate)];
         foreach ($rootAggregate->getDeepNestedAggregates() as $nestedAggregate) {
             $subject = $this->resolveSubject($nestedAggregate);
             if (!in_array($subject, $sequence)) {

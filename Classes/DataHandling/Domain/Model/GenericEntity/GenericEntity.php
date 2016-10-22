@@ -85,7 +85,7 @@ class GenericEntity extends State implements EventApplicable
         if ($subject->getUuid() !== null) {
             $reference->setUuid($subject->getUuid());
         } else {
-            $reference->setUuid(Uuid::uuid4());
+            $reference->setUuid(Uuid::uuid4()->toString());
         }
         return $reference;
     }

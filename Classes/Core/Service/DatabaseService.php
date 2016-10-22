@@ -22,7 +22,7 @@ class DatabaseService implements SingletonInterface
     /**
      * @return DatabaseService
      */
-    static public function instance()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(static::class);
     }

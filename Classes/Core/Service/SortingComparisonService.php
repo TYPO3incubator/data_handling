@@ -28,7 +28,7 @@ class SortingComparisonService implements SingletonInterface
     /**
      * @return SortingComparisonService
      */
-    static public function instance()
+    public static function instance()
     {
         return GeneralUtility::makeInstance(SortingComparisonService::class);
     }

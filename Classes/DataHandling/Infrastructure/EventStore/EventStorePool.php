@@ -46,6 +46,7 @@ class EventStorePool implements Providable
 
     /**
      * @var EventStoreEnrolment[]
+     * @todo Switch to AE: enroll, enrollment
      */
     protected $enrolments = [];
 

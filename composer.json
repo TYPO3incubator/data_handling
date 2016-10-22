@@ -4,6 +4,12 @@
 	"description": "TYPO3 Data Handling",
 	"homepage": "https://typo3.org",
 	"license": ["GPL-2.0+"],
+	"authors": [
+		{
+			"name": "Oliver Hader",
+			"email": "oliver@typo3.org"
+		}
+	],
 	"minimum-stability": "dev",
 	"require": {
 		"php" : "^7.0",

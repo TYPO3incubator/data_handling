@@ -49,4 +49,12 @@ class NullDriver implements PersistableDriver
     {
         return EventStream::create(NullDriverIterator::instance(), $streamName);
     }
+
+    /**
+     * @return bool
+     */
+    public function isAvailable(): bool
+    {
+        return true;
+    }
 }

@@ -44,7 +44,7 @@ class GetEventStoreDriver implements PersistableDriver
     /**
      * @var bool
      */
-    protected $offline;
+    protected $available = false;
 
     /**
      * @param string $url
@@ -67,11 +67,11 @@ class GetEventStoreDriver implements PersistableDriver
 
         try {
             $this->eventStore = new \EventStore\EventStore($url, $eventStoreClient);
+            $this->available = true;
         } catch (\Exception $exception) {
             if (!$mute) {
                 throw $exception;
             }
-            $this->offline = true;
         }
     }
 
@@ -84,7 +84,7 @@ class GetEventStoreDriver implements PersistableDriver
      */
     public function attach(string $streamName, BaseEvent $event, array $categories = [])
     {
-        if ($this->offline) {
+        if (!$this->available) {
             return false;
         }
 
@@ -125,7 +125,7 @@ class GetEventStoreDriver implements PersistableDriver
             throw new \RuntimeException('No selection criteria given', 1471441756);
         }
 
-        if ($this->offline) {
+        if (!$this->available) {
             return new \ArrayObject();
         }
 
@@ -142,5 +142,13 @@ class GetEventStoreDriver implements PersistableDriver
         );
 
         return EventStream::create($iterator, $streamName);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAvailable(): bool
+    {
+        return $this->available;
     }
 }

@@ -68,6 +68,10 @@ class GetEventStorePerformanceTest extends FunctionalTestCase
      */
     public function commitAndStreamEvents()
     {
+        if (!$this->eventStore->isAvailable()) {
+            $this->markTestSkipped('GetEventStore is not available');
+        }
+
         $value = 5000;
 
         $start = microtime(true);

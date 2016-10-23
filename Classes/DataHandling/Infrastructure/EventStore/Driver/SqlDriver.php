@@ -133,6 +133,14 @@ class SqlDriver implements PersistableDriver
     }
 
     /**
+     * @return bool
+     */
+    public function isAvailable(): bool
+    {
+        return ConnectionPool::instance()->getOriginConnection()->ping();
+    }
+
+    /**
      * @param QueryBuilder $queryBuilder
      * @param string $fieldName
      * @param string $needle

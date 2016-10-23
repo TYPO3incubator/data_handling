@@ -32,4 +32,9 @@ interface PersistableDriver
      * @return \Iterator
      */
     public function stream(string $streamName, array $categories = []);
+
+    /**
+     * @return bool
+     */
+    public function isAvailable(): bool;
 }

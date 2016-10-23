@@ -72,4 +72,12 @@ class EventStore implements AttachableStore
     {
         return $this->driver->stream($streamName, $categories);
     }
+
+    /**
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return $this->driver->isAvailable();
+    }
 }

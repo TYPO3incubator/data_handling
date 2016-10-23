@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
@@ -22,21 +21,21 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\SuggestedState;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 
-class CommandResolver
+class ChangeCommandResolver
 {
     /**
      * @param Change[] $changes
-     * @return CommandResolver
+     * @return ChangeCommandResolver
      */
     public static function create(array $changes)
     {
-        return GeneralUtility::makeInstance(static::class, $changes);
+        return new static($changes);
     }
 
     /**
      * @param Change[] $changes
      */
-    public function __construct(array $changes)
+    private function __construct(array $changes)
     {
         $this->changes = $changes;
         $this->resolve();

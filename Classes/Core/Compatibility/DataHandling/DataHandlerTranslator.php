@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
-use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\CommandResolver;
+use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\ChangeCommandResolver;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\SuggestedState;
@@ -333,7 +333,7 @@ class DataHandlerTranslator
                 $rootAggregate
             );
             // resolve meta commands
-            $resolver = CommandResolver::create($rootAggregateChanges);
+            $resolver = ChangeCommandResolver::create($rootAggregateChanges);
             $commands = $resolver->getCommands();
             // try to translate into specific commands
             $commands = TcaCommandTranslator::create($commands)->translate();

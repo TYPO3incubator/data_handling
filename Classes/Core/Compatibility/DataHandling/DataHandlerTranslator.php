@@ -27,7 +27,6 @@ use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntit
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command\AbstractCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandBus;

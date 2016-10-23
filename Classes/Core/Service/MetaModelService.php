@@ -149,9 +149,41 @@ class MetaModelService implements SingletonInterface
                         && !empty($GLOBALS['TCA'][$configuration['foreign_table']])
                     || ($configuration['special'] ?? null) === 'languages'
                 )
-            || $configuration['type'] === 'inline'
-                && !empty($configuration['foreign_table'])
-                && !empty($GLOBALS['TCA'][$configuration['foreign_table']])
+            || $this->isInlineRelationProperty($tableName, $propertyName)
+        );
+    }
+
+    public function isInlineRelationProperty(string $tableName, string $propertyName): bool
+    {
+        if (empty($GLOBALS['TCA'][$tableName]['columns'][$propertyName]['config']['type'])) {
+            return false;
+        }
+
+        $configuration = $GLOBALS['TCA'][$tableName]['columns'][$propertyName]['config'];
+
+        return (
+            $configuration['type'] === 'inline'
+            && !empty($configuration['foreign_table'])
+            && !empty($GLOBALS['TCA'][$configuration['foreign_table']])
+        );
+    }
+
+    public function isCascadingDeleteRelationProperty(string $tableName, string $propertyName): bool
+    {
+        if (empty($GLOBALS['TCA'][$tableName]['columns'][$propertyName]['config']['type'])) {
+            return false;
+        }
+
+        $configuration = $GLOBALS['TCA'][$tableName]['columns'][$propertyName]['config'];
+
+        return (
+            $this->isInlineRelationProperty($tableName, $propertyName)
+            && (
+                // default behavior is enabled, if property is not defined
+                !isset($configuration['behaviour']['enableCascadingDelete'])
+                || !empty($configuration['behaviour']['enableCascadingDelete'])
+            )
+            && empty($configuration['MM'])
         );
     }
 

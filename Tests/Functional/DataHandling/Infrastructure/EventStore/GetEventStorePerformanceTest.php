@@ -18,12 +18,14 @@ use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Tests\FunctionalTestCase;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Driver\GetEventStoreDriver;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStore;
+use TYPO3\CMS\DataHandling\Tests\Framework\PerformanceMessageException;
+use TYPO3\CMS\DataHandling\Tests\Framework\PerformanceTest;
 use TYPO3\CMS\DataHandling\Tests\Functional\DataHandling\Infrastructure\EventStore\Fixtures\EventFixture;
 
 /**
  * Performance test on using event store GetEventStoreDriver
  */
-class GetEventStorePerformanceTest extends FunctionalTestCase
+class GetEventStorePerformanceTest extends FunctionalTestCase implements PerformanceTest
 {
     /**
      * @var string[]
@@ -36,6 +38,11 @@ class GetEventStorePerformanceTest extends FunctionalTestCase
      * @var EventStore
      */
     private $eventStore;
+
+    /**
+     * @var array
+     */
+    private $times = [];
 
     /**
      * @var string
@@ -74,32 +81,40 @@ class GetEventStorePerformanceTest extends FunctionalTestCase
 
         $value = 5000;
 
-        $start = microtime(true);
+        $timeItem = [
+            'name' => 'Write time',
+            'start' => microtime(true),
+        ];
+
         for ($i = 0; $i <= $value; $i++) {
             $event = EventFixture::create($i);
             $this->eventStore->attach($this->streamName, $event);
         }
-        $writeTime = microtime(true) - $start;
+
+        $timeItem['end'] = microtime(true);
+        $this->times[] = $timeItem;
 
         $lastEvent = null;
         $eventStream = $this->eventStore->stream($this->streamName);
 
-        $start = microtime(true);
+        $timeItem = [
+            'name' => 'Read time',
+            'start' => microtime(true),
+        ];
+
         /** @var EventFixture $event */
         foreach ($eventStream as $event) {
             $lastEvent = $event;
         }
-        $readTime = microtime(true) - $start;
 
-        var_dump(
-            implode(PHP_EOL, [
-                '',
-                'Write time: ' . sprintf('%.4fs', $writeTime),
-                'Read time: ' . sprintf('%.4fs', $readTime)
-            ])
-        );
+        $timeItem['end'] = microtime(true);
+        $this->times[] = $timeItem;
 
         $this->assertNotNull($lastEvent);
         $this->assertSame($value, $lastEvent->getValue());
+
+        $message = new PerformanceMessageException();
+        $message->setTimes($this->times);
+        throw $message;
     }
 }

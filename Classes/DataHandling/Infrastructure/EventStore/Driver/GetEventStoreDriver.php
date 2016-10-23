@@ -126,7 +126,10 @@ class GetEventStoreDriver implements PersistableDriver
         }
 
         if (!$this->available) {
-            return (new \ArrayObject())->getIterator();
+            return EventStream::create(
+                NullDriverIterator::instance(),
+                $streamName
+            );
         }
 
         $comparableStreamName = EventSelector::getComparablePart($streamName);

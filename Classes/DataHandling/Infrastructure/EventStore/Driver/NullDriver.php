@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Driver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStream;
 
@@ -26,7 +24,7 @@ class NullDriver implements PersistableDriver
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(NullDriver::class);
+        return new static();
     }
 
     /**

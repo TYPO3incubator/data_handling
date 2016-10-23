@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AggregateResolver;
 
 class Aggregate
@@ -24,7 +23,7 @@ class Aggregate
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(Aggregate::class);
+        return new static();
     }
 
     /**

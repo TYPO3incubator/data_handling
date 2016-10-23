@@ -31,7 +31,7 @@ class LocalStorage
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(LocalStorage::class);
+        return new static();
     }
 
     /**

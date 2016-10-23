@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
 class EventStoreEnrolment implements Instantiable
@@ -24,7 +23,7 @@ class EventStoreEnrolment implements Instantiable
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(EventStoreEnrolment::class);
+        return new static();
     }
 
     /**

@@ -14,21 +14,11 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
-class ModifiedEntityEvent extends AbstractEvent implements Instantiable
+class ModifiedEntityEvent extends AbstractEvent
 {
-    /**
-     * @return ModifiedEntityEvent
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(ModifiedEntityEvent::class);
-    }
-
     /**
      * @param Context $context
      * @param EntityReference $aggregateReference
@@ -37,7 +27,7 @@ class ModifiedEntityEvent extends AbstractEvent implements Instantiable
      */
     public static function create(Context $context, EntityReference $aggregateReference, array $values)
     {
-        $event = static::instance();
+        $event = new static();
         $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->values = $values;

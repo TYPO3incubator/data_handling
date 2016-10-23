@@ -15,7 +15,6 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
  */
 
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MetaModelService implements SingletonInterface
 {
@@ -24,7 +23,7 @@ class MetaModelService implements SingletonInterface
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(MetaModelService::class);
+        return new static();
     }
 
     public function shallListenEvents(string $tableName)

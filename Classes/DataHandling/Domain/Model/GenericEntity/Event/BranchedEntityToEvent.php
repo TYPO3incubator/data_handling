@@ -19,19 +19,10 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\TargetReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\TargetReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
-class BranchedEntityToEvent extends AbstractEvent implements Instantiable, TargetReference
+class BranchedEntityToEvent extends AbstractEvent implements TargetReference
 {
     use TargetReferenceTrait;
-
-    /**
-     * @return BranchedEntityToEvent
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(BranchedEntityToEvent::class);
-    }
 
     /**
      * @param Context $context
@@ -41,7 +32,7 @@ class BranchedEntityToEvent extends AbstractEvent implements Instantiable, Targe
      */
     public static function create(Context $context, EntityReference $aggregateReference, EntityReference $targetReference)
     {
-        $event = static::instance();
+        $event = new static();
         $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->targetReference = $targetReference;

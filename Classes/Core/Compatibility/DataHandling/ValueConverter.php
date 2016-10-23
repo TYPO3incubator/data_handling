@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter\AbstractConverter;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 
@@ -25,7 +24,7 @@ class ValueConverter
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ValueConverter::class);
+        return new static();
     }
 
     public function convert(PropertyReference $reference, $value)

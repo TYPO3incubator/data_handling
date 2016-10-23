@@ -85,7 +85,7 @@ class GetEventStoreDriver implements PersistableDriver
     public function attach(string $streamName, BaseEvent $event, array $categories = [])
     {
         if (!$this->available) {
-            return false;
+            return null;
         }
 
         $UUID = GetEventStoreUUID::fromNative(
@@ -126,7 +126,7 @@ class GetEventStoreDriver implements PersistableDriver
         }
 
         if (!$this->available) {
-            return new \ArrayObject();
+            return (new \ArrayObject())->getIterator();
         }
 
         $comparableStreamName = EventSelector::getComparablePart($streamName);

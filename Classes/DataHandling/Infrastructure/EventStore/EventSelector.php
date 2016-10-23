@@ -94,7 +94,7 @@ class EventSelector implements Instantiable
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(EventSelector::class);
+        return new static();
     }
 
     /**

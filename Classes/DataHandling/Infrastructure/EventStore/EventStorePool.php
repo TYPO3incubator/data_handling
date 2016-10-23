@@ -22,7 +22,7 @@ class EventStorePool implements Providable
     /**
      * @var EventStorePool
      */
-    static protected $eventStorePool;
+    private static $instance;
 
     /**
      * @param bool $force
@@ -30,18 +30,17 @@ class EventStorePool implements Providable
      */
     public static function provide(bool $force = false)
     {
-        if ($force || !isset(static::$eventStorePool)) {
-            static::$eventStorePool = static::instance();
+        if ($force || !isset(self::$instance)) {
+            self::$instance = new static();
         }
-        return static::$eventStorePool;
+        return self::$instance;
     }
 
     /**
-     * @return EventStorePool
+     * Disable public constructor invocation.
      */
-    public static function instance()
+    private function __construct()
     {
-        return GeneralUtility::makeInstance(EventStorePool::class);
     }
 
     /**

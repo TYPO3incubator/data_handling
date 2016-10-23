@@ -16,7 +16,6 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
-use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\DataHandlerScope;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
@@ -29,7 +28,7 @@ class RelationResolver extends AbstractResolver
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(RelationResolver::class);
+        return new static();
     }
 
     /**

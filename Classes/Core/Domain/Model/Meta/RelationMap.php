@@ -22,7 +22,7 @@ class RelationMap implements Providable
     /**
      * @var RelationMap
      */
-    static private $instance;
+    private static $instance;
 
     /**
      * @param bool $force
@@ -30,10 +30,10 @@ class RelationMap implements Providable
      */
     public static function provide(bool $force = false)
     {
-        if ($force || !isset(static::$instance) || !static::$instance->isCurrent()) {
-            static::$instance = new static();
+        if ($force || !isset(self::$instance) || !self::$instance->isCurrent()) {
+            self::$instance = new static();
         }
-        return static::$instance;
+        return self::$instance;
     }
 
     /**

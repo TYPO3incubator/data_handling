@@ -14,10 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Driver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\BaseEvent;
-
 class NullDriverIterator extends \ArrayObject implements EventTraversable
 {
     /**
@@ -25,6 +21,6 @@ class NullDriverIterator extends \ArrayObject implements EventTraversable
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(NullDriverIterator::class);
+        return new static();
     }
 }

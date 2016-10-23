@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReferenceTrait;
@@ -22,20 +21,11 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\AbstractSequence;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\SequenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
-class OrderRelationsCommand extends AbstractCommand implements Instantiable, AggregateReference, Sequence
+class OrderRelationsCommand extends AbstractCommand implements AggregateReference, Sequence
 {
     use AggregateReferenceTrait;
     use SequenceTrait;
-
-    /**
-     * @return OrderRelationsCommand
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(static::class);
-    }
 
     /**
      * @param Context $context
@@ -45,7 +35,7 @@ class OrderRelationsCommand extends AbstractCommand implements Instantiable, Agg
      */
     public static function create(Context $context, EntityReference $aggregateReference, AbstractSequence $sequence)
     {
-        $command = static::instance();
+        $command = new static();
         $command->context = $context;
         $command->aggregateReference = $aggregateReference;
         $command->sequence = $sequence;

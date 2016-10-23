@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Validation;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 class ValueValidator
 {
     /**
@@ -23,6 +21,6 @@ class ValueValidator
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ValueValidator::class);
+        return new static();
     }
 }

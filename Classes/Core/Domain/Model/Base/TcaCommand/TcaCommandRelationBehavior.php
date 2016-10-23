@@ -23,10 +23,6 @@ final class TcaCommandRelationBehavior implements Instantiable
         return new static();
     }
 
-    private function __constructor()
-    {
-    }
-
     /**
      * @var bool
      */

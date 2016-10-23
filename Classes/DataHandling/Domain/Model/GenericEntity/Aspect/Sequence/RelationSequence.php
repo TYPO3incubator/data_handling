@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 
 class RelationSequence extends AbstractSequence
@@ -24,7 +23,7 @@ class RelationSequence extends AbstractSequence
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(RelationSequence::class);
+        return new static();
     }
 
     /**

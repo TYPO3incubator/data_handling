@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsArray;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsString;
 
@@ -25,7 +24,7 @@ class PropertyReference implements RepresentableAsString, RepresentableAsArray
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(PropertyReference::class);
+        return new static();
     }
 
     /**

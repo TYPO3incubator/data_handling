@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Converter;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 
 class InputConverter extends AbstractConverter
@@ -24,7 +23,7 @@ class InputConverter extends AbstractConverter
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(InputConverter::class);
+        return new static();
     }
 
     public function convert(PropertyReference $reference, array $configuration, $value)

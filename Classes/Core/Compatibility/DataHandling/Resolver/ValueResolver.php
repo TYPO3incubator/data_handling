@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\DataHandlerScope;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\ValueConverter;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
@@ -29,7 +27,7 @@ class ValueResolver extends AbstractResolver
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ValueResolver::class);
+        return new static();
     }
 
     public function resolve(EntityReference $reference, array $rawValues): array

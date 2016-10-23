@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event\AbstractEvent;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event\OriginatedEntityEvent;
@@ -35,7 +34,7 @@ class GenericEntityEventRepository implements Instantiable, EventRepository
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(static::class);
+        return new static();
     }
 
     /**

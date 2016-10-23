@@ -14,24 +14,14 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\TargetReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\TargetReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
-class TranslatedEntityToEvent extends AbstractEvent implements Instantiable, TargetReference
+class TranslatedEntityToEvent extends AbstractEvent implements TargetReference
 {
     use TargetReferenceTrait;
-
-    /**
-     * @return TranslatedEntityToEvent
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(TranslatedEntityToEvent::class);
-    }
 
     /**
      * @param Context $context
@@ -41,7 +31,7 @@ class TranslatedEntityToEvent extends AbstractEvent implements Instantiable, Tar
      */
     public static function create(Context $context, EntityReference $aggregateReference, EntityReference $targetReference)
     {
-        $event = static::instance();
+        $event = new static();
         $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->targetReference = $targetReference;

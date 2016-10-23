@@ -14,24 +14,14 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReferenceTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
-class ModifyEntityCommand extends AbstractCommand implements Instantiable, AggregateReference
+class ModifyEntityCommand extends AbstractCommand implements AggregateReference
 {
     use AggregateReferenceTrait;
-
-    /**
-     * @return ModifyEntityCommand
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(static::class);
-    }
 
     /**
      * @param Context $context
@@ -41,7 +31,7 @@ class ModifyEntityCommand extends AbstractCommand implements Instantiable, Aggre
      */
     public static function create(Context $context, EntityReference $aggregateReference, array $data)
     {
-        $command = static::instance();
+        $command = new static();
         $command->context = $context;
         $command->aggregateReference = $aggregateReference;
         $command->data = $data;

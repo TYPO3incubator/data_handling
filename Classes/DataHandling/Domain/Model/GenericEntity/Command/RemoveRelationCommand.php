@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReferenceTrait;
@@ -22,20 +21,11 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\RelationReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\RelationReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
-class RemoveRelationCommand extends AbstractCommand implements Instantiable, AggregateReference, RelationReference
+class RemoveRelationCommand extends AbstractCommand implements AggregateReference, RelationReference
 {
     use AggregateReferenceTrait;
     use RelationReferenceTrait;
-
-    /**
-     * @return RemoveRelationCommand
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(static::class);
-    }
 
     /**
      * @param Context $context
@@ -45,7 +35,7 @@ class RemoveRelationCommand extends AbstractCommand implements Instantiable, Agg
      */
     public static function create(Context $context, EntityReference $aggregateReference, PropertyReference $relationReference)
     {
-        $command = static::instance();
+        $command = new static();
         $command->context = $context;
         $command->aggregateReference = $aggregateReference;
         $command->relationReference = $relationReference;

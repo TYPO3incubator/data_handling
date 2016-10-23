@@ -14,21 +14,11 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
-class PurgedEntityEvent extends AbstractEvent implements Instantiable
+class PurgedEntityEvent extends AbstractEvent
 {
-    /**
-     * @return PurgedEntityEvent
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(PurgedEntityEvent::class);
-    }
-
     /**
      * @param Context $context
      * @param EntityReference $aggregateReference
@@ -36,7 +26,7 @@ class PurgedEntityEvent extends AbstractEvent implements Instantiable
      */
     public static function create(Context $context, EntityReference $aggregateReference)
     {
-        $event = static::instance();
+        $event = new static();
         $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         return $event;

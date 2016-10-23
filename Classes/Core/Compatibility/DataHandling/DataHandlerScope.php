@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 
@@ -25,7 +24,7 @@ class DataHandlerScope
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(DataHandlerScope::class);
+        return new static();
     }
 
     /**

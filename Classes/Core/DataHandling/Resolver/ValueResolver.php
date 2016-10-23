@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 
@@ -25,7 +24,7 @@ class ValueResolver extends AbstractResolver
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ValueResolver::class);
+        return new static();
     }
 
     public function resolve(EntityReference $reference, array $rawValues): array

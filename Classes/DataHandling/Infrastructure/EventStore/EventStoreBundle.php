@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\BaseEvent;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\StorableEvent;
 
@@ -25,7 +24,7 @@ class EventStoreBundle extends \ArrayObject implements AttachableStore
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(EventStoreBundle::class);
+        return new static();
     }
 
     /**

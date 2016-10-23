@@ -14,25 +14,15 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\RelationReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\RelationReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
-class AttachedRelationEvent extends AbstractEvent implements Instantiable, RelationReference
+class AttachedRelationEvent extends AbstractEvent implements RelationReference
 {
     use RelationReferenceTrait;
-
-    /**
-     * @return AttachedRelationEvent
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(AttachedRelationEvent::class);
-    }
 
     /**
      * @param Context $context
@@ -42,7 +32,7 @@ class AttachedRelationEvent extends AbstractEvent implements Instantiable, Relat
      */
     public static function create(Context $context, EntityReference $aggregateReference, PropertyReference $relationReference)
     {
-        $event = static::instance();
+        $event = new static();
         $event->context = $context;
         $event->aggregateReference = $aggregateReference;
         $event->relationReference = $relationReference;

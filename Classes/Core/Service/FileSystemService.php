@@ -36,7 +36,7 @@ class FileSystemService
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(FileSystemService::class);
+        return new static();
     }
 
     /**

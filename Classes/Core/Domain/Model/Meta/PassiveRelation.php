@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 class PassiveRelation implements Relational
 {
     /**
@@ -23,7 +21,7 @@ class PassiveRelation implements Relational
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(PassiveRelation::class);
+        return new static();
     }
 
     /**

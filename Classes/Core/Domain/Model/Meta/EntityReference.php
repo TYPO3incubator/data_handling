@@ -16,7 +16,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsArray;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsString;
@@ -30,7 +29,7 @@ class EntityReference implements RepresentableAsString, RepresentableAsArray
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(static::class);
+        return new static();
     }
 
     /**

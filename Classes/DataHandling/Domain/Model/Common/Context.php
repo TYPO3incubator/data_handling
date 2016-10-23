@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsArray;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsLocalStorageName;
 
@@ -23,14 +22,6 @@ class Context implements RepresentableAsLocalStorageName, RepresentableAsArray
     public static function create(int $workspaceId = 0, int $languageId = 0)
     {
         return new static($workspaceId, $languageId);
-    }
-
-    /**
-     * @return Context
-     */
-    public static function instance()
-    {
-        return GeneralUtility::makeInstance(static::class);
     }
 
     /**

@@ -15,7 +15,6 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
  */
 
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DatabaseService implements SingletonInterface
 {
@@ -24,7 +23,7 @@ class DatabaseService implements SingletonInterface
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(static::class);
+        return new static();
     }
 
     /**

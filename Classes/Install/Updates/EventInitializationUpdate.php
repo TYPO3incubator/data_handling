@@ -45,7 +45,7 @@ class EventInitializationUpdate extends AbstractUpdate
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(EventInitializationUpdate::class);
+        return new static();
     }
 
     /**

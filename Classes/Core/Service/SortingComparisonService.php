@@ -15,7 +15,6 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
  */
 
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsString;
 
@@ -30,7 +29,7 @@ class SortingComparisonService implements SingletonInterface
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(SortingComparisonService::class);
+        return new static();
     }
 
     /**

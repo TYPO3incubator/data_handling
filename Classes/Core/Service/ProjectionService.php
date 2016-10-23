@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventSelector;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStorePool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Projection\ProjectionPool;
@@ -26,7 +25,7 @@ class ProjectionService
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ProjectionService::class);
+        return new static();
     }
 
     /**

@@ -23,10 +23,6 @@ final class TcaCommandEntityBehavior implements Instantiable
         return new static();
     }
 
-    private function __constructor()
-    {
-    }
-
     /**
      * @var string
      */

@@ -14,8 +14,6 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 class Change
 {
     /**
@@ -23,7 +21,7 @@ class Change
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(Change::class);
+        return new static();
     }
 
     /**

@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event as GenericEvent;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReference;
@@ -22,7 +21,6 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Bundle
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\RelationReference;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandHandler;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandHandlerTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 
 class CommandHandlerBundle implements Instantiable, CommandHandler
@@ -34,7 +32,7 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(static::class);
+        return new static();
     }
 
     /**

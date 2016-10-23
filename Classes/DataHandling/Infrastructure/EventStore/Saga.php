@@ -56,7 +56,7 @@ class Saga
     private $including;
 
     /**
-     * Disable public instantiation.
+     * Disable public constructor invocation.
      */
     private function __construct()
     {

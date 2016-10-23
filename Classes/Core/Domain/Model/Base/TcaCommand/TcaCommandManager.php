@@ -40,6 +40,9 @@ final class TcaCommandManager implements Providable
         return self::$instance;
     }
 
+    /**
+     * Disable public constructor invocation.
+     */
     private function __construct()
     {
     }

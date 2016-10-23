@@ -15,7 +15,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common;
  */
 
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Providable;
@@ -45,7 +44,7 @@ class ProjectionContext implements Instantiable, Providable, RepresentableAsLoca
      */
     public static function instance()
     {
-        return GeneralUtility::makeInstance(ProjectionContext::class);
+        return new static();
     }
 
     /**
@@ -53,7 +52,7 @@ class ProjectionContext implements Instantiable, Providable, RepresentableAsLoca
      * @param array $languageChain
      * @return string
      */
-    public static function asString(int $workspaceId, array $languageChain = null)
+    public static function asString(int $workspaceId, array $languageChain = [])
     {
         $stringRepresentation = 'workspace-' . $workspaceId;
         if (!empty($languageChain)) {
@@ -80,13 +79,7 @@ class ProjectionContext implements Instantiable, Providable, RepresentableAsLoca
     /**
      * @var int[]
      */
-    private $languageChain = null;
-
-    /**
-     * @var mixed
-     * @todo Add meaning and handling
-     */
-    private $permissions;
+    private $languageChain = [];
 
     /**
      * @var bool
@@ -125,6 +118,9 @@ class ProjectionContext implements Instantiable, Providable, RepresentableAsLoca
         return $this;
     }
 
+    /**
+     * @return \int[]
+     */
     public function getLanguageChain()
     {
         return $this->languageChain;
@@ -134,7 +130,7 @@ class ProjectionContext implements Instantiable, Providable, RepresentableAsLoca
      * @param array|null $languageChain
      * @return ProjectionContext
      */
-    public function setLanguageChain(array $languageChain = null)
+    public function setLanguageChain(array $languageChain = [])
     {
         $this->handleLock();
         $this->languageChain = $languageChain;

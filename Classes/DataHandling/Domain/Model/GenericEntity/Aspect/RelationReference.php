@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 interface RelationReference
 {
     /**
-     * @return null|PropertyReference
+     * @return PropertyReference
      */
     public function getRelationReference();
 }

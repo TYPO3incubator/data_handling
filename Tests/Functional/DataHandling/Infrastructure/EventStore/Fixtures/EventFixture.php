@@ -66,7 +66,7 @@ class EventFixture extends BaseEvent implements StorableEvent, Instantiable
     /**
      * @param array $data
      */
-    public function importData($data)
+    public function importData(array $data)
     {
         $this->value = $data['value'];
     }

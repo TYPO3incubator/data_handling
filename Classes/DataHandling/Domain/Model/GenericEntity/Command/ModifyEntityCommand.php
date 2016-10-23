@@ -39,9 +39,9 @@ class ModifyEntityCommand extends AbstractCommand implements AggregateReference
     }
 
     /**
-     * @var array|null
+     * @var array
      */
-    private $data;
+    private $data = [];
 
     /**
      * @return array

@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 interface NodeReference
 {
     /**
-     * @return null|EntityReference
+     * @return EntityReference
      */
     public function getNodeReference();
 }

@@ -24,7 +24,7 @@ trait TargetReferenceTrait
     protected $targetReference;
 
     /**
-     * @return null|EntityReference
+     * @return EntityReference
      */
     public function getTargetReference()
     {

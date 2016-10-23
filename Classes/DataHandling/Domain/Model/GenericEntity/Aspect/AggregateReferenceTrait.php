@@ -24,7 +24,7 @@ trait AggregateReferenceTrait
     protected $aggregateReference;
 
     /**
-     * @return null|EntityReference
+     * @return EntityReference
      */
     public function getAggregateReference()
     {

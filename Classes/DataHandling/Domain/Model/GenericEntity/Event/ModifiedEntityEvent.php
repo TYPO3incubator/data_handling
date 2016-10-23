@@ -58,9 +58,9 @@ class ModifiedEntityEvent extends AbstractEvent
     }
 
     /**
-     * @param array|null $data
+     * @param array $data
      */
-    public function importData($data)
+    public function importData(array $data)
     {
         parent::importData($data);
         $this->values = $data['values'];

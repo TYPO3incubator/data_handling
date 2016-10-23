@@ -24,7 +24,7 @@ trait FromReferenceTrait
     protected $fromReference;
 
     /**
-     * @return null|EventReference
+     * @return EventReference
      */
     public function getFromReference()
     {

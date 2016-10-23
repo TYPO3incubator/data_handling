@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 interface TargetReference
 {
     /**
-     * @return null|EntityReference
+     * @return EntityReference
      */
     public function getTargetReference();
 }

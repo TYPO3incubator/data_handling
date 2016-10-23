@@ -52,7 +52,7 @@ abstract class BaseEvent implements DomainEvent
         $event->eventDate = $date;
         $event->aggregateId = $aggregateId;
         $event->metadata = $metadata;
-        $event->importData($data);
+        $event->importData($data ?? []);
         return $event;
     }
 
@@ -167,7 +167,7 @@ abstract class BaseEvent implements DomainEvent
     /**
      * @param array $data
      */
-    abstract public function importData($data);
+    abstract public function importData(array $data);
 
     /**
      * @param array|null $metadata

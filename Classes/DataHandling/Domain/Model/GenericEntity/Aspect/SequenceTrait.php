@@ -25,7 +25,7 @@ trait SequenceTrait
     protected $sequence;
 
     /**
-     * @return null|AbstractSequence|RelationSequence
+     * @return AbstractSequence|RelationSequence
      */
     public function getSequence()
     {

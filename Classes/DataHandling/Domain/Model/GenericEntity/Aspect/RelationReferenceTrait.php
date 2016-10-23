@@ -24,7 +24,7 @@ trait RelationReferenceTrait
     protected $relationReference;
 
     /**
-     * @return null|PropertyReference
+     * @return PropertyReference
      */
     public function getRelationReference()
     {

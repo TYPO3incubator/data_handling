@@ -20,7 +20,7 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequen
 interface Sequence
 {
     /**
-     * @return null|AbstractSequence|RelationSequence
+     * @return AbstractSequence|RelationSequence
      */
     public function getSequence();
 }

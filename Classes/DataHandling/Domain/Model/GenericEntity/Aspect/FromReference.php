@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EventReference;
 interface FromReference
 {
     /**
-     * @return null|EventReference
+     * @return EventReference
      */
     public function getFromReference();
 }

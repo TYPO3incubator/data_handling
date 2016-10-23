@@ -94,14 +94,10 @@ abstract class AbstractEvent extends BaseEvent implements StorableEvent, Context
     }
 
     /**
-     * @param null|array $data
+     * @param array $data
      */
-    public function importData($data)
+    public function importData(array $data)
     {
-        if ($data === null) {
-            return;
-        }
-
         if ($this instanceof Contextual) {
             /** @var $this ContextualTrait */
             $this->context = Context::fromArray($data['context']);

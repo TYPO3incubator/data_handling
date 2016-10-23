@@ -16,11 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command;
 
 use League\Tactician\Handler\CommandHandlerMiddleware;
 use League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor;
-use League\Tactician\Handler\Locator\HandlerLocator;
 use League\Tactician\Handler\Locator\InMemoryLocator;
 use League\Tactician\Handler\MethodNameInflector\HandleInflector;
 use League\Tactician\Plugins\LockingMiddleware;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandHandler;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Providable;
 
 final class CommandBus implements Providable
@@ -43,7 +41,7 @@ final class CommandBus implements Providable
     }
 
     /**
-     * @var HandlerLocator
+     * @var InMemoryLocator
      */
     private $locator;
 

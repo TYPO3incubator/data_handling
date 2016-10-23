@@ -24,7 +24,7 @@ trait NodeReferenceTrait
     protected $nodeReference;
 
     /**
-     * @return null|EntityReference
+     * @return EntityReference
      */
     public function getNodeReference()
     {

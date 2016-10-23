@@ -37,7 +37,6 @@ use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
 /*
- * @todo
  * - first create all suggested states
  * - extend changes by entity information
  * - extend changes by resolved values and relations

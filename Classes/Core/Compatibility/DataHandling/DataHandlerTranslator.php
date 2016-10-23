@@ -19,7 +19,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
+use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\ActionCommandResolver;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\ChangeCommandResolver;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Action;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\SuggestedState;
@@ -60,6 +62,11 @@ class DataHandlerTranslator
      * @var Change[]
      */
     private $dataCollectionChanges = [];
+
+    /**
+     * @var Action[][]
+     */
+    private $actionCollectionActions = [];
 
     /**
      * @var EntityReference[]
@@ -127,6 +134,7 @@ class DataHandlerTranslator
         $this->buildPageChanges();
         $this->buildRecordChanges();
         $this->extendChanges();
+        $this->buildActions();
 
         $this->mapDataCollectionCommands();
         $this->mapActionCollectionCommands();
@@ -181,6 +189,39 @@ class DataHandlerTranslator
             );
 
             unset($targetState);
+        }
+    }
+
+    private function buildActions()
+    {
+        foreach ($this->actionCollection as $tableName => $uidValues) {
+            if (
+                !MetaModelService::instance()->shallListenEvents($tableName)
+            ) {
+                continue;
+            }
+
+            foreach ($uidValues as $uid => $actions) {
+                $subject = EntityReference::instance()
+                    ->setName($tableName)
+                    ->setUid($uid);
+                $subject->setUuid(
+                    $this->fetchUuid($subject)
+                );
+
+                foreach ($actions as $actionName => $actionSettings) {
+                    $action = Action::create($actionName);
+                    $action->setSubject($subject);
+                    $action->setState($this->fetchState($subject));
+
+                    if (!isset($this->actionCollectionActions[$actionName])) {
+                        $this->actionCollectionActions[$actionName] = [];
+                    }
+                    $this->actionCollectionActions[$actionName][] = $action;
+                }
+            }
+
+            unset($this->actionCollection[$tableName]);
         }
     }
 
@@ -332,7 +373,7 @@ class DataHandlerTranslator
             $rootAggregateChanges = $aggregateResolver->getBottomUpSubjects(
                 $rootAggregate
             );
-            // resolve meta commands
+            // resolve meta changes
             $resolver = ChangeCommandResolver::create($rootAggregateChanges);
             $commands = $resolver->getCommands();
             // try to translate into specific commands
@@ -346,7 +387,32 @@ class DataHandlerTranslator
 
     private function mapActionCollectionCommands()
     {
+        foreach ($this->actionCollectionActions as $actions) {
+            // sequence of changes ordered by accordant relative aggregate
+            $aggregateResolver = CoreResolver\AggregateResolver::create(
+                $actions,
+                function (Action $subject) {
+                    return $subject->getState();
+                }
+            );
 
+            foreach ($aggregateResolver->getRootAggregates() as $rootAggregate) {
+                /** @var Action[] $rootAggregateActions */
+                $rootAggregateActions = $aggregateResolver->getBottomUpSubjects(
+                    $rootAggregate
+                );
+
+                // resolve meta actions
+                $resolver = ActionCommandResolver::create($rootAggregateActions);
+                $commands = $resolver->getCommands();
+                // try to translate into specific commands
+                $commands = TcaCommandTranslator::create($commands)->translate();
+
+                foreach ($commands as $command) {
+                    CommandBus::provide()->handle($command);
+                }
+            }
+        }
     }
 
     private function provideNewSubjects()

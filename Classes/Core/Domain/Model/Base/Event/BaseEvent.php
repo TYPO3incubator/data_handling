@@ -22,6 +22,14 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\MicroDateTime;
 abstract class BaseEvent implements DomainEvent
 {
     /**
+     * @return static
+     */
+    protected static function instance()
+    {
+        return new static();
+    }
+
+    /**
      * @param string $eventType
      * @param string $eventId
      * @param int $eventVersion
@@ -41,7 +49,7 @@ abstract class BaseEvent implements DomainEvent
         $metadata
     )
     {
-        if (!in_array(Instantiable::class, class_implements($eventType))) {
+        if (!is_a($eventType, BaseEvent::class, true)) {
             throw new \RuntimeException('Cannot instantiate "' . $eventType . '"', 1470935798);
         }
 

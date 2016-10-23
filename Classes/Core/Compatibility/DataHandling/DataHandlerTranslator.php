@@ -319,14 +319,17 @@ class DataHandlerTranslator
     {
         // sequence of changes ordered by accordant relative aggregate
         $aggregateResolver = CoreResolver\AggregateResolver::create(
-            $this->dataCollectionChanges
+            $this->dataCollectionChanges,
+            function (Change $subject) {
+                return $subject->getTargetState();
+            }
         );
         // @todo Process aggregates in a bundle
         // - try to translate into specific commands
         // - handle sequences remaining commands (per aggregate)
 
         foreach ($aggregateResolver->getRootAggregates() as $rootAggregate) {
-            $rootAggregateChanges = $aggregateResolver->getBottomUpChanges(
+            $rootAggregateChanges = $aggregateResolver->getBottomUpSubjects(
                 $rootAggregate
             );
             // resolve meta commands

@@ -16,43 +16,48 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Aggregate;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PassiveRelation;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\State;
 
 class AggregateResolver
 {
     /**
-     * @param Change[] $subjects
-     * @param null|mixed $proxy
+     * @param object[] $subjects
+     * @param null|mixed $stateProxy
      * @return AggregateResolver
      */
-    public static function create(array $subjects, $proxy = null)
+    public static function create(array $subjects, $stateProxy = null)
     {
-        return GeneralUtility::makeInstance(AggregateResolver::class, $subjects, $proxy);
+        return GeneralUtility::makeInstance(AggregateResolver::class, $subjects, $stateProxy);
     }
 
     /**
      * AggregateResolver constructor.
-     * @param Change[] $subjects
-     * @param null|mixed $proxy
+     * @param object[] $subjects
+     * @param \Closure $stateProxy
      */
-    public function __construct(array $subjects, $proxy = null)
+    public function __construct(array $subjects, \Closure $stateProxy)
     {
         $this->subjects = $subjects;
-        $this->proxy = $proxy;
+        $this->stateProxy = $stateProxy;
         $this->build();
     }
 
     /**
-     * @var Change[]
+     * @var object[]
      */
     private $subjects;
 
     /**
-     * @var mixed|null
+     * The state proxy is used to determine the state of one
+     * subject to be used as aggregate.
+     *
+     * ($subject->getState() <-> $aggregate->getState())
+     *
+     * @var \Closure
      */
-    private $proxy;
+    private $stateProxy;
 
     /**
      * @var Aggregate[]
@@ -73,16 +78,16 @@ class AggregateResolver
     }
 
     /**
-     * Get all changes for one root aggregate, thus it's change is the
-     * first in the returned sequence.
+     * Get all subjects for one root aggregate, thus it's
+     * subject is the first in the returned sequence.
      *
      * Useful if working with a top-down approach, e.g. on traversing
      * all (nested) child entities of a (relative) parent.
      *
      * @param Aggregate $rootAggregate
-     * @return Change[]
+     * @return object[]
      */
-    public function getTopDownChanges(Aggregate $rootAggregate)
+    public function getTopDownSubjects(Aggregate $rootAggregate)
     {
         $sequence = [$this->resolveSubject($rootAggregate)];
         foreach ($rootAggregate->getDeepNestedAggregates() as $nestedAggregate) {
@@ -95,8 +100,8 @@ class AggregateResolver
     }
 
     /**
-     * Get all changes for one root aggregate in reverse order, thus it's
-     * change thus is last in the returned sequence.
+     * Get all subjects for one root aggregate in reverse order,
+     * thus it's subject thus is last in the returned sequence.
      *
      * Useful if working with a bottom-up approach, e.g. on actually creating
      * new child entities which can afterwards be referenced from an accordant
@@ -104,11 +109,11 @@ class AggregateResolver
      * the case in a top-down approach).
      *
      * @param Aggregate $rootAggregate
-     * @return Change[]
+     * @return object[]
      */
-    public function getBottomUpChanges(Aggregate $rootAggregate)
+    public function getBottomUpSubjects(Aggregate $rootAggregate)
     {
-        return array_reverse($this->getTopDownChanges($rootAggregate));
+        return array_reverse($this->getTopDownSubjects($rootAggregate));
     }
 
     /**
@@ -171,9 +176,10 @@ class AggregateResolver
         $this->aggregates = [];
         $this->rootAggregates = [];
 
-        foreach ($this->subjects as $change) {
-            // @todo Proxy
-            $this->aggregates[] = Aggregate::instance()->setState($change->getTargetState());
+        foreach ($this->subjects as $subject) {
+            $this->aggregates[] = Aggregate::instance()->setState(
+                $this->retrieveState($subject)
+            );
         }
 
         foreach ($this->aggregates as $aggregate) {
@@ -187,18 +193,35 @@ class AggregateResolver
 
     /**
      * @param Aggregate $aggregate
-     * @return Change
+     * @return object
      */
-    private function resolveSubject(Aggregate $aggregate): Change
+    private function resolveSubject(Aggregate $aggregate)
     {
         foreach ($this->subjects as $subject) {
-            // @todo Proxy
-            if ($subject->getTargetState() !== $aggregate->getState()) {
+            if ($this->retrieveState($subject) !== $aggregate->getState()) {
                 continue;
             }
             return $subject;
         }
         throw new \RuntimeException('Subject cannot be resolved', 1470672893);
+    }
+
+    /**
+     * @param object $subject
+     * @return State
+     */
+    private function retrieveState($subject)
+    {
+        $state = $this->stateProxy->call($this, $subject);
+
+        if (!($state instanceof State)) {
+            throw new \LogicException(
+                'State proxy did not return State object',
+                1477232678
+            );
+        }
+
+        return $state;
     }
 
     /**

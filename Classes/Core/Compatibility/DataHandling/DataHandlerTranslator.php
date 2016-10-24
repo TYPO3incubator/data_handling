@@ -22,6 +22,7 @@ use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as Compatibi
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\ActionCommandResolver;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver\ChangeCommandResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Action;
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Position;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\SuggestedState;
@@ -280,6 +281,7 @@ class DataHandlerTranslator
                 $targetState = SuggestedState::instance()
                     ->setContext($context)
                     ->setSubject($subject)
+                    ->setPosition(Position::createTop())
                     ->setSuggestedValues($values);
                 $changes[] = Change::instance()
                     ->setTargetState($targetState);
@@ -321,11 +323,16 @@ class DataHandlerTranslator
                 $recordReference = EntityReference::instance()
                     ->import($targetStateReference)
                     ->setUid(abs($pageIdValue));
+                $recordReference->setUuid($this->fetchUuid($recordReference));
                 $nodeReference = EntityReference::instance()
                     ->setName('pages')
                     ->setUid($this->fetchPageId($recordReference));
                 $nodeReference->setUuid($this->fetchUuid($nodeReference));
-                $change->getTargetState()->getNode()->import($nodeReference);
+                $change->getTargetState()->setPosition(
+                    Position::createAfter($recordReference)
+                );
+                $change->getTargetState()->getNode()
+                    ->import($nodeReference);
             // relating to an existing page
             } elseif ((string)$pageIdValue !== '0') {
                 $nodeReference = EntityReference::instance()

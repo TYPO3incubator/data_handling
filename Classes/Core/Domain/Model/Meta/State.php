@@ -34,6 +34,11 @@ abstract class State
     protected $subject;
 
     /**
+     * @var Position
+     */
+    protected $position;
+
+    /**
      * @var array
      */
     protected $values = [];
@@ -45,9 +50,10 @@ abstract class State
 
     protected function __construct()
     {
+        $this->context = Context::create();
         $this->node = EntityReference::instance();
         $this->subject = EntityReference::instance();
-        $this->context = Context::create();
+        $this->position = Position::createBottom();
     }
 
     /**
@@ -98,6 +104,24 @@ abstract class State
     public function setSubject(EntityReference $subject)
     {
         $this->subject = $subject;
+        return $this;
+    }
+
+    /**
+     * @return Position
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param Position $position
+     * @return static
+     */
+    public function setPosition(Position $position)
+    {
+        $this->position = $position;
         return $this;
     }
 

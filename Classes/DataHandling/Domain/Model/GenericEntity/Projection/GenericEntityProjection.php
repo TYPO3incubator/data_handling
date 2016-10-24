@@ -34,6 +34,16 @@ class GenericEntityProjection implements Projection
      */
     private $repository;
 
+    /**
+     * @var MetaModelService
+     */
+    private $metaModelService;
+
+    public function __construct()
+    {
+        $this->metaModelService = MetaModelService::instance();
+    }
+
     public function listensTo()
     {
         return [
@@ -252,12 +262,11 @@ class GenericEntityProjection implements Projection
      */
     private function getCreationData(Event\AbstractEvent $event)
     {
-        $metaModelService = MetaModelService::instance();
         $aggregateType = $event->getAggregateType();
 
-        $isWorkspaceAware = $metaModelService
+        $isWorkspaceAware = $this->metaModelService
             ->isWorkspaceAware($aggregateType);
-        $languageField = $metaModelService
+        $languageField = $this->metaModelService
             ->getLanguageFieldName($aggregateType);
 
         $metadata = $event->getMetadata();

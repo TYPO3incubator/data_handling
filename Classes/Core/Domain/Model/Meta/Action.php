@@ -52,6 +52,11 @@ class Action
     private $subject;
 
     /**
+     * @var array|string|int
+     */
+    private $payload;
+
+    /**
      * @var GenericEntity
      */
     private $state;
@@ -111,6 +116,22 @@ class Action
     public function setSubject(EntityReference $subject)
     {
         $this->subject = $subject;
+    }
+
+    /**
+     * @return array|int|string
+     */
+    public function getPayload()
+    {
+        return $this->payload;
+    }
+
+    /**
+     * @param array|int|string $payload
+     */
+    public function setPayload($payload)
+    {
+        $this->payload = $payload;
     }
 
     /**

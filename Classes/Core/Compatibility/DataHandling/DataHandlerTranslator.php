@@ -210,9 +210,15 @@ class DataHandlerTranslator
                     $this->fetchUuid($subject)
                 );
 
-                foreach ($actions as $actionName => $actionSettings) {
+                foreach ($actions as $actionName => $actionPayload) {
+                    $context = Context::create(
+                        $this->getWorkspaceId()
+                    );
+
                     $action = Action::create($actionName);
+                    $action->setContext($context);
                     $action->setSubject($subject);
+                    $action->setPayload($actionPayload);
                     $action->setState($this->fetchState($subject));
 
                     if (!isset($this->actionCollectionActions[$actionName])) {

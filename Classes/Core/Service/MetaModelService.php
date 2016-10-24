@@ -108,6 +108,12 @@ class MetaModelService implements SingletonInterface
         return ($GLOBALS['TCA'][$tableName]['columns'][$propertyName] ?? null);
     }
 
+    public function shallPrefixTitleOnTranslation(string $tableName, string $propertyName)
+    {
+        $setting = ($GLOBALS['TCA'][$tableName]['columns'][$propertyName]['l10n_mode'] ?? null);
+        return ($setting === 'prefixLangTitle');
+    }
+
     public function isInvalidValueProperty(string $tableName, string $propertyName): bool
     {
         return (

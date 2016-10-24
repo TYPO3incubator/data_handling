@@ -14,12 +14,15 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Tests\Functional\DataHandling\Framework\DataSet;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command as GenericCommand;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
-use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
 
-class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase
+class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\Modify\ActionTest
 {
     /**
      * @var string[]
@@ -30,9 +33,9 @@ class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regu
 
     protected function setup()
     {
-        ConnectionPool::originAsDefault(true);
+        $currentValue = ConnectionPool::originAsDefault(true);
         parent::setUp();
-        ConnectionPool::originAsDefault(true);
+        ConnectionPool::originAsDefault($currentValue);
 
         EventInitializationUpdate::instance()->performUpdate(
             $queriesReference = [],
@@ -145,26 +148,91 @@ class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regu
         parent::movePageToDifferentPageAndChangeSorting();
     }
 
-    protected function assertHasCommands(array $expectations, array $actualCommands)
+    /**
+     * Override core methods
+     */
+
+    /**
+     * @param string $tableName
+     * @param array $record
+     * @return Context
+     */
+    private function getContextForRecord(string $tableName, array $record)
     {
-        $foundCommands = [];
-        $expectedCommandCount = 0;
-        foreach ($expectations as $commandClassName => $commandExpectationCollection) {
-            foreach ($commandExpectationCollection as $commandExpectations) {
-                $expectedCommandCount++;
-                foreach ($actualCommands as $actualCommand) {
-                    if (in_array($actualCommand, $foundCommands)) {
+        $workspaceId = 0;
+        if (MetaModelService::instance()->isWorkspaceAware($tableName)) {
+            if (!empty($record['t3ver_wsid'])) {
+                $workspaceId = (int)$record['t3ver_wsid'];
+            }
+        }
+        return Context::create($workspaceId);
+    }
+
+    /**
+     * @param Context $context
+     * @return \TYPO3\CMS\Core\Database\Connection
+     */
+    private function getLocalStorageForContext(Context $context)
+    {
+        return ConnectionPool::instance()
+            ->provideLocalStorageConnection(
+                $context->asLocalStorageName(),
+                true
+            );
+    }
+
+    protected function assertAssertionDataSet($dataSetName)
+    {
+        $fileName = rtrim($this->assertionDataSetDirectory, '/') . '/' . $dataSetName . '.csv';
+        $fileName = GeneralUtility::getFileAbsFileName($fileName);
+
+        $dataSet = DataSet::read($fileName);
+        $failMessages = [];
+
+        foreach ($dataSet->getTableNames() as $tableName) {
+            $sortingField = MetaModelService::instance()->getSortingField($tableName);
+
+            $hasUidField = ($dataSet->getIdIndex($tableName) !== null);
+            $records = $this->getAllRecords($tableName, $hasUidField);
+            foreach ($dataSet->getElements($tableName) as $assertion) {
+                // @todo Remove work-around to ignore sorting assertions
+                if ($sortingField !== null && isset($assertion[$sortingField])) {
+                    unset($assertion[$sortingField]);
+                }
+
+                $result = $this->assertInRecords($assertion, $records);
+                if ($result === false) {
+                    if ($hasUidField && empty($records[$assertion['uid']])) {
+                        $failMessages[] = 'Record "' . $tableName . ':' . $assertion['uid'] . '" not found in database';
                         continue;
                     }
-                    if (!is_a($actualCommand, $commandClassName)) {
-                        continue;
+                    $recordIdentifier = $tableName . ($hasUidField ? ':' . $assertion['uid'] : '');
+                    $additionalInformation = ($hasUidField ? $this->renderRecords($assertion, $records[$assertion['uid']]) : $this->arrayToString($assertion));
+                    $failMessages[] = 'Assertion in data-set failed for "' . $recordIdentifier . '":' . LF . $additionalInformation;
+                    // Unset failed asserted record
+                    if ($hasUidField) {
+                        unset($records[$assertion['uid']]);
                     }
-                    if (AssertionUtility::matchesExpectations($commandExpectations, $actualCommand)) {
-                        $foundCommands[] = $actualCommand;
-                    }
+                } else {
+                    // Unset asserted record
+                    unset($records[$result]);
+                    // Increase assertion counter
+                    $this->assertTrue($result !== false);
+                }
+            }
+            if (!empty($records)) {
+                foreach ($records as $record) {
+                    $recordIdentifier = $tableName . ':' . $record['uid'];
+                    $emptyAssertion = array_fill_keys($dataSet->getFields($tableName), '[none]');
+                    $reducedRecord = array_intersect_key($record, $emptyAssertion);
+                    $additionalInformation = ($hasUidField ? $this->renderRecords($emptyAssertion, $reducedRecord) : $this->arrayToString($reducedRecord));
+                    $failMessages[] = 'Not asserted record found for "' . $recordIdentifier . '":' . LF . $additionalInformation;
                 }
             }
         }
-        $this->assertEquals($expectedCommandCount, count($foundCommands), 'Could not assert all commands');
+
+        if (!empty($failMessages)) {
+            $this->fail(implode(LF, $failMessages));
+        }
     }
 }

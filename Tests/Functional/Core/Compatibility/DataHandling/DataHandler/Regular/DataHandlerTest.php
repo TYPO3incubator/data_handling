@@ -233,18 +233,8 @@ class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regu
     }
 
     /**
-     * @param Context $context
-     * @return \TYPO3\CMS\Core\Database\Connection
+     * @param string $dataSetName
      */
-    private function getLocalStorageForContext(Context $context)
-    {
-        return ConnectionPool::instance()
-            ->provideLocalStorageConnection(
-                $context->asLocalStorageName(),
-                true
-            );
-    }
-
     protected function assertAssertionDataSet($dataSetName)
     {
         $fileName = rtrim($this->assertionDataSetDirectory, '/') . '/' . $dataSetName . '.csv';

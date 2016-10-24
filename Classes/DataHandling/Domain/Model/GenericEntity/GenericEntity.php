@@ -137,7 +137,10 @@ class GenericEntity extends State implements EventApplicable
      */
     public function branchEntityTo(Context $context)
     {
-        $branchedEntity = static::createNewEntity($context, $this->subject);
+        $branchedEntity = static::createNewEntity(
+            $context,
+            EntityReference::create($this->subject->getName())
+        );
 
         $event = Event\BranchedEntityToEvent::create(
             $context,
@@ -181,7 +184,10 @@ class GenericEntity extends State implements EventApplicable
      */
     public function translateEntityTo(Context $context)
     {
-        $translatedEntity = static::createNewEntity($context, $this->subject);
+        $translatedEntity = static::createNewEntity(
+            $context,
+            EntityReference::create($this->subject->getName())
+        );
 
         $event = Event\TranslatedEntityToEvent::create(
             $context,

@@ -167,6 +167,22 @@ class GenericEntityProjection implements Projection
             $this->getNodeReferenceData($sourceEntity->getNode())
         );
 
+        $languagePointerField = $this->metaModelService
+            ->getLanguagePointerFieldName($event->getAggregateType());
+        $originalPointerField = $this->metaModelService
+            ->getOriginalPointerField($event->getAggregateType());
+
+        if ($languagePointerField !== null) {
+            $data[$languagePointerField] = $this->retrieveUid(
+                $sourceEntity->getSubject()
+            );
+        }
+        if ($originalPointerField !== null) {
+            $data[$originalPointerField] = $this->retrieveUid(
+                $sourceEntity->getSubject()
+            );
+        }
+
         $this->repository->add($data);
     }
 

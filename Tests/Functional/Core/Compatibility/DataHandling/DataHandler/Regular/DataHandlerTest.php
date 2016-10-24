@@ -64,87 +64,151 @@ class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regu
         parent::modifyContent();
     }
 
+    /**
+     * @test
+     */
     public function deleteContent() {
         parent::deleteContent();
     }
 
+    /**
+     * @test
+     */
     public function deleteLocalizedContentAndDeleteContent()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::deleteLocalizedContentAndDeleteContent();
     }
 
+    /**
+     * @test
+     */
     public function copyContent()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::copyContent();
     }
 
+    /**
+     * @test
+     */
     public function copyPasteContent()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::copyPasteContent();
     }
 
+    /**
+     * @test
+     */
     public function localizeContent()
     {
         parent::localizeContent();
     }
 
+    /**
+     * @test
+     */
     public function changeContentSorting()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::changeContentSorting();
     }
 
+    /**
+     * @test
+     */
     public function moveContentToDifferentPage()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::moveContentToDifferentPage();
     }
 
+    /**
+     * @test
+     */
     public function movePasteContentToDifferentPage()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::movePasteContentToDifferentPage();
     }
 
+    /**
+     * @test
+     */
     public function moveContentToDifferentPageAndChangeSorting()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::moveContentToDifferentPageAndChangeSorting();
     }
 
+    /**
+     * @test
+     */
     public function createPage()
     {
         parent::createPage();
     }
 
+    /**
+     * @test
+     */
     public function modifyPage()
     {
         parent::modifyPage();
     }
 
+    /**
+     * @test
+     */
     public function deletePage()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::deletePage();
     }
 
+    /**
+     * @test
+     */
     public function copyPage()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::copyPage();
     }
 
+    /**
+     * @test
+     */
     public function localizePage()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::localizePage();
     }
 
+    /**
+     * @test
+     */
     public function changePageSorting()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::changePageSorting();
     }
 
+    /**
+     * @test
+     */
     public function movePageToDifferentPage()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::movePageToDifferentPage();
     }
 
+    /**
+     * @test
+     */
     public function movePageToDifferentPageAndChangeSorting()
     {
+        $this->markTestSkipped('Not completely implemented');
         parent::movePageToDifferentPageAndChangeSorting();
     }
 

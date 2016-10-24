@@ -250,6 +250,13 @@ abstract class AbstractProjectionRepository implements ProjectionRepository
             $data[$timestampFieldName] = $GLOBALS['EXEC_TIME'];
         }
 
+        $data = array_filter(
+            $data,
+            function ($value) {
+                return ($value !== null && $value !== false);
+            }
+        );
+
         return $data;
     }
 

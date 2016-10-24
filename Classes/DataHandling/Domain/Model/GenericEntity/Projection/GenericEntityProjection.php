@@ -303,16 +303,7 @@ class GenericEntityProjection implements Projection
     private function getNodeReferenceData(EntityReference $nodeReference)
     {
         $data = [];
-
-        $aggregateType = $nodeReference->getName();
-        $aggregateId = $nodeReference->getUuid();
-        $rawValues = OriginProjectionRepository::create($aggregateType)
-            ->findRawByUuid($aggregateId);
-
-        if (isset($rawValues['uid'])) {
-            $data['pid'] = (int)$rawValues['uid'];
-        }
-
+        $data['pid'] = $this->retrieveUid($nodeReference);
         return $data;
     }
 
@@ -381,5 +372,26 @@ class GenericEntityProjection implements Projection
         $this->repository->forWorkspace(
             $event->getContext()->getWorkspaceId()
         );
+    }
+
+    /**
+     * @param EntityReference $subject
+     * @return null|int
+     */
+    private function retrieveUid(EntityReference $subject)
+    {
+        if (!empty($subject->getUid())) {
+            return $subject->getUid();
+        }
+
+        $rawValues = OriginProjectionRepository::create($subject->getName())
+            ->findRawByUuid($subject->getUuid());
+        if (!empty($rawValues['uid'])) {
+            return $subject
+                ->setUid((int)$rawValues['uid'])
+                ->getUid();
+        }
+
+        return null;
     }
 }

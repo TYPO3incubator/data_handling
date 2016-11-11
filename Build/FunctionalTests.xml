@@ -14,7 +14,7 @@
 	verbose="false"
 >
 	<testsuites>
-		<testsuite name="ext:data-handling functional tests">
+		<testsuite name="ext:data_handling functional tests">
 			<directory>../Tests/Functional/</directory>
 		</testsuite>
 	</testsuites>

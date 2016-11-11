@@ -10,12 +10,17 @@
 			"email": "oliver@typo3.org"
 		}
 	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:TYPO3Incubator/event_sourcing.git"
+		}
+ ],
 	"minimum-stability": "dev",
 	"require": {
 		"php" : "^7.0",
 		"ramsey/uuid": "~3.5",
-		"dbellettini/eventstore-client": "dev-master",
-		"league/tactician": "^1.0"
+		"typo3/cms-event-sourcing": "dev-master"
 	},
 	"replace": {
 		"data_handling": "*"

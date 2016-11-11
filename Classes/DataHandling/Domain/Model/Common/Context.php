@@ -14,8 +14,8 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsArray;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsLocalStorageName;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Common\RepresentableAsArray;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Common\RepresentableAsLocalStorageName;
 
 class Context implements RepresentableAsLocalStorageName, RepresentableAsArray
 {

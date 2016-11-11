@@ -15,9 +15,9 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Project
  */
 
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
-use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Saga;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\BaseEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Projection\Projection;
+use TYPO3\CMS\EventSourcing\DataHandling\Infrastructure\EventStore\Saga;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\BaseEvent;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Projection\Projection;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\TableVersionProjectionRepository;
 

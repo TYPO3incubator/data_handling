@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
 
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\Framework\DataSet;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command as GenericCommand;
@@ -28,7 +28,8 @@ class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regu
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/data_handling'
+        'typo3conf/ext/event_sourcing',
+        'typo3conf/ext/data_handling',
     ];
 
     protected function setup()

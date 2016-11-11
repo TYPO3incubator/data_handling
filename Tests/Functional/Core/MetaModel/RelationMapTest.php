@@ -19,8 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\ActiveRelation;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PassiveRelation;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Relational;
-use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\EventSourcing\Tests\Framework\AssertionUtility;
 
 class RelationMapTest extends FunctionalTestCase
 {
@@ -28,7 +27,9 @@ class RelationMapTest extends FunctionalTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3/sysext/core/Tests/Functional/Fixtures/Extensions/irre_tutorial'
+        'typo3conf/ext/event_sourcing',
+        'typo3conf/ext/data_handling',
+        'typo3/sysext/core/Tests/Functional/Fixtures/Extensions/irre_tutorial',
     ];
 
     /**

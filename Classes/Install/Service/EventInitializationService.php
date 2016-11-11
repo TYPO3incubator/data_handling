@@ -23,7 +23,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver as CompatibilityResolver;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Database\Query\Restriction\LanguageRestriction;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\SuggestedState;

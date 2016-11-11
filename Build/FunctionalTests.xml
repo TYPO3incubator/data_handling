@@ -18,7 +18,4 @@
 			<directory>../Tests/Functional/</directory>
 		</testsuite>
 	</testsuites>
-	<listeners>
-		<listener class="TYPO3\CMS\DataHandling\Tests\Framework\PerformanceListener"></listener>
-	</listeners>
 </phpunit>

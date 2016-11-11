@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command
 
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Contextual;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\ContextualTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\DomainCommand;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\DomainCommand;
 
 abstract class AbstractCommand implements DomainCommand, Contextual
 {

@@ -26,9 +26,9 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\State;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\AbstractSequence;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\EventApplicable;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\EventHandlerTrait;
-use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Saga;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\EventApplicable;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\EventHandlerTrait;
+use TYPO3\CMS\EventSourcing\DataHandling\Infrastructure\EventStore\Saga;
 
 class GenericEntity extends State implements EventApplicable
 {

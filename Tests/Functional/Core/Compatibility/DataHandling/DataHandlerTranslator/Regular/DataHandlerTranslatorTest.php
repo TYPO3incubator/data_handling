@@ -14,21 +14,23 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandBus;
+use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\CommandBus;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
-use TYPO3\CMS\DataHandling\Tests\Framework\AssertionUtility;
+use TYPO3\CMS\EventSourcing\Tests\Framework\AssertionUtility;
 use TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandling\DataHandlerTranslator\Fixtures\CommandHandlerFixture;
 
-class DataHandlerTranslatorTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regular\AbstractActionTestCase
+class DataHandlerTranslatorTest extends AbstractActionTestCase
 {
     /**
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/data_handling'
+        'typo3conf/ext/event_sourcing',
+        'typo3conf/ext/data_handling',
     ];
 
     /**

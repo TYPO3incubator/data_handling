@@ -20,12 +20,13 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Aggreg
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Bundle;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\RelationReference;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandHandler;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\CommandHandler;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\CommandHandlerTrait;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Common\Instantiable;
 
 class CommandHandlerBundle implements Instantiable, CommandHandler
 {
-    use \TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandHandlerTrait;
+    use CommandHandlerTrait;
 
     /**
      * @return CommandHandlerBundle

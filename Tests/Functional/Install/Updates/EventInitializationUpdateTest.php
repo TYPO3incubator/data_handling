@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Install\Updates;
  */
 
 use TYPO3\CMS\Core\Tests\Functional\DataHandling\AbstractDataHandlerActionTestCase;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\Install\Updates\EventInitializationUpdate;
 
@@ -36,7 +36,8 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
      * @var string[]
      */
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/data_handling'
+        'typo3conf/ext/event_sourcing',
+        'typo3conf/ext/data_handling',
     ];
 
     /**
@@ -59,7 +60,6 @@ class EventInitializationUpdateTest extends AbstractDataHandlerActionTestCase
 
         ConnectionPool::originAsDefault(false);
 
-        $this->streamName = uniqid('test');
         $this->update = EventInitializationUpdate::instance();
     }
 

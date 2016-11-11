@@ -14,8 +14,8 @@ namespace TYPO3\CMS\DataHandling\Tests\Functional\Core\Compatibility\DataHandlin
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandHandler;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\DomainCommand;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\CommandHandler;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\DomainCommand;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Bundle;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command\AbstractCommand;
 

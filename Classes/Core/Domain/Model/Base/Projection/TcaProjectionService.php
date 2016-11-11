@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Projection;
 use Ramsey\Uuid\UuidInterface;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\PageContext;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommandManager;
 use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 

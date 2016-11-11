@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Providable;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Common\Providable;
 
 class RelationMap implements Providable
 {

@@ -35,8 +35,8 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequen
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\SequenceTrait;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\TargetReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\TargetReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\BaseEvent;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\StorableEvent;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\BaseEvent;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\StorableEvent;
 
 abstract class AbstractEvent extends BaseEvent implements StorableEvent, Contextual, AggregateReference
 {

@@ -20,7 +20,7 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Aggreg
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\ContextualTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\NodeReferenceTrait;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Instantiable;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Common\Instantiable;
 
 class CommandBuilder implements Instantiable
 {

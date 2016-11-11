@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\RepresentableAsString;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Common\RepresentableAsString;
 
 class SortingComparisonService implements SingletonInterface
 {

@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Common\Providable;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Common\Providable;
 
 final class TcaCommandManager implements Providable
 {

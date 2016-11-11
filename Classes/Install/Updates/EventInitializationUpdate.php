@@ -19,7 +19,7 @@ use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;

@@ -16,14 +16,10 @@ namespace TYPO3\CMS\DataHandling;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider\TcaCommandModifier;
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
-use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Driver\GetEventStoreDriver;
-use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\Driver\SqlDriver;
-use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStore;
-use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\EventStore\EventStorePool;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Command\CommandBus;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Projection\ProjectionManager;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\CommandBus;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Projection\ProjectionManager;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
@@ -108,7 +104,7 @@ class Common
 
         // provides SchemaMigrator for origin connection (instead of any LocalStorage)
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Database\Schema\SchemaMigrator::class]['className']
-            = \TYPO3\CMS\DataHandling\Core\Database\Schema\SchemaMigrator::class;
+            = \TYPO3\CMS\EventSourcing\Core\Database\Schema\SchemaMigrator::class;
         // provides ProjectionContext, once workspace information is available
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class]['className']
             = \TYPO3\CMS\DataHandling\Core\Authentication\BackendUserAuthentication::class;
@@ -177,24 +173,6 @@ class Common
             new \TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Projection\GenericEntityProjection(),
             new \TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Projection\TableVersionProjection(),
         ]);
-
-        // initialize default EventStore using SqlDriver
-        EventStorePool::provide()
-            ->enrolStore('sql')
-            ->concerning('*')
-            ->setStore(
-                EventStore::create(
-                    SqlDriver::instance()
-                )
-            );
-//        EventStorePool::provide()
-//            ->enrolStore('geteventstore.com')
-//            ->concerning('*')
-//            ->setStore(
-//                EventStore::create(
-//                    GetEventStoreDriver::create('http://127.0.0.1:2113', 'admin', 'changeit', true)
-//                )
-//            );
     }
 
     /**

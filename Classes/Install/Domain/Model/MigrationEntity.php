@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EventReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\Event\BaseEvent;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\BaseEvent;
 
 class MigrationEntity extends GenericEntity
 {

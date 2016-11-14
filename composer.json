@@ -16,7 +16,6 @@
 			"url": "git@github.com:TYPO3Incubator/event_sourcing.git"
 		}
  ],
-	"minimum-stability": "dev",
 	"require": {
 		"php" : "^7.0",
 		"ramsey/uuid": "~3.5",

@@ -16,7 +16,7 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity;
 
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
-use TYPO3\CMS\EventSourcing\DataHandling\Infrastructure\EventStore\Saga;
+use TYPO3\CMS\EventSourcing\Infrastructure\EventStore\Saga;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\EventApplicable;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\EventHandlerTrait;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;

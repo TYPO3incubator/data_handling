@@ -18,8 +18,8 @@ use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommand;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommandEntityBehavior;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommandManager;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\ActiveRelation;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Meta\ActiveRelation;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Meta\RelationMap;
 
 /**
  * Modifies TCA settings depending on current state

@@ -35,7 +35,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\CommandBus;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommandManager;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommandTranslator;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\EventSourcing\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 
 /*

@@ -19,8 +19,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use TYPO3\CMS\DataHandling\Core\EventSourcing\Store\EventSelector;
 use TYPO3\CMS\DataHandling\Core\Service\ProjectionService;
+use TYPO3\CMS\EventSourcing\Infrastructure\EventStore\EventSelector;
 
 class BuildCommand extends Command
 {

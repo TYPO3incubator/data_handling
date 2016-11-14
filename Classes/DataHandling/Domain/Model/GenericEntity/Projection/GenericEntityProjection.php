@@ -20,7 +20,7 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\FromRe
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\BaseEvent;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Projection\Projection;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\EventSourcing\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\BranchedToWorkspace;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntity\UniversalProjectionRepository;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntity\OriginProjectionRepository;

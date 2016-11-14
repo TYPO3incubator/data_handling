@@ -28,7 +28,7 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequen
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\EventApplicable;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Event\EventHandlerTrait;
-use TYPO3\CMS\EventSourcing\DataHandling\Infrastructure\EventStore\Saga;
+use TYPO3\CMS\EventSourcing\Infrastructure\EventStore\Saga;
 
 class GenericEntity extends State implements EventApplicable
 {
@@ -55,6 +55,7 @@ class GenericEntity extends State implements EventApplicable
     {
         $aggregateReference = EntityReference::fromRecord($aggregateType, $data);
 
+        /** @var GenericEntity $genericEntity */
         $genericEntity = new static();
         $genericEntity->getSubject()->import($aggregateReference);
 

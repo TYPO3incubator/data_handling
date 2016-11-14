@@ -66,9 +66,6 @@ class Common
             ]
         ];
 
-        $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][ConnectionPool::ORIGIN_CONNECTION_NAME] =
-            $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][ConnectionPool::DEFAULT_CONNECTION_NAME];
-
         if (!self::$enable) {
             return;
         }

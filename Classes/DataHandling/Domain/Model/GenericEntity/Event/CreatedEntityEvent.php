@@ -26,6 +26,7 @@ class CreatedEntityEvent extends AbstractEvent implements NodeReference
     /**
      * @param Context $context
      * @param EntityReference $aggregateReference
+     * @param EntityReference $nodeReference
      * @return CreatedEntityEvent
      */
     public static function create(Context $context, EntityReference $aggregateReference, EntityReference $nodeReference)

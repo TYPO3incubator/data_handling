@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\PageContext;
 use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Base\TcaCommand\TcaCommandManager;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\EventSourcing\Core\Service\MetaModelService;
 
 final class TcaProjectionService
 {

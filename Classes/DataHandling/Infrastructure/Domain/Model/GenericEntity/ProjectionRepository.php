@@ -19,7 +19,7 @@ use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
 
 interface ProjectionRepository
-extends \TYPO3\CMS\EventSourcing\DataHandling\Infrastructure\Domain\Model\Base\ProjectionRepository
+extends \TYPO3\CMS\EventSourcing\Infrastructure\Domain\Model\Base\ProjectionRepository
 {
     /**
      * @param string $identifier

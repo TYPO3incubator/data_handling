@@ -14,7 +14,7 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\Generi
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\Core\Database\ConnectionPool;
+use TYPO3\CMS\DataHandling\Core\Database\LocalStoragePool;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
@@ -206,8 +206,8 @@ class UniversalProjectionRepository implements ProjectionRepository
      */
     private function getLocalStorageProjectionRepository(Context $context)
     {
-        $localStorage = ConnectionPool::instance()
-            ->provideLocalStorageConnection(
+        $localStorage = LocalStoragePool::instance()
+            ->provideConnection(
                 $context->asLocalStorageName(),
                 true
             );

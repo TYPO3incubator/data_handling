@@ -19,11 +19,12 @@ use Ramsey\Uuid\Uuid;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Common;
+use TYPO3\CMS\DataHandling\Core\Database\LocalStoragePool;
 use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver as CoreResolver;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EventSourcingMap;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Meta\EventSourcingMap;
 use TYPO3\CMS\DataHandling\Core\Service\ContextService;
 use TYPO3\CMS\DataHandling\Install\Service\EventInitializationService;
 use TYPO3\CMS\Install\Updates\AbstractUpdate;
@@ -95,7 +96,7 @@ class EventInitializationUpdate extends AbstractUpdate
 
         // remove existing local storage for workspaces
         foreach ($contextService->getWorkspaceIds() as $workspaceId) {
-            ConnectionPool::instance()->reinitializeLocalStorage(
+            LocalStoragePool::instance()->reinitialize(
                 Context::create($workspaceId)->asLocalStorageName()
             );
         }

@@ -17,7 +17,7 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
-use TYPO3\CMS\EventSourcing\DataHandling\Infrastructure\Domain\Model\Base\ProjectionRepository;
+use TYPO3\CMS\EventSourcing\Infrastructure\Domain\Model\Base\ProjectionRepository;
 
 class TableVersionProjectionRepository implements ProjectionRepository
 {

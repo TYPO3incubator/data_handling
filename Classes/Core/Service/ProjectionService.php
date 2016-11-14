@@ -14,9 +14,12 @@ namespace TYPO3\CMS\DataHandling\Core\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\EventSourcing\DataHandling\Infrastructure\EventStore\EventSelector;
-use TYPO3\CMS\EventSourcing\DataHandling\Infrastructure\EventStore\EventStorePool;
+use TYPO3\CMS\EventSourcing\Infrastructure\EventStore\EventSelector;
+use TYPO3\CMS\EventSourcing\Infrastructure\EventStore\EventStorePool;
 
+/**
+ * @todo Needs implementation to trigger projection from command line
+ */
 class ProjectionService
 {
     /**

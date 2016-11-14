@@ -32,10 +32,10 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 use TYPO3\CMS\DataHandling\Install\Domain\Model\MigrationEntity;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Meta\RelationMap;
+use TYPO3\CMS\EventSourcing\Core\Service\MetaModelService;
 
 class EventInitializationService
 {

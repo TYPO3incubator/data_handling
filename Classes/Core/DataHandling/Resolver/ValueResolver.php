@@ -15,7 +15,7 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
  */
 
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\EventSourcing\Core\Service\MetaModelService;
 
 class ValueResolver extends AbstractResolver
 {

@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\DataHandling\Core\DataHandling\Resolver\AbstractResolver;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\EventSourcing\Core\Service\MetaModelService;
 
 class RelationResolver extends AbstractResolver
 {

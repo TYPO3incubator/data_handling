@@ -16,9 +16,9 @@ namespace TYPO3\CMS\DataHandling\Core\DataHandling\Resolver;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Aggregate;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationMap;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PassiveRelation;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\State;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Meta\RelationMap;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Meta\PassiveRelation;
 
 class AggregateResolver
 {

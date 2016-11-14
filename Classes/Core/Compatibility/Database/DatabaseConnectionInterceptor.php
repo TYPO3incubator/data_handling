@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\DataHandling\Common;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EventSourcingMap;
+use TYPO3\CMS\EventSourcing\Core\Domain\Model\Meta\EventSourcingMap;
 use TYPO3\CMS\DataHandling\Core\Service\GenericService;
 
 class DatabaseConnectionInterceptor extends DatabaseConnection

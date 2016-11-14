@@ -24,7 +24,7 @@ use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
-use TYPO3\CMS\DataHandling\Core\Service\MetaModelService;
+use TYPO3\CMS\EventSourcing\Core\Service\MetaModelService;
 
 abstract class AbstractProjectionRepository implements ProjectionRepository
 {

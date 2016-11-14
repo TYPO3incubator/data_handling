@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Core\Compatibility\Database\ConnectionInterceptor;
 use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
-use TYPO3\CMS\EventSourcing\Core\Database\LocalStorage;
 use TYPO3\CMS\EventSourcing\Core\Service\FileSystemService;
 
 class LocalStoragePool

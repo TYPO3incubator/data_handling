@@ -19,7 +19,7 @@
 	"require": {
 		"php" : "^7.0",
 		"ramsey/uuid": "~3.5",
-		"typo3/cms-event-sourcing": "^0.2.1"
+		"typo3/cms-event-sourcing": "^0.2.4"
 	},
 	"replace": {
 		"data_handling": "*"

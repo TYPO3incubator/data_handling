@@ -110,6 +110,15 @@ class DataHandlerTest extends \TYPO3\CMS\Core\Tests\Functional\DataHandling\Regu
     /**
      * @test
      */
+    public function localizeContentFromNonDefaultLanguage()
+    {
+        $this->markTestSkipped('Not completely implemented');
+        parent::localizeContentFromNonDefaultLanguage();
+    }
+
+    /**
+     * @test
+     */
     public function changeContentSorting()
     {
         $this->markTestSkipped('Not completely implemented');

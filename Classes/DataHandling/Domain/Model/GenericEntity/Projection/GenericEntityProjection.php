@@ -319,7 +319,8 @@ class GenericEntityProjection implements Projection
     private function getNodeReferenceData(EntityReference $nodeReference)
     {
         $data = [];
-        $data['pid'] = $this->retrieveUid($nodeReference);
+        // use implicit value of 0 for root page
+        $data['pid'] = $this->retrieveUid($nodeReference, 0);
         return $data;
     }
 
@@ -392,9 +393,10 @@ class GenericEntityProjection implements Projection
 
     /**
      * @param EntityReference $subject
+     * @param null|int $defaultValue
      * @return null|int
      */
-    private function retrieveUid(EntityReference $subject)
+    private function retrieveUid(EntityReference $subject, int $defaultValue = null)
     {
         if (!empty($subject->getUid())) {
             return $subject->getUid();
@@ -408,6 +410,6 @@ class GenericEntityProjection implements Projection
                 ->getUid();
         }
 
-        return null;
+        return $defaultValue;
     }
 }

@@ -339,12 +339,16 @@ class DataHandlerTranslator
                 );
                 $change->getTargetState()->getNode()
                     ->import($nodeReference);
-            // relating to an existing page
-            } elseif ((string)$pageIdValue !== '0') {
+            // relating to an existing page (including root page)
+            } elseif ($pageIdValue !== null) {
                 $nodeReference = EntityReference::instance()
                     ->setName('pages')
                     ->setUid($pageIdValue);
-                $nodeReference->setUuid($this->fetchUuid($nodeReference));
+                $nodeReference->setUuid(
+                    (string)$pageIdValue === '0'
+                    ? EntityReference::DEFAULT_UUID
+                    : $this->fetchUuid($nodeReference)
+                );
                 $change->getTargetState()->getNode()->import($nodeReference);
             }
         }

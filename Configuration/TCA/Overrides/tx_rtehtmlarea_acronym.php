@@ -1,8 +1,10 @@
 <?php
 defined('TYPO3_MODE') || die();
 
-$GLOBALS['TCA']['tx_rtehtmlarea_acronym']['ctrl']['eventSourcing'] = [
-    'listenEvents' => true,
-    'recordEvents' => true,
-    'projectEvents' => false,
-];
+if (!empty($GLOBALS['TCA']['tx_rtehtmlarea_acronym'])) {
+    $GLOBALS['TCA']['tx_rtehtmlarea_acronym']['ctrl']['eventSourcing'] = [
+        'listenEvents' => true,
+        'recordEvents' => true,
+        'projectEvents' => false,
+    ];
+}

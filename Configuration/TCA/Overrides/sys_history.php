@@ -1,8 +1,10 @@
 <?php
 defined('TYPO3_MODE') || die();
 
-$GLOBALS['TCA']['sys_history']['ctrl']['eventSourcing'] = [
-    'listenEvents' => false,
-    'recordEvents' => false,
-    'projectEvents' => false,
-];
+if (!empty($GLOBALS['TCA']['sys_history'])) {
+    $GLOBALS['TCA']['sys_history']['ctrl']['eventSourcing'] = [
+        'listenEvents' => false,
+        'recordEvents' => false,
+        'projectEvents' => false,
+    ];
+}

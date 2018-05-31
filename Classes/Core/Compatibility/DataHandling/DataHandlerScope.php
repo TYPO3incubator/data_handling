@@ -34,6 +34,7 @@ class DataHandlerScope
 
     /**
      * @var EntityReference[]
+     * @deprecated Not used anymore
      */
     public $ignoredNewEntityReferences = [];
 

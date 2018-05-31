@@ -236,7 +236,7 @@ class AggregateResolver
 
         foreach ($this->aggregates as $aggregate) {
             $state = $aggregate->getState();
-            // skip aggregates that are do not issue the requested passive relation
+            // skip aggregates that do not issue the requested passive relation
             if ($state->getSubject()->getName() !== $activeProperty->getSchema()->getName()) {
                 continue;
             }

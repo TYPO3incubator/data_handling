@@ -34,9 +34,10 @@ class RelationResolver extends AbstractResolver
     /**
      * @param EntityReference $reference
      * @param array $rawValues
+     * @param PropertyReference[] $fallbackRelations
      * @return PropertyReference[]
      */
-    public function resolve(EntityReference $reference, array $rawValues): array {
+    public function resolve(EntityReference $reference, array $rawValues, array $fallbackRelations = []): array {
         $relations = [];
 
         foreach ($rawValues as $propertyName => $rawValue) {
@@ -92,6 +93,20 @@ class RelationResolver extends AbstractResolver
                     ->setName($propertyName);
             }
         }
+
+        // add those fallback relations that where not given in $rawValues
+        // (happens when submitting IRRE entities that are collapsed in form view)
+        $rawPropertyNames = array_keys($rawValues);
+        $relations = $relations + array_filter(
+            $fallbackRelations,
+            function (PropertyReference $relations) use ($rawPropertyNames) {
+                return !in_array(
+                    $relations->getName(),
+                    $rawPropertyNames,
+                    true
+                );
+            }
+        );
 
         return $relations;
     }

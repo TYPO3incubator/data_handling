@@ -176,6 +176,7 @@ class DataHandlerTranslator
         }
         // process all changes & resolve value and relations
         foreach ($this->dataCollectionChanges as $change) {
+            $sourceState = $change->getSourceState();
             $targetState = $change->getTargetState();
 
             $targetState->setValues(
@@ -183,10 +184,11 @@ class DataHandlerTranslator
                     ->setScope($this->scope)
                     ->resolve($targetState->getSubject(), $targetState->getSuggestedValues())
             );
+            $sourceRelations = $sourceState ? $sourceState->getRelations() : [];
             $targetState->setRelations(
                 CompatibilityResolver\RelationResolver::instance()
                     ->setScope($this->scope)
-                    ->resolve($targetState->getSubject(), $targetState->getSuggestedValues())
+                    ->resolve($targetState->getSubject(), $targetState->getSuggestedValues(), $sourceRelations)
             );
 
             unset($targetState);

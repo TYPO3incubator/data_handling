@@ -50,7 +50,7 @@ class Change
         return $this;
     }
 
-    public function getSourceState(): State
+    public function getSourceState(): ?State
     {
         return $this->sourceState;
     }

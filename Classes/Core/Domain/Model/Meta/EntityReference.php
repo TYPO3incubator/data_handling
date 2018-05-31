@@ -203,7 +203,7 @@ class EntityReference implements RepresentableAsString, RepresentableAsArray
             $this->name === $reference->getName()
             && (
                 $this->uuid === $reference->getUuid()
-                || $this->uid = $reference->getUid()
+                || $this->uid === $reference->getUid()
             )
         );
     }

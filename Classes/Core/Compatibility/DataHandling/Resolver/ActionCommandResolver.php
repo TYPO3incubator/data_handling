@@ -96,27 +96,29 @@ class ActionCommandResolver
      */
     private function resolveDeleteAction(Action $action)
     {
+        $sourceState = $action->getSourceState();
         $deletedFieldName = MetaModelService::instance()
-            ->getDeletedFieldName($action->getSubject()->getName());
+            ->getDeletedFieldName($sourceState->getSubject()->getName());
 
         if ($deletedFieldName !== null) {
             $this->commands[] = Command\DeleteEntityCommand::create(
-                $action->getContext(),
-                $action->getSubject()
+                $action->getTargetContext(),
+                $sourceState->getSubject()
             );
         } else {
             $this->commands[] = Command\PurgeEntityCommand::create(
-                $action->getContext(),
-                $action->getSubject()
+                $action->getTargetContext(),
+                $sourceState->getSubject()
             );
         }
     }
 
     private function resolveRecoverAction(Action $action)
     {
+        $sourceState = $action->getSourceState();
         $this->commands[] = Command\RecoverEntityCommand::create(
-            $action->getContext(),
-            $action->getSubject()
+            $action->getTargetContext(),
+            $sourceState->getSubject()
         );
     }
 
@@ -125,11 +127,12 @@ class ActionCommandResolver
      */
     private function resolveLocalizeAction(Action $action)
     {
+        $sourceState = $action->getSourceState();
         $metaModelService = MetaModelService::instance();
 
         $languageId = (int)$action->getPayload();
         $context = Context::create(
-            $action->getContext()->getWorkspaceId(),
+            $action->getTargetContext()->getWorkspaceId(),
             $languageId
         );
 
@@ -138,11 +141,11 @@ class ActionCommandResolver
 
         $commands = [];
         $values = [];
-        foreach ($action->getState()->getValues()
+        foreach ($action->getSourceState()->getValues()
                  as $propertyName => $propertyValue
         ) {
             if (!$metaModelService->shallPrefixTitleOnTranslation(
-                $action->getSubject()->getName(),
+                $sourceState->getSubject()->getName(),
                 $propertyName
             )) {
                 continue;
@@ -163,7 +166,7 @@ class ActionCommandResolver
 
         $this->commands[] = Command\TranslateEntityBundleCommand::create(
             $context,
-            $action->getSubject(),
+            $sourceState->getSubject(),
             $commands
         );
     }

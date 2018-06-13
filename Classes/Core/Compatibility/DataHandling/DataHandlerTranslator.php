@@ -208,20 +208,22 @@ class DataHandlerTranslator
                 $subject = EntityReference::instance()
                     ->setName($tableName)
                     ->setUid($uid);
-                $subject->setUuid(
-                    $this->fetchUuid($subject)
-                );
+
+                $sourceState = $this->fetchState($subject);
+                $languageFieldName = MetaModelService::instance()->getLanguageFieldName($tableName);
 
                 foreach ($actions as $actionName => $actionPayload) {
-                    $context = Context::create(
-                        $this->getWorkspaceId()
+                    $targetContext = Context::create(
+                        $this->getWorkspaceId(),
+                        $sourceState->getValue($languageFieldName)
                     );
 
-                    $action = Action::create($actionName);
-                    $action->setContext($context);
-                    $action->setSubject($subject);
+                    $action = new Action(
+                        $actionName,
+                        $sourceState,
+                        $targetContext
+                    );
                     $action->setPayload($actionPayload);
-                    $action->setState($this->fetchState($subject));
 
                     if (!isset($this->actionCollectionActions[$actionName])) {
                         $this->actionCollectionActions[$actionName] = [];
@@ -272,16 +274,12 @@ class DataHandlerTranslator
 
             foreach ($uidValues as $uid => $values) {
                 // @todo validate against proper languages
-                if (!empty($values[$languageFieldName])) {
-                    $context = Context::create(
-                        $this->getWorkspaceId(),
-                        (int)$values[$languageFieldName]
-                    );
-                } else {
-                    $context = Context::create(
-                        $this->getWorkspaceId()
-                    );
-                }
+                $context = Context::create(
+                    $this->getWorkspaceId(),
+                    isset($values[$languageFieldName])
+                        ? (int)$values[$languageFieldName]
+                        : null
+                );
 
                 $subject = EntityReference::instance()
                     ->setName($tableName)
@@ -411,7 +409,7 @@ class DataHandlerTranslator
             $aggregateResolver = CoreResolver\AggregateResolver::create(
                 $actions,
                 function (Action $subject) {
-                    return $subject->getState();
+                    return $subject->getSourceState();
                 }
             );
 

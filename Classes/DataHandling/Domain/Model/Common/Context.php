@@ -19,8 +19,11 @@ use TYPO3\CMS\EventSourcing\Core\Domain\Model\Common\RepresentableAsLocalStorage
 
 class Context implements RepresentableAsLocalStorageName, RepresentableAsArray
 {
-    public static function create(int $workspaceId = 0, int $languageId = 0)
+    public static function create(int $workspaceId = 0, int $languageId = null)
     {
+        if ($languageId === null) {
+            $languageId = 0;
+        }
         return new static($workspaceId, $languageId);
     }
 

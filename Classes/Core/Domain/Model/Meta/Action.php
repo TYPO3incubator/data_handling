@@ -15,41 +15,28 @@ namespace TYPO3\CMS\DataHandling\Core\Domain\Model\Meta;
  */
 
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
 
 class Action
 {
-    /**
-     * @param string $name
-     * @return Action
-     */
-    public static function create(string $name)
-    {
-        $action = new static();
-        $action->name = $name;
-        $action->context = Context::create();
-        return $action;
-    }
-
     /**
      * @var string
      */
     private $name;
 
     /**
+     * @var State
+     */
+    private $sourceState;
+
+    /**
      * @var Context
      */
-    private $context;
+    private $targetContext;
 
     /**
      * @var EntityReference
      */
-    private $node;
-
-    /**
-     * @var EntityReference
-     */
-    private $subject;
+    private $targetNode;
 
     /**
      * @var array|string|int
@@ -57,12 +44,15 @@ class Action
     private $payload;
 
     /**
-     * @var GenericEntity
+     * @param string $name
+     * @param State $sourceState
+     * @param Context $targetContext
      */
-    private $state;
-
-    private function __construct()
+    public function __construct(string $name, State $sourceState, Context $targetContext)
     {
+        $this->name = $name;
+        $this->sourceState = $sourceState;
+        $this->targetContext = $targetContext;
     }
 
     /**
@@ -74,48 +64,32 @@ class Action
     }
 
     /**
+     * @return State
+     */
+    public function getSourceState(): State
+    {
+        return $this->sourceState;
+    }
+
+    /**
      * @return Context
      */
-    public function getContext()
+    public function getTargetContext(): Context
     {
-        return $this->context;
+        return $this->targetContext;
+    }
+
+    public function getTargetNode(): ?EntityReference
+    {
+        return $this->targetNode;
     }
 
     /**
-     * @param Context $context
+     * @param EntityReference $targetNode
      */
-    public function setContext(Context $context)
+    public function setTargetNode(EntityReference $targetNode)
     {
-        $this->context = $context;
-    }
-
-    public function getNode(): EntityReference
-    {
-        return $this->node;
-    }
-
-    /**
-     * @param EntityReference $node
-     */
-    public function setNode(EntityReference $node)
-    {
-        $this->node = $node;
-    }
-
-    /**
-     * @return EntityReference
-     */
-    public function getSubject(): EntityReference
-    {
-        return $this->subject;
-    }
-
-    /**
-     * @param EntityReference $subject
-     */
-    public function setSubject(EntityReference $subject)
-    {
-        $this->subject = $subject;
+        $this->targetNode = $targetNode;
     }
 
     /**
@@ -132,21 +106,5 @@ class Action
     public function setPayload($payload)
     {
         $this->payload = $payload;
-    }
-
-    /**
-     * @return GenericEntity
-     */
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    /**
-     * @param GenericEntity $state
-     */
-    public function setState(GenericEntity $state)
-    {
-        $this->state = $state;
     }
 }

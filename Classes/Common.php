@@ -16,12 +16,12 @@ namespace TYPO3\CMS\DataHandling;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\DataHandling\Backend\Form\FormDataProvider\TcaCommandModifier;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\EventUpdate\ModifiedEntityEventUpdate;
 use TYPO3\CMS\EventSourcing\Core\Database\ConnectionPool;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Command\CommandBus;
 use TYPO3\CMS\EventSourcing\Core\Domain\Model\Base\Projection\ProjectionManager;
-use TYPO3\CMS\Extbase\Object\Container\Container;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\EventSourcing\Infrastructure\EventStore\EventStorePool;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 class Common
@@ -172,5 +172,9 @@ class Common
             new \TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Projection\GenericEntityProjection(),
             new \TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Projection\TableVersionProjection(),
         ]);
+
+        EventStorePool::provide()
+            ->getAllFor('*')
+            ->attachUpdate(new ModifiedEntityEventUpdate());
     }
 }

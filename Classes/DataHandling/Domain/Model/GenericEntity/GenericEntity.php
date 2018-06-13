@@ -133,6 +133,36 @@ class GenericEntity extends State implements EventApplicable
     }
 
     /**
+     * @var bool
+     */
+    protected $disabled = false;
+
+    /**
+     * @var bool
+     */
+    protected $deleted = false;
+
+    /**
+     * @var bool
+     */
+    protected $purged = false;
+
+    public function isDisabled(): bool
+    {
+        return $this->disabled;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    public function isPurged(): bool
+    {
+        return $this->purged;
+    }
+
+    /**
      * @param Context $context
      * @return static
      */
@@ -312,6 +342,7 @@ class GenericEntity extends State implements EventApplicable
 
     protected function applyBranchedEntityToEvent(Event\BranchedEntityToEvent $event)
     {
+        $this->assertLifecycle();
     }
 
     protected function applyBranchedEntityFromEvent(Event\BranchedEntityFromEvent $event)
@@ -323,6 +354,7 @@ class GenericEntity extends State implements EventApplicable
                 $event->getFromReference()->getEntityReference(),
                 $event->getFromReference()->getEventId()
             );
+        $fromEntity->assertLifecycle();
 
         $this->setNode(
             EntityReference::instance()->import(
@@ -342,6 +374,7 @@ class GenericEntity extends State implements EventApplicable
 
     protected function applyTranslatedToEvent(Event\TranslatedEntityToEvent $event)
     {
+        $this->assertLifecycle();
     }
 
     protected function applyTranslatedFromEvent(Event\TranslatedEntityFromEvent $event)
@@ -353,6 +386,7 @@ class GenericEntity extends State implements EventApplicable
                 $event->getFromReference()->getEntityReference(),
                 $event->getFromReference()->getEventId()
             );
+        $fromEntity->assertLifecycle();
 
         $this->setNode(
             EntityReference::instance()->import(
@@ -375,45 +409,72 @@ class GenericEntity extends State implements EventApplicable
 
     protected function applyModifiedEntityEvent(Event\ModifiedEntityEvent $event)
     {
+        $this->assertLifecycle();
         $this->values = $event->getValues();
     }
 
     protected function applyDeletedEntityEvent(Event\DeletedEntityEvent $event)
     {
-        // @todo Create and apply meta-state for entity
+        $this->assertLifecycle();
+        $this->deleted = true;
     }
 
     protected function applyAttachedRelationEvent(Event\AttachedRelationEvent $event)
     {
+        $this->assertLifecycle();
         $this->relations[] = $event->getRelationReference();
     }
 
     protected function applyRemovedRelationEvent(Event\RemovedRelationEvent $event)
     {
+        $this->assertLifecycle();
+        $this->assertRelation($event->getRelationReference());
+
         $relationIndex = array_search(
             $event->getRelationReference(),
             $this->relations,
             true
         );
-        if ($relationIndex !== false) {
-            unset($this->relations[$relationIndex]);
-        }
+        unset($this->relations[$relationIndex]);
     }
 
     protected function applyOrderedRelationsEvent(Event\OrderedRelationsEvent $event)
     {
-        $relations = [];
+        $this->assertLifecycle();
 
+        $relations = [];
         foreach($event->getSequence()->get() as $orderedRelation) {
-            if (!in_array($orderedRelation, $this->relations, true)) {
-                throw new \RuntimeException(
-                    'Cannot define order with non-existing relation',
-                    1471101357
-                );
-            }
+            $this->assertRelation($orderedRelation);
             $relations[] = $orderedRelation;
         }
 
         $this->relations = $relations;
+    }
+
+
+    protected function assertRelation(PropertyReference $reference)
+    {
+        if (!in_array($reference, $this->relations, true)) {
+            throw new \RuntimeException(
+                'Relation reference does not exist',
+                1528882405
+            );
+        }
+    }
+
+    protected function assertLifecycle()
+    {
+        if ($this->deleted) {
+            throw new \RuntimeException(
+                'Cannot change deleted entity',
+                1528882406
+            );
+        }
+        if ($this->purged) {
+            throw new \RuntimeException(
+                'Cannot change purged entity',
+                1528882407
+            );
+        }
     }
 }

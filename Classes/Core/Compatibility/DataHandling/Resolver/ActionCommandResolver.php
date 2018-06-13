@@ -20,7 +20,6 @@ use TYPO3\CMS\EventSourcing\Core\Service\MetaModelService;
 use TYPO3\CMS\DataHandling\Core\Utility\UuidUtility;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command\DeleteEntityCommand;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
 use TYPO3\CMS\DataHandling\DataHandling\Infrastructure\Domain\Model\GenericEntityEventRepository;
 
@@ -83,7 +82,10 @@ class ActionCommandResolver
      */
     private function resolveDeleteAction(Action $action)
     {
-        $this->commands[] = DeleteEntityCommand::create(
+        $this->commands[] = Command\DeleteEntityCommand::create(
+            $action->getContext(),
+            $action->getSubject()
+        );
             $action->getContext(),
             $action->getSubject()
         );

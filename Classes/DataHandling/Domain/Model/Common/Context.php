@@ -62,7 +62,7 @@ class Context implements RepresentableAsLocalStorageName, RepresentableAsArray
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'workspace' => $this->workspaceId,
@@ -74,7 +74,7 @@ class Context implements RepresentableAsLocalStorageName, RepresentableAsArray
      * @return string
      * @todo Extend for language as well
      */
-    public function asLocalStorageName()
+    public function asLocalStorageName(): string
     {
         return sprintf('workspace-%d', $this->workspaceId);
     }
@@ -82,7 +82,7 @@ class Context implements RepresentableAsLocalStorageName, RepresentableAsArray
     /**
      * @return int
      */
-    public function getWorkspaceId()
+    public function getWorkspaceId(): int
     {
         return $this->workspaceId;
     }
@@ -90,8 +90,24 @@ class Context implements RepresentableAsLocalStorageName, RepresentableAsArray
     /**
      * @return int
      */
-    public function getLanguageId()
+    public function getLanguageId(): int
     {
         return $this->languageId;
+    }
+
+    public function isDifferent(Context $other): bool
+    {
+        return $this->isDifferentWorkspace($other)
+            || $this->isDifferenceLanguage($other);
+    }
+
+    public function isDifferentWorkspace(Context $other): bool
+    {
+        return $this->workspaceId !== $other->workspaceId;
+    }
+
+    public function isDifferenceLanguage(Context $other): bool
+    {
+        return $this->languageId !== $other->languageId;
     }
 }

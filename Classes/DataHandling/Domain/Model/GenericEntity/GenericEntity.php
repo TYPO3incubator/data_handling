@@ -258,14 +258,14 @@ class GenericEntity extends State implements EventApplicable
 
     /**
      * @param Context $context
-     * @param array $data
+     * @param array $values
      */
-    public function modifyEntity(Context $context, array $data)
+    public function changeEntityValues(Context $context, array $values)
     {
-        $event = Event\ModifiedEntityEvent::create(
+        $event = Event\ChangedEntityValuesEvent::create(
             $context,
             $this->subject,
-            $data
+            $values
         );
 
         $this->manageEvent($event);
@@ -427,7 +427,7 @@ class GenericEntity extends State implements EventApplicable
         );
     }
 
-    protected function applyModifiedEntityEvent(Event\ModifiedEntityEvent $event)
+    protected function applyChangedEntityValuesEvent(Event\ChangedEntityValuesEvent $event)
     {
         $this->assertLifecycle();
         $this->values = $event->getValues();

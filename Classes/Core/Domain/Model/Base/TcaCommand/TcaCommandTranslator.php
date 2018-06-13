@@ -92,7 +92,7 @@ final class TcaCommandTranslator
     private function resolveEntityBehavior(Command\AbstractCommand $command, TcaCommand $tcaCommand)
     {
         $entityBehavior = null;
-        if ($command instanceof Command\CreateEntityBundleCommand) {
+        if ($command instanceof Command\NewEntityCommand) {
             $entityBehavior = $tcaCommand->onCreate();
         }
         if ($command instanceof Command\BranchEntityBundleCommand) {
@@ -104,7 +104,7 @@ final class TcaCommandTranslator
         if ($command instanceof Command\TranslateEntityBundleCommand) {
 
         }
-        if ($command instanceof Command\ModifyEntityBundleCommand) {
+        if ($command instanceof Command\ChangeEntityCommand) {
             $entityBehavior = $tcaCommand->onModify();
         }
         if ($command instanceof Command\DeleteEntityCommand) {
@@ -138,10 +138,10 @@ final class TcaCommandTranslator
         }
 
         foreach ($command->getCommands() as $bundledCommand) {
-            if ($bundledCommand instanceof Command\ModifyEntityCommand) {
+            if ($bundledCommand instanceof Command\ChangeEntityValuesCommand) {
                 $propertyNameIntersections = array_intersect(
                     array_keys($entityBehavior->getProperties()),
-                    array_keys($bundledCommand->getData())
+                    array_keys($bundledCommand->getValues())
                 );
                 if (empty($propertyNameIntersections)) {
                     return false;

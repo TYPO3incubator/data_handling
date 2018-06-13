@@ -17,32 +17,37 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReferenceTrait;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Bundle;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\BundleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\NodeReference;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\NodeReferenceTrait;
 
-class CreateEntityBundleCommand extends AbstractCommand implements Bundle, AggregateReference, NodeReference
+class ChangeEntityValuesCommand extends AbstractCommand implements AggregateReference
 {
-    use BundleTrait;
     use AggregateReferenceTrait;
-    use NodeReferenceTrait;
 
     /**
      * @param Context $context
      * @param EntityReference $aggregateReference
-     * @param EntityReference $nodeReference
-     * @param AbstractCommand[] $commands
-     * @return CreateEntityBundleCommand
+     * @param array $values
+     * @return ChangeEntityValuesCommand
      */
-    public static function create(Context $context, EntityReference $aggregateReference, EntityReference $nodeReference, array $commands)
+    public static function create(Context $context, EntityReference $aggregateReference, array $values)
     {
         $command = new static();
         $command->context = $context;
         $command->aggregateReference = $aggregateReference;
-        $command->nodeReference = $nodeReference;
-        $command->commands = $commands;
+        $command->values = $values;
         return $command;
+    }
+
+    /**
+     * @var array
+     */
+    private $values = [];
+
+    /**
+     * @return array
+     */
+    public function getValues()
+    {
+        return $this->values;
     }
 }

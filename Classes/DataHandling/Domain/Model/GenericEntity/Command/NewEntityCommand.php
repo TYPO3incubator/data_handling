@@ -14,30 +14,63 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationChanges;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReferenceTrait;
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Bundle;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\BundleTrait;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\NodeReference;
+use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\NodeReferenceTrait;
 
-class ModifyEntityBundleCommand extends AbstractCommand implements Bundle, AggregateReference
+class NewEntityCommand extends AbstractCommand implements AggregateReference, NodeReference
 {
     use BundleTrait;
     use AggregateReferenceTrait;
+    use NodeReferenceTrait;
+
+    /**
+     * @var array
+     */
+    private $values;
+
+    /**
+     * @var RelationChanges
+     */
+    private $relationChanges;
 
     /**
      * @param Context $context
      * @param EntityReference $aggregateReference
-     * @param array $commands
-     * @return ModifyEntityBundleCommand
+     * @param EntityReference $nodeReference
+     * @param array $values
+     * @param RelationChanges $relationChanges
+     * @return NewEntityCommand
      */
-    public static function create(Context $context, EntityReference $aggregateReference, array $commands)
+    public static function create(Context $context, EntityReference $aggregateReference, EntityReference $nodeReference, array $values, RelationChanges $relationChanges)
     {
         $command = new static();
         $command->context = $context;
         $command->aggregateReference = $aggregateReference;
-        $command->commands = $commands;
+        $command->nodeReference = $nodeReference;
+        $command->values = $values;
+        $command->relationChanges = $relationChanges;
         return $command;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValues(): array
+    {
+        return $this->values;
+    }
+
+    /**
+     * @return RelationChanges
+     */
+    public function getRelationChanges(): RelationChanges
+    {
+        return $this->relationChanges;
     }
 }

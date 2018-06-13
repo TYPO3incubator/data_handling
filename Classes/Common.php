@@ -156,11 +156,13 @@ class Common
     {
         CommandBus::provide()->addHandlerBundle(
             Command\CommandHandlerBundle::instance(), [
-                Command\CreateEntityBundleCommand::class,
                 Command\BranchEntityBundleCommand::class,
                 Command\BranchAndTranslateEntityBundleCommand::class,
+
+                Command\NewEntityCommand::class,
+                Command\ChangeEntityCommand::class,
+
                 Command\TranslateEntityBundleCommand::class,
-                Command\ModifyEntityBundleCommand::class,
                 Command\DeleteEntityCommand::class,
                 // @todo: enable, disable, move
             ]

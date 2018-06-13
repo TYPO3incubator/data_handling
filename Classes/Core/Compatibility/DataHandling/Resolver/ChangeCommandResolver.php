@@ -14,10 +14,10 @@ namespace TYPO3\CMS\DataHandling\Core\Compatibility\DataHandling\Resolver;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\RelationChanges;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\Change;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\PropertyReference;
-use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\SuggestedState;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Sequence\RelationSequence;
 use TYPO3\CMS\DataHandling\Core\Service\SortingComparisonService;
 
@@ -52,11 +52,6 @@ class ChangeCommandResolver
     private $commands = [];
 
     /**
-     * @var Command\CommandBuilder
-     */
-    private $commandBuilder;
-
-    /**
      * @return Command\AbstractCommand[]
      */
     public function getCommands()
@@ -68,42 +63,36 @@ class ChangeCommandResolver
     {
         // root aggregate change is processed first
         foreach ($this->changes as $change) {
-            $this->commandBuilder = Command\CommandBuilder::instance();
-            $this->processContext($change);
-            $this->processValues($change);
-            $this->processRelations($change);
+            $values = $this->resolveValues($change);
+            $relationChanges = $this->resolveRelations($change);
 
-            if (!is_null($command = $this->commandBuilder->build())) {
-                $this->commands[] = $command;
+            if (empty($values) && $relationChanges->isEmpty()) {
+                continue;
+            }
+
+            $targetState = $change->getTargetState();
+
+            if ($change->isNew()) {
+                $this->commands[] = Command\NewEntityCommand::create(
+                    $targetState->getContext(),
+                    $targetState->getSubject(),
+                    $targetState->getNode(),
+                    $values,
+                    $relationChanges
+                );
+            } else {
+                $this->commands[] = Command\ChangeEntityCommand::create(
+                    $targetState->getContext(),
+                    $targetState->getSubject(),
+                    $values,
+                    $relationChanges
+                );
             }
         }
     }
 
-    private function processContext(Change $change)
+    private function resolveValues(Change $change): array
     {
-        if ($change->isNew()) {
-            $this->commandBuilder->newCreateCommand(
-                $change->getTargetState()->getContext(),
-                $change->getTargetState()->getSubject(),
-                $change->getTargetState()->getNode()
-            );
-        } elseif ($this->isDifferentContext()) {
-            $this->commandBuilder->newBranchCommand(
-                $change->getTargetState()->getContext(),
-                $change->getTargetState()->getSubject()
-            );
-        } else {
-            $this->commandBuilder->newModifyCommand(
-                $change->getTargetState()->getContext(),
-                $change->getTargetState()->getSubject()
-            );
-        }
-    }
-
-    private function processValues(Change $change)
-    {
-        $aggregateReference = $change->getTargetState()->getSubject();
-
         if ($change->isNew()) {
             $values = $change->getTargetState()->getValues();
         } else {
@@ -112,19 +101,13 @@ class ChangeCommandResolver
                 $change->getSourceState()->getValues()
             );
         }
-        if (!empty($values)) {
-            $this->commandBuilder->addCommand(
-                Command\ModifyEntityCommand::create(
-                    $change->getTargetState()->getContext(),
-                    $aggregateReference,
-                    $values
-                )
-            );
-        }
+        return $values;
     }
 
-    private function processRelations(Change $change)
+    private function resolveRelations(Change $change): RelationChanges
     {
+        $relationChanges = new RelationChanges();
+
         /** @var PropertyReference[][] $sourceRelationsByProperty */
         $sourceRelationsByProperty = [];
         /** @var PropertyReference[][] $targetRelationsByProperty */
@@ -147,7 +130,7 @@ class ChangeCommandResolver
         // not exist in the target relations anymore
         foreach ($removedPropertyNames as $removedPropertyName) {
             $this->comparePropertyRelations(
-                $change->getTargetState(),
+                $relationChanges,
                 $sourceRelationsByProperty[$removedPropertyName],
                 []
             );
@@ -156,7 +139,7 @@ class ChangeCommandResolver
         // not exist in the source relations before
         foreach ($addedPropertyNames as $addedPropertyName) {
             $this->comparePropertyRelations(
-                $change->getTargetState(),
+                $relationChanges,
                 [],
                 $targetRelationsByProperty[$addedPropertyName]
             );
@@ -173,25 +156,25 @@ class ChangeCommandResolver
 
             $sourceRelations = $sourceRelationsByProperty[$propertyName];
             $this->comparePropertyRelations(
-                $change->getTargetState(),
+                $relationChanges,
                 $sourceRelations,
                 $targetRelations
             );
         }
+
+        return $relationChanges;
     }
 
     /**
-     * @param SuggestedState $targetState
+     * @param RelationChanges $relationChanges
      * @param PropertyReference[] $sourceRelations
      * @param PropertyReference[] $targetRelations
      */
     private function comparePropertyRelations(
-        SuggestedState $targetState,
+        RelationChanges $relationChanges,
         array $sourceRelations,
         array $targetRelations
     ) {
-        $aggregateReference = $targetState->getSubject();
-
         $comparisonActions = SortingComparisonService::instance()->compare(
             $sourceRelations,
             $targetRelations
@@ -201,46 +184,19 @@ class ChangeCommandResolver
             if ($comparisonAction['action'] === SortingComparisonService::ACTION_REMOVE) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
-                $this->commandBuilder->addCommand(
-                    Command\RemoveRelationCommand::create(
-                        $targetState->getContext(),
-                        $aggregateReference,
-                        $relationPropertyReference
-                    )
-                );
+                $relationChanges->remove($relationPropertyReference);
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ADD) {
                 /** @var PropertyReference $relationPropertyReference */
                 $relationPropertyReference = $comparisonAction['item'];
-                $this->commandBuilder->addCommand(
-                    Command\AttachRelationCommand::create(
-                        $targetState->getContext(),
-                        $aggregateReference,
-                        $relationPropertyReference
-                    )
-                );
+                $relationChanges->add($relationPropertyReference);
             } elseif ($comparisonAction['action'] === SortingComparisonService::ACTION_ORDER) {
                 $relationSequence = RelationSequence::instance();
                 /** @var PropertyReference $relationPropertyReference */
                 foreach ($comparisonAction['items'] as $relationPropertyReference) {
                     $relationSequence->attach($relationPropertyReference);
                 }
-                $this->commandBuilder->addCommand(
-                    Command\OrderRelationsCommand::create(
-                        $targetState->getContext(),
-                        $aggregateReference,
-                        $relationSequence
-                    )
-                );
+                $relationChanges->order($relationSequence);
             }
         }
-    }
-
-    /**
-     * @return bool
-     * @todo Implement context switch
-     */
-    private function isDifferentContext(): bool
-    {
-        return false;
     }
 }

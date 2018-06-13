@@ -17,13 +17,13 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\Common\Context;
 use TYPO3\CMS\DataHandling\Core\Domain\Model\Meta\EntityReference;
 
-class ModifiedEntityEvent extends AbstractEvent
+class ChangedEntityValuesEvent extends AbstractEvent
 {
     /**
      * @param Context $context
      * @param EntityReference $aggregateReference
      * @param array $values
-     * @return ModifiedEntityEvent
+     * @return ChangedEntityValuesEvent
      */
     public static function create(Context $context, EntityReference $aggregateReference, array $values)
     {

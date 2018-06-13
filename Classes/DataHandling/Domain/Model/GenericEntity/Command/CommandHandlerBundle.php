@@ -36,10 +36,10 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     }
 
     /**
-     * @param CreateEntityBundleCommand $command
+     * @param NewEntityCommand $command
      * @return GenericEntity
      */
-    protected function handleCreateEntityBundleCommand(CreateEntityBundleCommand $command)
+    protected function handleNewEntityCommand(NewEntityCommand $command)
     {
         $genericEntity = GenericEntity::createEntity(
             $command->getContext(),
@@ -47,7 +47,18 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
             $command->getNodeReference()
         );
 
-        $this->handleBundle($command, $genericEntity);
+        if (!empty($command->getValues())) {
+            $genericEntity->changeEntityValues(
+                $command->getContext(),
+                $command->getValues()
+            );
+        }
+        foreach ($command->getRelationChanges()->getAdd() as $relationReference) {
+            $genericEntity->attachRelation(
+                $command->getContext(),
+                $relationReference
+            );
+        }
 
         GenericEntityEventRepository::instance()->commit($genericEntity);
     }
@@ -100,30 +111,54 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     }
 
     /**
-     * @param ModifyEntityBundleCommand $command
+     * @param ChangeEntityCommand $command
      * @return GenericEntity
      */
-    protected function handleModifyEntityBundleCommand(ModifyEntityBundleCommand $command)
+    protected function handleChangeEntityCommand(ChangeEntityCommand $command)
     {
         $genericEntity = $this->fetchGenericEntity($command);
 
-        $this->handleBundle($command, $genericEntity);
+        if (!empty($command->getValues())) {
+            $genericEntity->changeEntityValues(
+                $command->getContext(),
+                $command->getValues()
+            );
+        }
+        foreach ($command->getRelationChanges()->getRemove() as $relationReference) {
+            $genericEntity->removeRelation(
+                $command->getContext(),
+                $relationReference
+            );
+        }
+        foreach ($command->getRelationChanges()->getAdd() as $relationReference) {
+            $genericEntity->attachRelation(
+                $command->getContext(),
+                $relationReference
+            );
+        }
+        foreach ($command->getRelationChanges()->getOrder() as $relationSequence) {
+            $genericEntity->orderRelations(
+                $command->getContext(),
+                $relationSequence
+            );
+        }
 
         GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 
     /**
-     * @param ModifyEntityCommand $command
+     * @param ChangeEntityValuesCommand $command
      * @param GenericEntity $genericEntity
      * @return GenericEntity
      */
-    protected function handleModifyEntityCommand(ModifyEntityCommand $command, GenericEntity $genericEntity = null)
+    protected function handleChangeEntityValuesCommand(ChangeEntityValuesCommand $command, GenericEntity $genericEntity = null)
     {
         $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
-        $genericEntity->modifyEntity(
+        $genericEntity->changeEntityValues(
             $command->getContext(),
-            $command->getData()
+            $command->getValues()
         );
+
         GenericEntityEventRepository::instance()->commit($genericEntity);
     }
 

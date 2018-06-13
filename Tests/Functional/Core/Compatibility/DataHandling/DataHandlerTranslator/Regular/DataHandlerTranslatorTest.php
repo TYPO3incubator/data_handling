@@ -54,11 +54,12 @@ class DataHandlerTranslatorTest extends AbstractActionTestCase
         CommandBus::provide(true)->addHandlerBundle(
             $this->commandHandler,
             [
-                Command\CreateEntityBundleCommand::class,
+                Command\NewEntityCommand::class,
+                Command\ChangeEntityCommand::class,
+
                 Command\BranchEntityBundleCommand::class,
                 Command\BranchAndTranslateEntityBundleCommand::class,
                 Command\TranslateEntityBundleCommand::class,
-                Command\ModifyEntityBundleCommand::class,
                 Command\DeleteEntityCommand::class,
             ]
         );
@@ -80,42 +81,24 @@ class DataHandlerTranslatorTest extends AbstractActionTestCase
 
         $this->assertHasCommands(
             [
-                Command\CreateEntityBundleCommand::class => [
+                Command\NewEntityCommand::class => [
                     [
                         'aggregateReference.name' => static::TABLE_Content,
                         'aggregateReference.uuid' => '@@UUID@@',
                         'nodeReference.name' => static::TABLE_Page,
                         'nodeReference.uuid' => '@@UUID@@',
-                    ],
-                    [
-                        'aggregateReference.name' => static::TABLE_Content,
-                        'aggregateReference.uuid' => '@@UUID@@',
-                        'nodeReference.name' => static::TABLE_Page,
-                        'nodeReference.uuid' => '@@UUID@@',
-                    ],
-                ],
-            ],
-            $this->commandHandler->getCommands()
-        );
-
-        $this->assertHasCommands(
-            [
-                Command\ModifyEntityCommand::class => [
-                    [
-                        'aggregateReference.name' => static::TABLE_Content,
-                        'aggregateReference.uuid' => '@@UUID@@',
                         'data.header' => 'Testing #1',
                     ],
                     [
                         'aggregateReference.name' => static::TABLE_Content,
                         'aggregateReference.uuid' => '@@UUID@@',
+                        'nodeReference.name' => static::TABLE_Page,
+                        'nodeReference.uuid' => '@@UUID@@',
                         'data.header' => 'Testing #2',
                     ],
                 ],
             ],
-            $this->commandHandler->getBundleCommands(
-                Command\CreateEntityBundleCommand::class
-            )
+            $this->commandHandler->getCommands()
         );
     }
 
@@ -128,29 +111,15 @@ class DataHandlerTranslatorTest extends AbstractActionTestCase
 
         $this->assertHasCommands(
             [
-                Command\ModifyEntityBundleCommand::class => [
-                    [
-                        'aggregateReference.name' => static::TABLE_Content,
-                        'aggregateReference.uuid' => '@@UUID@@',
-                    ]
-                ],
-            ],
-            $this->commandHandler->getCommands()
-        );
-
-        $this->assertHasCommands(
-            [
-                Command\ModifyEntityCommand::class => [
+                Command\ChangeEntityCommand::class => [
                     [
                         'aggregateReference.name' => static::TABLE_Content,
                         'aggregateReference.uuid' => '@@UUID@@',
                         'data.header' => 'Testing #1',
-                    ],
+                    ]
                 ],
             ],
-            $this->commandHandler->getBundleCommands(
-                Command\ModifyEntityBundleCommand::class
-            )
+            $this->commandHandler->getCommands()
         );
     }
 

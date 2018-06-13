@@ -228,7 +228,7 @@ class EventInitializationService
     }
 
     /**
-     * Creates ModifiedEntityEvent for assigned values.
+     * Creates ChangedEntityValuesEvent for assigned values.
      *
      * @param MigrationEntity $migrationEntity
      * @param array $data
@@ -256,7 +256,7 @@ class EventInitializationService
             )
         );
 
-        $migrationEntity->modifyEntity($context, $temporaryState->getValues());
+        $migrationEntity->changeEntityValues($context, $temporaryState->getValues());
         GenericEntityEventRepository::instance()->commit($migrationEntity);
     }
 

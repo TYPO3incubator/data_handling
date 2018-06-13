@@ -51,7 +51,7 @@ class GenericEntityProjection implements Projection
             Event\BranchedEntityFromEvent::class,
             Event\TranslatedEntityFromEvent::class,
 
-            Event\ModifiedEntityEvent::class,
+            Event\ChangedEntityValuesEvent::class,
             Event\AttachedRelationEvent::class,
             Event\RemovedRelationEvent::class,
             Event\OrderedRelationsEvent::class,
@@ -89,8 +89,8 @@ class GenericEntityProjection implements Projection
         }
 
         // entity modification
-        if ($event instanceof Event\ModifiedEntityEvent) {
-            $this->projectModifiedEntityEvent($event);
+        if ($event instanceof Event\ChangedEntityValuesEvent) {
+            $this->projectChangedEntityValuesEvent($event);
         }
         if ($event instanceof Event\AttachedRelationEvent) {
             $this->projectAttachedRelationEvent($event);
@@ -186,7 +186,7 @@ class GenericEntityProjection implements Projection
         $this->repository->add($data);
     }
 
-    private function projectModifiedEntityEvent(Event\ModifiedEntityEvent $event)
+    private function projectChangedEntityValuesEvent(Event\ChangedEntityValuesEvent $event)
     {
         if ($event->getContext()->getWorkspaceId() !== 0) {
             $this->addSpecificProjectionRepositories($event);

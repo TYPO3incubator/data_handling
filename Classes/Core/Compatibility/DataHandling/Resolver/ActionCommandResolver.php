@@ -157,7 +157,7 @@ class ActionCommandResolver
         }
 
         if (!empty($values)) {
-            $commands[] = Command\ModifyEntityCommand::create(
+            $commands[] = Command\ChangeEntityValuesCommand::create(
                 $context,
                 EntityReference::instance(),
                 $values

@@ -284,6 +284,26 @@ class GenericEntity extends State implements EventApplicable
         $this->manageEvent($event);
     }
 
+    public function recoverEntity(Context $context)
+    {
+        $event = Event\RecoveredEntityEvent::create(
+            $context,
+            $this->subject
+        );
+
+        $this->manageEvent($event);
+    }
+
+    public function purgeEntity(Context $context)
+    {
+        $event = Event\PurgedEntityEvent::create(
+            $context,
+            $this->subject
+        );
+
+        $this->manageEvent($event);
+    }
+
     /**
      * @param Context $context
      * @param PropertyReference $relationReference
@@ -417,6 +437,16 @@ class GenericEntity extends State implements EventApplicable
     {
         $this->assertLifecycle();
         $this->deleted = true;
+    }
+
+    protected function applyRecoveredEntityEvent(Event\RecoveredEntityEvent $event)
+    {
+        $this->deleted = false;
+    }
+
+    protected function applyPurgedEntityEvent(Event\PurgedEntityEvent $event)
+    {
+        $this->purged = true;
     }
 
     protected function applyAttachedRelationEvent(Event\AttachedRelationEvent $event)

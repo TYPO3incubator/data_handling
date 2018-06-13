@@ -14,7 +14,6 @@ namespace TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Command
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Event as GenericEvent;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\GenericEntity;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\AggregateReference;
 use TYPO3\CMS\DataHandling\DataHandling\Domain\Model\GenericEntity\Aspect\Bundle;
@@ -137,6 +136,24 @@ class CommandHandlerBundle implements Instantiable, CommandHandler
     {
         $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
         $genericEntity->deleteEntity(
+            $command->getContext()
+        );
+        GenericEntityEventRepository::instance()->commit($genericEntity);
+    }
+
+    protected function handleRecoverEntityCommand(RecoverEntityCommand $command, GenericEntity $genericEntity = null)
+    {
+        $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
+        $genericEntity->recoverEntity(
+            $command->getContext()
+        );
+        GenericEntityEventRepository::instance()->commit($genericEntity);
+    }
+
+    protected function handlePurgeEntityCommand(PurgeEntityCommand $command, GenericEntity $genericEntity = null)
+    {
+        $genericEntity = ($genericEntity ?? $this->fetchGenericEntity($command));
+        $genericEntity->purgeEntity(
             $command->getContext()
         );
         GenericEntityEventRepository::instance()->commit($genericEntity);

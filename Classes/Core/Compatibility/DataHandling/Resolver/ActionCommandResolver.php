@@ -66,13 +66,27 @@ class ActionCommandResolver
         // root aggregate action is processed first
         foreach ($this->actions as $action) {
             switch ($action->getName()) {
-                case 'delete':
-                    $this->resolveDeleteAction($action);
+                case 'move':
+                    // @todo
+                    break;
+                case 'copy':
+                    // @todo
                     break;
                 case 'localize':
                     $this->resolveLocalizeAction($action);
                     break;
-                // @todo Implement remaining actions
+                case 'copyToLanguage':
+                    // @todo
+                    break;
+                case 'inlineLocalizeSynchronize':
+                    // @todo
+                    break;
+                case 'delete':
+                    $this->resolveDeleteAction($action);
+                    break;
+                case 'undelete':
+                    $this->resolveRecoverAction($action);
+                    break;
             }
         }
     }
@@ -82,10 +96,25 @@ class ActionCommandResolver
      */
     private function resolveDeleteAction(Action $action)
     {
-        $this->commands[] = Command\DeleteEntityCommand::create(
-            $action->getContext(),
-            $action->getSubject()
-        );
+        $deletedFieldName = MetaModelService::instance()
+            ->getDeletedFieldName($action->getSubject()->getName());
+
+        if ($deletedFieldName !== null) {
+            $this->commands[] = Command\DeleteEntityCommand::create(
+                $action->getContext(),
+                $action->getSubject()
+            );
+        } else {
+            $this->commands[] = Command\PurgeEntityCommand::create(
+                $action->getContext(),
+                $action->getSubject()
+            );
+        }
+    }
+
+    private function resolveRecoverAction(Action $action)
+    {
+        $this->commands[] = Command\RecoverEntityCommand::create(
             $action->getContext(),
             $action->getSubject()
         );

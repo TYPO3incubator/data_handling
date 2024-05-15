@@ -34,7 +34,13 @@ class DataHandlerHook
 
     protected function process(DataHandler $dataHandler)
     {
+        // skip, in case there's actually nothing to do
         if (empty($dataHandler->datamap) && empty($dataHandler->cmdmap)) {
+            return;
+        }
+        // skip, in case this is an import process
+        // @todo `ext:impexp` still should be handled at some point (later™)
+        if ($dataHandler->isImporting) {
             return;
         }
         // create command mapper for incoming data
